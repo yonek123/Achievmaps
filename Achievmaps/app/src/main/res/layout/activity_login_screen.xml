@@ -7,37 +7,8 @@
     android:background="@color/background_gray"
     tools:context=".LoginScreen">
 
-    <Button
-        android:id="@+id/LoginButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:backgroundTint="@color/button_green"
-        android:text="@string/login_button_text"
-        app:cornerRadius="@dimen/button_round"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/RegisterButton"
-        app:layout_constraintStart_toStartOf="@+id/RegisterButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.47000003"
-        tools:ignore="TextContrastCheck"
-        android:onClick="openMap"/>
-
-    <Button
-        android:id="@+id/RegisterButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:backgroundTint="@color/button_green"
-        android:text="@string/register_button_text"
-        app:cornerRadius="@dimen/button_round"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LoginButton"
-        tools:ignore="TextContrastCheck" />
-
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/LoginScreenTitle"
         android:layout_width="wrap_content"
         android:layout_height="222dp"
         android:layout_marginTop="36dp"
@@ -50,7 +21,7 @@
         tools:ignore="ImageContrastCheck" />
 
     <ImageView
-        android:id="@+id/imageView6"
+        android:id="@+id/LoginScreenBg"
         android:layout_width="700dp"
         android:layout_height="150dp"
         android:contentDescription="@string/bg_description"
@@ -59,5 +30,176 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/tlo_fale"
         tools:ignore="ImageContrastCheck" />
+
+    <EditText
+        android:id="@+id/LoginLoginField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:ems="10"
+        android:hint="@string/login_field_text"
+        android:importantForAutofill="auto"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toTopOf="@+id/LoginPasswordField"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
+
+    <EditText
+        android:id="@+id/LoginPasswordField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:ems="10"
+        android:hint="@string/password_field_text"
+        android:importantForAutofill="auto"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toTopOf="@+id/LoginRememberMe"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
+
+    <CheckBox
+        android:id="@+id/LoginRememberMe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="@string/remember_me_text"
+        app:layout_constraintBottom_toTopOf="@+id/LoginLoginButton"
+        app:layout_constraintStart_toStartOf="@+id/LoginPasswordField" />
+
+    <Button
+        android:id="@+id/LoginLoginButton"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="@color/button_green"
+        android:onClick="loginCompleted"
+        android:text="@string/login_button_text"
+        app:cornerRadius="@dimen/button_round"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.622"
+        tools:ignore="TextContrastCheck" />
+
+    <Button
+        android:id="@+id/LoginRegisterButton"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:onClick="visibleRegister"
+        android:text="@string/register_button_text"
+        android:textColor="@color/black"
+        android:textIsSelectable="false"
+        android:textSize="14sp"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/LoginLoginButton"
+        tools:ignore="TextContrastCheck" />
+
+    <EditText
+        android:id="@+id/RegisterEmailField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:ems="10"
+        android:hint="@string/email_field_text"
+        android:inputType="textEmailAddress"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toTopOf="@+id/RegisterLoginField"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="TextContrastCheck"
+        android:importantForAutofill="no"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/RegisterLoginField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:ems="10"
+        android:hint="@string/login_field_text"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toTopOf="@+id/RegisterPasswordField"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="TextContrastCheck"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/RegisterPasswordField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:ems="10"
+        android:hint="@string/password_field_text"
+        android:importantForAutofill="no"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toTopOf="@+id/RegisterRepeatPasswordField"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="TextContrastCheck"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/RegisterRepeatPasswordField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:ems="10"
+        android:hint="@string/repeat_password_field_text"
+        android:importantForAutofill="no"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toTopOf="@+id/RegisterNextButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="TextContrastCheck"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/RegisterNextButton"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="@color/button_green"
+        android:text="@string/next_button_text"
+        app:cornerRadius="@dimen/button_round"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.682"
+        tools:ignore="TextContrastCheck"
+        android:visibility="gone"
+        android:onClick="visibleLogin" />
+
+    <Button
+        android:id="@+id/RegisterBackButton"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:onClick="visibleLogin"
+        android:text="@string/back_button_text"
+        android:textColor="@color/black"
+        android:textIsSelectable="false"
+        android:textSize="14sp"
+        android:textStyle="normal"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/RegisterNextButton"
+        tools:ignore="TextContrastCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

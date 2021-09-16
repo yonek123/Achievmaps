@@ -4,8 +4,16 @@
     <string name="title_activity_maps">MapsActivity</string>
     <string name="title_activity_login">LoginActivity</string>
 
+    <string name="login_field_text">Login</string>
+    <string name="password_field_text">Hasło</string>
+    <string name="email_field_text">E-mail</string>
+    <string name="repeat_password_field_text">Powtórz hasło</string>
+
     <string name="login_button_text">Zaloguj</string>
     <string name="register_button_text">Zarejestruj</string>
+    <string name="next_button_text">Dalej</string>
+    <string name="back_button_text">Wróć</string>
+    <string name="remember_me_text">Zapamiętaj</string>
 
     <string name="app_name_description">Nazwa aplikacji w formie stylizowanej</string>
     <string name="bg_description">Background</string>
