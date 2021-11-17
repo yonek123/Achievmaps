@@ -1,19 +1,38 @@
 <resources>
     <string name="app_name">Achievmaps</string>
-
     <string name="title_activity_maps">MapsActivity</string>
     <string name="title_activity_login">LoginActivity</string>
 
-    <string name="login_field_text">Login</string>
+    <string name="send_button_text">Wyślij</string>
+    <string name="back_button_text">Wróć</string>
+    <string name="close_button_text">Zamknij</string>
+
+    <string name="nick_field_text">Nickname</string>
     <string name="password_field_text">Hasło</string>
     <string name="email_field_text">E-mail</string>
     <string name="repeat_password_field_text">Powtórz hasło</string>
 
     <string name="login_button_text">Zaloguj</string>
     <string name="register_button_text">Zarejestruj</string>
-    <string name="next_button_text">Dalej</string>
-    <string name="back_button_text">Wróć</string>
+    <string name="password_recovery_button_text">Zapomniałeś hasła?</string>
     <string name="remember_me_text">Zapamiętaj</string>
+
+    <string name="password_recovery_text">Wpisz email konta, którego\nhasło chcesz odzyskać</string>
+    <string name="recovery_code_sent_text">Kod odzyskiwania wysłany\nna podany adres e-mail!</string>
+
+    <string name="basic_validation_text">Coś poszło nie tak</string>
+
+    <string name="database_conn_error3_text">Błąd połączenia z bazą danych, error nr. 3</string>
+    <string name="database_conn_error2_text">Błąd połączenia z bazą danych, error nr. 2</string>
+    <string name="login_wrong_email_or_password_text">Błędny email lub hasło!</string>
+
+    <string name="wrong_email_text">Nieprwidłowy e-mail!</string>
+    <string name="nick_too_short_text">Nick musi mieć co najmniej 5 znaków!</string>
+    <string name="password_too_short_text">Hasło musi mieć co najmniej 8 znaków!</string>
+    <string name="passwords_not_equal_text">Hasła nie są ze sobą zgodne!</string>
+    <string name="register_email_already_exist_text">Email jest już w bazie danych!</string>
+    <string name="register_nick_already_exist_text">Nick jest już zajęty!</string>
+    <string name="register_success_text">Rejestracja przebiegła\npomyślnie!</string>
 
     <string name="app_name_description">Nazwa aplikacji w formie stylizowanej</string>
     <string name="bg_description">Background</string>
