@@ -9,9 +9,9 @@ import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import com.example.achievmaps.R
-import com.example.achievmaps.LoginScreen.databaseConnection.Login
-import com.example.achievmaps.LoginScreen.databaseConnection.Register
-import com.example.achievmaps.MainMenuScreen
+import com.example.achievmaps.DatabaseConnections.Login
+import com.example.achievmaps.DatabaseConnections.Register
+import com.example.achievmaps.MainMenuScreen.MainMenuScreen
 import kotlinx.android.synthetic.main.login_screen.*
 
 
@@ -26,6 +26,12 @@ class LoginScreen : AppCompatActivity() {
         var loggedUserPointsAll = 0
         var loggedUserPointsNature = 0
         var loggedUserPointsArchitecture = 0
+    }
+
+    override fun onResume() {
+        super.onResume()
+        LoginLoadingScreen.visibility = View.GONE
+        setLoginRegisterEnabled(true)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,8 +110,8 @@ class LoginScreen : AppCompatActivity() {
                 editor.apply()
             }
 
-            var loggedUserData = "-1"
-            var lines = listOf<String>("0")
+            var loggedUserData = "-3"
+            var lines = listOf("0")
             val t = Thread {
                 loggedUserData =
                     Login.login(LoginEmailField.text.toString(), LoginPasswordField.text.toString())
@@ -114,18 +120,22 @@ class LoginScreen : AppCompatActivity() {
             }
             t.start()
             t.join()
-            LoginLoadingScreen.visibility = View.GONE
-            setLoginRegisterEnabled(true)
 
             if (loggedUserID == -3) {
                 LoginValidationText.text = getString(R.string.database_conn_error3_text)
                 LoginValidationText.visibility = View.VISIBLE
+                LoginLoadingScreen.visibility = View.GONE
+                setLoginRegisterEnabled(true)
             } else if (loggedUserID == -2) {
                 LoginValidationText.text = getString(R.string.database_conn_error2_text)
                 LoginValidationText.visibility = View.VISIBLE
+                LoginLoadingScreen.visibility = View.GONE
+                setLoginRegisterEnabled(true)
             } else if (loggedUserID == -1) {
                 LoginValidationText.text = getString(R.string.login_wrong_email_or_password_text)
                 LoginValidationText.visibility = View.VISIBLE
+                LoginLoadingScreen.visibility = View.GONE
+                setLoginRegisterEnabled(true)
             } else {
                 loggedUserEmail = lines[1]
                 loggedUserPassword = lines[2]

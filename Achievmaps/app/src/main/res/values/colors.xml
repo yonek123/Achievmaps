@@ -10,4 +10,6 @@
     <color name="button_green">#6DDA0F</color>
     <color name="background_gray">#E4E4E4</color>
     <color name="grayish_green">#AB81FF59</color>
+    <color name="button_red">#DA0F0F</color>
+    <color name="grayish_red">#B4FD3030</color>
 </resources>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_gray"
+    tools:context=".RankingScreen.RankingScreen">
+
+    <ImageView
+        android:id="@+id/RankingScreenBg"
+        android:layout_width="536dp"
+        android:layout_height="891dp"
+        android:contentDescription="@string/bg_description"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.693"
+        app:srcCompat="@drawable/tlo_fale3" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/CenteredLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/RankingTopButtons"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Button
+                android:id="@+id/RankingAllButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:backgroundTint="@color/button_green"
+                android:text="@string/rankingall_text"
+                app:cornerRadius="@dimen/button_round" />
+
+            <Button
+                android:id="@+id/RankingNatureButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:backgroundTint="@color/button_green"
+                android:text="@string/rankingnature_text"
+                app:cornerRadius="@dimen/button_round" />
+
+            <Button
+                android:id="@+id/RankingArchitectureButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:backgroundTint="@color/button_green"
+                android:text="@string/rankingarchitecture_text"
+                app:cornerRadius="@dimen/button_round" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/RankingView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/RankingTopButtons" />
+
+        <LinearLayout
+            android:id="@+id/RankingBotButtons"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/RankingView">
+
+            <Button
+                android:id="@+id/RankingFirstPageButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:backgroundTint="@color/button_green"
+                android:text="@string/first_page_text"
+                android:textSize="20sp"
+                app:cornerRadius="@dimen/button_round" />
+
+            <Button
+                android:id="@+id/RankingNextPageButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:backgroundTint="@color/button_green"
+                android:text="@string/next_page_text"
+                android:textSize="20sp"
+                app:cornerRadius="@dimen/button_round" />
+
+            <Button
+                android:id="@+id/RankingUserPageButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:backgroundTint="@color/button_green"
+                android:text="@string/reset_page_text"
+                android:textSize="20sp"
+                app:cornerRadius="@dimen/button_round" />
+
+            <Button
+                android:id="@+id/RankingPreviousPageButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:backgroundTint="@color/button_green"
+                android:text="@string/previous_page_text"
+                android:textSize="20sp"
+                app:cornerRadius="@dimen/button_round" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

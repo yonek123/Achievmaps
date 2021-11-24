@@ -404,7 +404,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/recoveryCloseButton"
+            android:id="@+id/RegisterSuccessCloseButton"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -443,7 +443,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/LoginProgressBar"
             style="?android:attr/progressBarStyle"
             android:layout_width="147dp"
             android:layout_height="127dp"

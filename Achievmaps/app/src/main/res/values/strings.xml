@@ -8,6 +8,11 @@
     <string name="back_button_text">Wróć</string>
     <string name="close_button_text">Zamknij</string>
     <string name="welcome_text">Witaj użytkowniku!</string>
+    <string name="unknown_error_text">Wystąpił nieznany błąd</string>
+    <string name="first_page_text">&#60;&#60;</string>
+    <string name="next_page_text">&#60;</string>
+    <string name="previous_page_text">&#62;</string>
+    <string name="reset_page_text">&#8634;</string>
 
 
     <string name="nick_field_text">Nickname</string>
@@ -55,4 +60,9 @@
     <string name="achievements_image_description">Obraz osiągnięcia</string>
     <string name="friends_image_description">Obraz przyjaciele</string>
     <string name="ranking_image_description">Obraz ranking</string>
+
+
+    <string name="rankingall_text">Ogólny</string>
+    <string name="rankingnature_text">Natura</string>
+    <string name="rankingarchitecture_text">Zabytki</string>
 </resources>

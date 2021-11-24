@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray"
-    tools:context=".LoginScreen.LoginScreen">
+    tools:context=".MainMenuScreen.MainMenuScreen">
 
     <ImageView
         android:id="@+id/MenuScreenBg"
@@ -51,7 +51,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="185dp"
                 android:layout_marginHorizontal="50dp"
-                android:layout_marginVertical="7dp">
+                android:layout_marginVertical="7dp"
+                android:onClick="openMap">
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
@@ -98,7 +99,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="185dp"
                 android:layout_marginHorizontal="50dp"
-                android:layout_marginVertical="7dp">
+                android:layout_marginVertical="7dp"
+                android:onClick="openNews">
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
@@ -144,7 +146,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="185dp"
                 android:layout_marginHorizontal="50dp"
-                android:layout_marginVertical="7dp">
+                android:layout_marginVertical="7dp"
+                android:onClick="openAchievements">
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
@@ -190,7 +193,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="185dp"
                 android:layout_marginHorizontal="50dp"
-                android:layout_marginVertical="7dp">
+                android:layout_marginVertical="7dp"
+                android:onClick="openFriends">
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
@@ -236,7 +240,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="185dp"
                 android:layout_marginHorizontal="50dp"
-                android:layout_marginVertical="7dp">
+                android:layout_marginVertical="7dp"
+                android:onClick="openRanking">
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
@@ -279,5 +284,83 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/MainMenuErrorLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/error_box"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/MainMenuErrorText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/unknown_error_text"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="16dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/MainMenuErrorCloseButton"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:backgroundTint="@color/button_red"
+            android:onClick="closeMainMenuErrorLayout"
+            android:text="@string/close_button_text"
+            android:visibility="visible"
+            app:cornerRadius="@dimen/button_round"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/MainMenuErrorText"
+            tools:ignore="TextContrastCheck" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/MainMenuLoadingScreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/info_box"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/MainMenuLoadingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/please_wait_text"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/MainMenuProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="147dp"
+            android:layout_height="127dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="5dp"
+            android:indeterminateTint="@color/button_green"
+            android:indeterminateTintMode="src_atop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/MainMenuLoadingText" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
