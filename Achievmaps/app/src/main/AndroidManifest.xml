@@ -20,7 +20,7 @@
         android:supportsRtl="true">
 
         <activity
-            android:name=".LoginScreen.LoginScreen"
+            android:name=".loginScreen.LoginScreen"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -31,12 +31,12 @@
         </activity>
 
         <activity
-            android:name=".MainMenuScreen.MainMenuScreen"
+            android:name=".mainMenuScreen.MainMenuScreen"
             android:exported="true"
             android:screenOrientation="portrait"></activity>
 
         <activity
-            android:name=".RankingScreen.RankingScreen"
+            android:name=".rankingScreen.RankingScreen"
             android:exported="true"
             android:screenOrientation="portrait"></activity>
 

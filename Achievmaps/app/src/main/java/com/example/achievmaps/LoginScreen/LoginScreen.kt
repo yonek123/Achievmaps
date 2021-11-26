@@ -1,4 +1,4 @@
-package com.example.achievmaps.LoginScreen
+package com.example.achievmaps.loginScreen
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -9,9 +9,9 @@ import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import com.example.achievmaps.R
-import com.example.achievmaps.DatabaseConnections.Login
-import com.example.achievmaps.DatabaseConnections.Register
-import com.example.achievmaps.MainMenuScreen.MainMenuScreen
+import com.example.achievmaps.databaseConnections.Login
+import com.example.achievmaps.databaseConnections.Register
+import com.example.achievmaps.mainMenuScreen.MainMenuScreen
 import kotlinx.android.synthetic.main.login_screen.*
 
 

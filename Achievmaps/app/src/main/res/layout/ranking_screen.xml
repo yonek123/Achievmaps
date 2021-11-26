@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray"
-    tools:context=".RankingScreen.RankingScreen">
+    tools:context=".rankingScreen.RankingScreen">
 
     <ImageView
         android:id="@+id/RankingScreenBg"
@@ -45,7 +45,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.3"
-                android:backgroundTint="@color/button_green"
+                android:backgroundTint="@color/button_grayishgreen"
+                android:enabled="false"
+                android:onClick="goRankingAll"
                 android:text="@string/rankingall_text"
                 app:cornerRadius="@dimen/button_round" />
 
@@ -55,6 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.3"
                 android:backgroundTint="@color/button_green"
+                android:onClick="goRankingNature"
                 android:text="@string/rankingnature_text"
                 app:cornerRadius="@dimen/button_round" />
 
@@ -64,6 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.3"
                 android:backgroundTint="@color/button_green"
+                android:onClick="goRankingArchitecture"
                 android:text="@string/rankingarchitecture_text"
                 app:cornerRadius="@dimen/button_round" />
         </LinearLayout>
@@ -91,6 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
                 android:backgroundTint="@color/button_green"
+                android:onClick="goFirstPage"
                 android:text="@string/first_page_text"
                 android:textSize="20sp"
                 app:cornerRadius="@dimen/button_round" />
@@ -101,16 +106,19 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
                 android:backgroundTint="@color/button_green"
+                android:onClick="goNextPage"
                 android:text="@string/next_page_text"
                 android:textSize="20sp"
                 app:cornerRadius="@dimen/button_round" />
 
             <Button
-                android:id="@+id/RankingUserPageButton"
+                android:id="@+id/RankingDefaultPageButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:backgroundTint="@color/button_green"
+                android:backgroundTint="@color/button_grayishgreen"
+                android:enabled="false"
+                android:onClick="goDefaultPage"
                 android:text="@string/reset_page_text"
                 android:textSize="20sp"
                 app:cornerRadius="@dimen/button_round" />
@@ -121,10 +129,89 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
                 android:backgroundTint="@color/button_green"
+                android:onClick="goPreviousPage"
                 android:text="@string/previous_page_text"
                 android:textSize="20sp"
                 app:cornerRadius="@dimen/button_round" />
         </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/RankingErrorLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/error_box"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/RankingErrorText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/unknown_error_text"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="16dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/RankingErrorCloseButton"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:backgroundTint="@color/button_red"
+            android:onClick="closeRankingErrorLayout"
+            android:text="@string/close_button_text"
+            android:visibility="visible"
+            app:cornerRadius="@dimen/button_round"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/RankingErrorText"
+            tools:ignore="TextContrastCheck" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/RankingLoadingScreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/info_box"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/RankingLoadingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/please_wait_text"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/RankingProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="147dp"
+            android:layout_height="127dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="5dp"
+            android:indeterminateTint="@color/button_green"
+            android:indeterminateTintMode="src_atop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/RankingLoadingText" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

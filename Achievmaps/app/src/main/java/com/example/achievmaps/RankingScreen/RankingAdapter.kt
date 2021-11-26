@@ -1,11 +1,12 @@
-package com.example.achievmaps.RankingScreen
+package com.example.achievmaps.rankingScreen
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
 
 class RankingAdapter (private val rankingPage: ArrayList<ArrayList<String>>) : RecyclerView.Adapter<RankingAdapter.ViewHolder>()
@@ -25,9 +26,14 @@ class RankingAdapter (private val rankingPage: ArrayList<ArrayList<String>>) : R
 
     override fun onBindViewHolder(viewHolder: RankingAdapter.ViewHolder, position: Int) {
         val data: ArrayList<String> = rankingPage.get(position)
-        viewHolder.rankField.setText(data[0])
-        viewHolder.nicknameField.setText(data[1])
-        viewHolder.pointsField.setText(data[2])
+        if(data[1]==LoginScreen.loggedUserNick) {
+            viewHolder.rankField.setTextColor(Color.RED)
+            viewHolder.nicknameField.setTextColor(Color.RED)
+            viewHolder.pointsField.setTextColor(Color.RED)
+        }
+        viewHolder.rankField.text = data[0]
+        viewHolder.nicknameField.text = data[1]
+        viewHolder.pointsField.text = data[2]
     }
 
     override fun getItemCount(): Int {

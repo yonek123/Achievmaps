@@ -1,4 +1,4 @@
-package com.example.achievmaps.DatabaseConnections
+package com.example.achievmaps.databaseConnections
 
 import java.lang.Exception
 import java.net.HttpURLConnection
