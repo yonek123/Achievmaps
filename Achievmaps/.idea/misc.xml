@@ -17,9 +17,11 @@
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout-land/activity_maps.xml" value="0.21516754850088182" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/activity_login_screen.xml" value="0.264" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/activity_maps.xml" value="0.25" />
+        <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/friends_item_layout.xml" value="0.25" />
+        <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/friends_screen.xml" value="0.25" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/login_screen.xml" value="0.25" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/main_menu_screen.xml" value="0.264" />
-        <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/ranking_item_layout.xml" value="0.12760416666666666" />
+        <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/ranking_item_layout.xml" value="0.264" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/ranking_screen.xml" value="0.264" />
       </map>
     </option>

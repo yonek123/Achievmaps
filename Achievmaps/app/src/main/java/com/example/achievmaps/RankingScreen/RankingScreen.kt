@@ -12,6 +12,8 @@ import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
 import kotlinx.android.synthetic.main.ranking_screen.*
 import android.widget.Button
+import com.example.achievmaps.databaseConnections.Friends
+import kotlinx.android.synthetic.main.main_menu_screen.*
 import java.lang.Exception
 
 class RankingScreen : AppCompatActivity() {
@@ -51,7 +53,7 @@ class RankingScreen : AppCompatActivity() {
             }
             t.start()
             t.join()
-        }, 1000)
+        }, 100)
         changeRanking(RankingAllButton, 1)
     }
 
@@ -78,7 +80,7 @@ class RankingScreen : AppCompatActivity() {
         for (item in list) {
             row.add(item)
             poz++
-            if (poz > 2) {
+            if (poz > 3) {
                 poz = 0
                 table.add(row.clone() as ArrayList<String>)
                 row.clear()
@@ -147,8 +149,7 @@ class RankingScreen : AppCompatActivity() {
                 } else {
                     RankingPreviousPageButton.setBackgroundColor(getColor(R.color.button_green))
                 }
-                if (button2 == RankingDefaultPageButton)
-                {
+                if (button2 == RankingDefaultPageButton) {
                     RankingDefaultPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
                     RankingDefaultPageButton.isEnabled = false
                 } else {
@@ -156,7 +157,7 @@ class RankingScreen : AppCompatActivity() {
                 }
                 button1?.isEnabled = false
             }
-        }, 1000)
+        }, 100)
     }
 
     fun goRankingAll(view: View) {

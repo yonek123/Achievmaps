@@ -146,7 +146,7 @@ class LoginScreen : AppCompatActivity() {
                 val intent = Intent(this, MainMenuScreen::class.java)
                 startActivity(intent)
             }
-        }, 1000)
+        }, 100)
     }
 
     fun registerValidate(view: View) {
@@ -201,7 +201,7 @@ class LoginScreen : AppCompatActivity() {
                     setLoginRegisterEnabled(false)
                 }
             }
-        }, 1000)
+        }, 100)
     }
 
     fun closeRegisterSuccessLayout(view: View) {

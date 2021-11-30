@@ -11,3 +11,5 @@ v4: dodane paski ładowania i takie tam, dodane menu
 v5: dodany ranking
 
 v6: ranking w pełni działający i połączony z bazą danych
+
+v7: friedsy here, ale jeszcze bez dodawania

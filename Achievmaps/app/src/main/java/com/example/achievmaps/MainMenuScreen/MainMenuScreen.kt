@@ -8,6 +8,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
+import com.example.achievmaps.friendsScreen.FriendsScreen
 import com.example.achievmaps.rankingScreen.RankingScreen
 import kotlinx.android.synthetic.main.main_menu_screen.*
 
@@ -48,7 +49,7 @@ class MainMenuScreen : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             MainMenuLoadingScreen.visibility = View.GONE
             setMainMenuEnabled(true)
-        }, 1000)
+        }, 100)
     }
 
     fun openNews(view: View) {
@@ -57,7 +58,7 @@ class MainMenuScreen : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             MainMenuLoadingScreen.visibility = View.GONE
             setMainMenuEnabled(true)
-        }, 1000)
+        }, 100)
     }
 
     fun openAchievements(view: View) {
@@ -66,16 +67,16 @@ class MainMenuScreen : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             MainMenuLoadingScreen.visibility = View.GONE
             setMainMenuEnabled(true)
-        }, 1000)
+        }, 100)
     }
 
     fun openFriends(view: View) {
         MainMenuLoadingScreen.visibility = View.VISIBLE
         setMainMenuEnabled(false)
         Handler(Looper.getMainLooper()).postDelayed({
-            MainMenuLoadingScreen.visibility = View.GONE
-            setMainMenuEnabled(true)
-        }, 1000)
+            val intent = Intent(this, FriendsScreen::class.java)
+            startActivity(intent)
+        }, 100)
     }
 
     fun openRanking(view: View) {
@@ -84,6 +85,6 @@ class MainMenuScreen : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, RankingScreen::class.java)
             startActivity(intent)
-        }, 1000)
+        }, 100)
     }
 }

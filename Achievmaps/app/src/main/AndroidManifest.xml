@@ -39,6 +39,10 @@
             android:name=".rankingScreen.RankingScreen"
             android:exported="true"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".friendsScreen.FriendsScreen"
+            android:exported="true"
+            android:screenOrientation="portrait"></activity>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

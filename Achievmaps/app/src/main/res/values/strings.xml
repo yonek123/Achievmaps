@@ -4,6 +4,8 @@
     <string name="title_activity_login">LoginActivity</string>
 
 
+    <string name="yes_text">Tak</string>
+    <string name="no_text">Nie</string>
     <string name="send_button_text">Wyślij</string>
     <string name="back_button_text">Wróć</string>
     <string name="close_button_text">Zamknij</string>
@@ -62,7 +64,15 @@
     <string name="ranking_image_description">Obraz ranking</string>
 
 
+    <string name="ranking_screen_text">Ranking</string>
     <string name="rankingall_text">Ogólny</string>
     <string name="rankingnature_text">Natura</string>
     <string name="rankingarchitecture_text">Zabytki</string>
+
+
+    <string name="friends_screen_text">Znajomi</string>
+    <string name="friends_pointsall_text">Ogólne</string>
+    <string name="add_friend_text">Dodać użytkownika do znajomych?</string>
+    <string name="already_friends_text">Już jesteście znajomymi!</string>
+    <string name="friend_added_text">Dodano do znajomych!</string>
 </resources>

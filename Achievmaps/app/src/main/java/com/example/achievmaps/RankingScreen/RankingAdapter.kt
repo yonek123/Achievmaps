@@ -4,17 +4,19 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
 
-class RankingAdapter (private val rankingPage: ArrayList<ArrayList<String>>) : RecyclerView.Adapter<RankingAdapter.ViewHolder>()
-{
+class RankingAdapter(private val rankingPage: ArrayList<ArrayList<String>>) :
+    RecyclerView.Adapter<RankingAdapter.ViewHolder>() {
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val rankField = itemView.findViewById<TextView>(R.id.Rank)
-        val nicknameField = itemView.findViewById<TextView>(R.id.Nickname)
-        val pointsField = itemView.findViewById<TextView>(R.id.Points)
+        val rankField = itemView.findViewById<TextView>(R.id.RankingRank)
+        val nicknameField = itemView.findViewById<TextView>(R.id.RankingNickname)
+        val pointsField = itemView.findViewById<TextView>(R.id.RankingPoints)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RankingAdapter.ViewHolder {
@@ -26,7 +28,7 @@ class RankingAdapter (private val rankingPage: ArrayList<ArrayList<String>>) : R
 
     override fun onBindViewHolder(viewHolder: RankingAdapter.ViewHolder, position: Int) {
         val data: ArrayList<String> = rankingPage.get(position)
-        if(data[1]==LoginScreen.loggedUserNick) {
+        if (data[1] == LoginScreen.loggedUserNick) {
             viewHolder.rankField.setTextColor(Color.RED)
             viewHolder.nicknameField.setTextColor(Color.RED)
             viewHolder.pointsField.setTextColor(Color.RED)
@@ -36,7 +38,7 @@ class RankingAdapter (private val rankingPage: ArrayList<ArrayList<String>>) : R
         viewHolder.pointsField.text = data[2]
     }
 
-    override fun getItemCount(): Int {
-        return rankingPage.size
-    }
+override fun getItemCount(): Int {
+    return rankingPage.size
+}
 }
