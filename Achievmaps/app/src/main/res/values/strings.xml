@@ -4,6 +4,9 @@
     <string name="title_activity_login">LoginActivity</string>
 
 
+    <string name="wrong_user_text">Nieprawidłowy nick!</string>
+    <string name="add_text">Dodaj</string>
+    <string name="delete_text">Usuń</string>
     <string name="yes_text">Tak</string>
     <string name="no_text">Nie</string>
     <string name="send_button_text">Wyślij</string>
@@ -72,7 +75,10 @@
 
     <string name="friends_screen_text">Znajomi</string>
     <string name="friends_pointsall_text">Ogólne</string>
-    <string name="add_friend_text">Dodać użytkownika do znajomych?</string>
+    <string name="add_friend_text">Wpisz nick użytkownika\ndo dodania do znajomych</string>
+    <string name="delete_friend_text">Wpisz nick użytkownika\ndo usunięcia ze znajomych</string>
     <string name="already_friends_text">Już jesteście znajomymi!</string>
+    <string name="not_friends_text">Nie jesteście znajomymi!</string>
     <string name="friend_added_text">Dodano do znajomych!</string>
+    <string name="friend_deleted_text">Usunięto ze znajomych!</string>
 </resources>

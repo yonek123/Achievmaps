@@ -143,6 +143,7 @@ class LoginScreen : AppCompatActivity() {
                 loggedUserPointsAll = lines[4].toInt()
                 loggedUserPointsNature = lines[5].toInt()
                 loggedUserPointsArchitecture = lines[6].toInt()
+                LoginValidationText.visibility = View.GONE
                 val intent = Intent(this, MainMenuScreen::class.java)
                 startActivity(intent)
             }

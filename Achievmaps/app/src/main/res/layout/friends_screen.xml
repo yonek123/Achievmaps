@@ -29,17 +29,19 @@
         android:text="@string/friends_screen_text"
         android:textColor="#000000"
         android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="@+id/CenteredLayout"
-        app:layout_constraintStart_toStartOf="@+id/CenteredLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/CenteredLayout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
+        android:layout_marginBottom="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/FriendsScreenText">
@@ -55,7 +57,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/FriendsNickText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
@@ -66,7 +68,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/FriendsPointsAllText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
@@ -77,7 +79,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/FriendsPointsNatureText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
@@ -88,7 +90,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/FriendsPointsArchitectureText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
@@ -99,14 +101,25 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/FriendsView"
+
+        <ScrollView
+            android:id="@+id/FriendsScroll"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:contentDescription="@string/scroll_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/FriendsTopButtons" />
+            app:layout_constraintTop_toBottomOf="@+id/FriendsTopButtons">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/FriendsView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent" />
+        </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -151,6 +164,134 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/FriendsAddDeleteLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/info_box"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/FriendsChoiceBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/FriendsAddDeleteText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_friend_text"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="16dp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/FriendNickValidationText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/basic_validation_text"
+                android:textColor="#FF0000"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/FriendsAddDeleteText" />
+
+            <EditText
+                android:id="@+id/AddFriendNickBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="@string/nick_field_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/FriendsAddDeleteText" />
+
+            <Button
+                android:id="@+id/FriendsAddDeleteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:backgroundTint="@color/button_green"
+                android:onClick="addFriend"
+                android:text="@string/add_text"
+                android:visibility="visible"
+                app:cornerRadius="@dimen/button_round"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/AddFriendNickBox"
+                tools:ignore="TextContrastCheck" />
+
+            <Button
+                android:id="@+id/FriendsAddDeleteCloseButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:backgroundTint="@color/button_red"
+                android:onClick="closeAddFriendLayout"
+                android:text="@string/close_button_text"
+                android:visibility="visible"
+                app:cornerRadius="@dimen/button_round"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/AddFriendNickBox"
+                tools:ignore="TextContrastCheck" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/AddDeleteFriendCloseBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/AddDeleteFriendCloseText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/friend_added_text"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="16dp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/AddDeleteFriendCloseButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:backgroundTint="@color/button_green"
+                android:onClick="closeAddFriendLayout"
+                android:text="@android:string/ok"
+                android:visibility="visible"
+                app:cornerRadius="@dimen/button_round"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/AddDeleteFriendCloseText"
+                tools:ignore="TextContrastCheck" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/FriendsLoadingScreen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -187,5 +328,33 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/FriendsLoadingText" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/AddFriendButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="50dp"
+        android:backgroundTint="@color/button_green"
+        android:clickable="true"
+        android:onClick="openAddFriendLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@android:drawable/ic_input_add"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/DeleteFriendButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="50dp"
+        android:backgroundTint="@color/button_red"
+        android:clickable="true"
+        android:onClick="openDeleteFriendLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@android:drawable/ic_delete"
+        tools:ignore="SpeakableTextPresentCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

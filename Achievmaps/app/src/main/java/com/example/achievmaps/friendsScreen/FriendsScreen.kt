@@ -11,9 +11,7 @@ import com.example.achievmaps.databaseConnections.Friends
 import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
 import kotlinx.android.synthetic.main.friends_screen.*
-import android.widget.Button
-import com.example.achievmaps.friendsScreen.FriendsAdapter
-import java.lang.Exception
+import kotlinx.android.synthetic.main.login_screen.*
 
 class FriendsScreen : AppCompatActivity() {
     private var list = listOf("0")
@@ -25,7 +23,10 @@ class FriendsScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.friends_screen)
+        loadFriends()
+    }
 
+    fun loadFriends() {
         FriendsView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         FriendsLoadingScreen.visibility = View.VISIBLE
 
@@ -71,5 +72,116 @@ class FriendsScreen : AppCompatActivity() {
     fun closeFriendsErrorLayout(view: View) {
         FriendsErrorLayout.visibility = View.GONE
         this.finish()
+    }
+
+    fun openAddFriendLayout(view: View) {
+        FriendsAddDeleteText.text = getString(R.string.add_friend_text)
+        FriendsAddDeleteButton.text = getString(R.string.add_text)
+        FriendsAddDeleteButton.setOnClickListener(View.OnClickListener {
+            addFriend(it)
+        })
+        FriendsAddDeleteLayout.visibility = View.VISIBLE
+        AddFriendButton.isEnabled = false
+        DeleteFriendButton.isEnabled = false
+    }
+
+    fun openDeleteFriendLayout(view: View) {
+        FriendsAddDeleteText.text = getString(R.string.delete_friend_text)
+        FriendsAddDeleteButton.text = getString(R.string.delete_text)
+        FriendsAddDeleteButton.setOnClickListener(View.OnClickListener {
+            deleteFriend(it)
+        })
+        FriendsAddDeleteLayout.visibility = View.VISIBLE
+        AddFriendButton.isEnabled = false
+        DeleteFriendButton.isEnabled = false
+    }
+
+    fun closeAddFriendLayout(view: View) {
+        FriendsChoiceBox.visibility = View.VISIBLE
+        AddDeleteFriendCloseBox.visibility = View.GONE
+        FriendsAddDeleteLayout.visibility = View.GONE
+        FriendNickValidationText.visibility = View.GONE
+        AddFriendButton.isEnabled = true
+        DeleteFriendButton.isEnabled = true
+    }
+
+    fun addFriend(view: View) {
+        FriendsLoadingScreen.visibility = View.VISIBLE
+        FriendsAddDeleteButton.isEnabled = false
+        FriendsAddDeleteCloseButton.isEnabled = false
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            var isSuccess = "-3"
+            var lines = listOf("0")
+            val t = Thread {
+                isSuccess =
+                    Friends.addFriend(LoginScreen.loggedUserID, AddFriendNickBox.text.toString())
+                lines = isSuccess.split('\n')
+            }
+            t.start()
+            t.join()
+
+            if (lines[0] == "-3") {
+                FriendNickValidationText.text = getString(R.string.database_conn_error3_text)
+                FriendNickValidationText.visibility = View.VISIBLE
+            } else if (lines[0] == "-2") {
+                FriendNickValidationText.text = getString(R.string.database_conn_error2_text)
+                FriendNickValidationText.visibility = View.VISIBLE
+            } else if (lines[0] == "-1") {
+                FriendNickValidationText.text = getString(R.string.already_friends_text)
+                FriendNickValidationText.visibility = View.VISIBLE
+            } else if (lines[0] == "-4") {
+                FriendNickValidationText.text = getString(R.string.wrong_user_text)
+                FriendNickValidationText.visibility = View.VISIBLE
+            } else {
+                AddDeleteFriendCloseText.text = getString(R.string.friend_added_text)
+                FriendsChoiceBox.visibility = View.GONE
+                AddDeleteFriendCloseBox.visibility = View.VISIBLE
+                loadFriends()
+            }
+            FriendsLoadingScreen.visibility = View.GONE
+            FriendsAddDeleteButton.isEnabled = true
+            FriendsAddDeleteCloseButton.isEnabled = true
+        }, 100)
+    }
+
+    fun deleteFriend(view: View) {
+        FriendsLoadingScreen.visibility = View.VISIBLE
+        FriendsAddDeleteButton.isEnabled = false
+        FriendsAddDeleteCloseButton.isEnabled = false
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            var isSuccess = "-3"
+            var lines = listOf("0")
+            val t = Thread {
+                isSuccess =
+                    Friends.deleteFriend(LoginScreen.loggedUserID, AddFriendNickBox.text.toString())
+                lines = isSuccess.split('\n')
+            }
+            t.start()
+            t.join()
+
+            if (lines[0] == "-3") {
+                FriendNickValidationText.text = getString(R.string.database_conn_error3_text)
+                FriendNickValidationText.visibility = View.VISIBLE
+            } else if (lines[0] == "-2") {
+                FriendNickValidationText.text = getString(R.string.database_conn_error2_text)
+                FriendNickValidationText.visibility = View.VISIBLE
+            } else if (lines[0] == "-1") {
+                FriendNickValidationText.text = getString(R.string.not_friends_text)
+                FriendNickValidationText.visibility = View.VISIBLE
+            } else if (lines[0] == "-4") {
+                FriendNickValidationText.text = getString(R.string.wrong_user_text)
+                FriendNickValidationText.visibility = View.VISIBLE
+            } else {
+                AddDeleteFriendCloseText.text = getString(R.string.friend_deleted_text)
+                FriendsChoiceBox.visibility = View.GONE
+                AddDeleteFriendCloseBox.visibility = View.VISIBLE
+                loadFriends()
+            }
+            FriendsLoadingScreen.visibility = View.GONE
+            FriendsAddDeleteButton.isEnabled = true
+            FriendsAddDeleteCloseButton.isEnabled = true
+        }, 100)
     }
 }

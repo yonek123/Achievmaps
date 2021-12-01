@@ -67,10 +67,10 @@
                     <ImageView
                         android:id="@+id/MainMenuMapSubmenuImage"
                         android:layout_width="334dp"
-                        android:layout_height="190dp"
+                        android:layout_height="175dp"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="20dp"
                         android:contentDescription="@string/map_image_description"
+                        android:scaleY="1.25"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -115,8 +115,8 @@
                     <ImageView
                         android:id="@+id/MainMenuNewsSubmenuImage"
                         android:layout_width="298dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="left"
+                        android:layout_height="167dp"
+                        android:layout_gravity="center"
                         android:contentDescription="@string/news_image_description"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
