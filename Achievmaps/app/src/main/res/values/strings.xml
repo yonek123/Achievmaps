@@ -81,4 +81,13 @@
     <string name="not_friends_text">Nie jesteście znajomymi!</string>
     <string name="friend_added_text">Dodano do znajomych!</string>
     <string name="friend_deleted_text">Usunięto ze znajomych!</string>
+
+
+    <string name="news_screen_text">Nowości i wydarzenia</string>
+
+
+    <string name="achievements_screen_text">Osiągnięcia</string>
+    <string name="achievement_name_text">Nazwa</string>
+    <string name="achievement_description_text">Opis</string>
+    <string name="achievement_points_text">Punkty</string>
 </resources>

@@ -47,7 +47,7 @@
         app:layout_constraintTop_toBottomOf="@+id/FriendsScreenText">
 
         <LinearLayout
-            android:id="@+id/FriendsTopButtons"
+            android:id="@+id/FriendsTop"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -105,12 +105,13 @@
         <ScrollView
             android:id="@+id/FriendsScroll"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="10dp"
             android:contentDescription="@string/scroll_description"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/FriendsTopButtons">
+            app:layout_constraintTop_toBottomOf="@+id/FriendsTop">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/FriendsView"

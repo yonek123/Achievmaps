@@ -8,7 +8,9 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
+import com.example.achievmaps.achievementsScreen.AchievementsScreen
 import com.example.achievmaps.friendsScreen.FriendsScreen
+import com.example.achievmaps.newsScreen.NewsScreen
 import com.example.achievmaps.rankingScreen.RankingScreen
 import kotlinx.android.synthetic.main.main_menu_screen.*
 
@@ -56,8 +58,8 @@ class MainMenuScreen : AppCompatActivity() {
         MainMenuLoadingScreen.visibility = View.VISIBLE
         setMainMenuEnabled(false)
         Handler(Looper.getMainLooper()).postDelayed({
-            MainMenuLoadingScreen.visibility = View.GONE
-            setMainMenuEnabled(true)
+            val intent = Intent(this, NewsScreen::class.java)
+            startActivity(intent)
         }, 100)
     }
 
@@ -65,8 +67,8 @@ class MainMenuScreen : AppCompatActivity() {
         MainMenuLoadingScreen.visibility = View.VISIBLE
         setMainMenuEnabled(false)
         Handler(Looper.getMainLooper()).postDelayed({
-            MainMenuLoadingScreen.visibility = View.GONE
-            setMainMenuEnabled(true)
+            val intent = Intent(this, AchievementsScreen::class.java)
+            startActivity(intent)
         }, 100)
     }
 

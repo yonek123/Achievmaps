@@ -15,3 +15,5 @@ v6: ranking w pełni działający i połączony z bazą danych
 v7: friedsy here, ale jeszcze bez dodawania
 
 v8: dodawanie i usuwanie friendsów plus dużo poprawek
+
+v9: jest wszystko poza samą mapą i gpseme

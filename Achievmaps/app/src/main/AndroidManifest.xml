@@ -39,8 +39,19 @@
             android:name=".rankingScreen.RankingScreen"
             android:exported="true"
             android:screenOrientation="portrait"></activity>
+
         <activity
             android:name=".friendsScreen.FriendsScreen"
+            android:exported="true"
+            android:screenOrientation="portrait"></activity>
+
+        <activity
+            android:name=".newsScreen.NewsScreen"
+            android:exported="true"
+            android:screenOrientation="portrait"></activity>
+
+        <activity
+            android:name=".achievementsScreen.AchievementsScreen"
             android:exported="true"
             android:screenOrientation="portrait"></activity>
 
