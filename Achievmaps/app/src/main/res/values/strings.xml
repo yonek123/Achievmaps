@@ -90,4 +90,13 @@
     <string name="achievement_name_text">Nazwa</string>
     <string name="achievement_description_text">Opis</string>
     <string name="achievement_points_text">Punkty</string>
+
+
+    <string name="help_text">Pomoc</string>
+    <string name="help_page1_text">Mapa domyślnie wyświetla twoją aktualną lokalizację. Przesuwaj mapę jednym palcem. Aby przybliżyć mapę użyj dwóch palców i zbliż je do krawędzi ekranu. Aby oddalić mapę zbliż oba palce do środka ekranu.</string>
+    <string name="help_page2_text">Aby powrócić do twojej lokalizacji naciśnij zielony przycisk odświerzenia w prawym dolnym rogu ekranu.</string>
+    <string name="help_page3_text">Czerwone pinezki na mapie oznaczają obiekty które możesz odwiedzić aby zdobyć punkty. Naciśnij na pinezkę aby zobaczyć okno z nazwą i opisem obiektu. Jeśli jesteś blisko obiektu pojawi się tam także przycisk dodania obiektu do listy odwiedzonych. W ten sposób możesz zdobyć punkty które podwyższą twoją pozycję w rankingu!</string>
+    <string name="help_page4_text">To wszystko co musisz wiedzieć aby używać aplikacji. Nie pozostało ci nic innego niż odwiedzić pobliskie zabytki, a następnie zaplanować gdzie wyjedziesz na wakacje.\n\nNie zapomnij zabrać ze sobą telefonu z zainstalowaną aplikacją oraz dobrego aparatu :)</string>
+    <string name="location_required_text">Dostep do lokalizacji jest wymagany do działania aplikacji!</string>
+    <string name="add_achievement_text">Zdobądź punkty</string>
 </resources>

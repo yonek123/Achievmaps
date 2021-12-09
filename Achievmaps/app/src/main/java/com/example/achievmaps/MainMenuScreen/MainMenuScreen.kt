@@ -10,6 +10,7 @@ import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
 import com.example.achievmaps.achievementsScreen.AchievementsScreen
 import com.example.achievmaps.friendsScreen.FriendsScreen
+import com.example.achievmaps.mapScreen.MapScreen
 import com.example.achievmaps.newsScreen.NewsScreen
 import com.example.achievmaps.rankingScreen.RankingScreen
 import kotlinx.android.synthetic.main.main_menu_screen.*
@@ -32,7 +33,7 @@ class MainMenuScreen : AppCompatActivity() {
         MenuScreenText.text = "Witaj " + LoginScreen.loggedUserNick + "!"
     }
 
-    fun setMainMenuEnabled(setting: Boolean) {
+    public fun setMainMenuEnabled(setting: Boolean) {
         MainMenuMapSubmenu.isEnabled = setting
         MainMenuNewsSubmenu.isEnabled = setting
         MainMenuAchievementsSubmenu.isEnabled = setting
@@ -49,8 +50,8 @@ class MainMenuScreen : AppCompatActivity() {
         MainMenuLoadingScreen.visibility = View.VISIBLE
         setMainMenuEnabled(false)
         Handler(Looper.getMainLooper()).postDelayed({
-            MainMenuLoadingScreen.visibility = View.GONE
-            setMainMenuEnabled(true)
+            val intent = Intent(this, MapScreen::class.java)
+            startActivity(intent)
         }, 100)
     }
 

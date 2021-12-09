@@ -21,11 +21,13 @@
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/achievements_item_layout.xml" value="0.2477355072463768" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/achievements_screen.xml" value="0.2477355072463768" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/activity_login_screen.xml" value="0.264" />
-        <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/activity_maps.xml" value="0.25" />
+        <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/activity_maps.xml" value="0.264" />
+        <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/activity_maps_info_box.xml" value="0.4" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/friends_item_layout.xml" value="0.25" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/friends_screen.xml" value="0.264" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/login_screen.xml" value="0.25" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/main_menu_screen.xml" value="0.264" />
+        <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/map_screen.xml" value="0.24320652173913043" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/news_image_gradient.xml" value="0.25" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/news_screen.xml" value="0.25" />
         <entry key="..\:/apki/Achievmaps/app/src/main/res/layout/ranking_item_layout.xml" value="0.264" />

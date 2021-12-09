@@ -17,3 +17,5 @@ v7: friedsy here, ale jeszcze bez dodawania
 v8: dodawanie i usuwanie friendsów plus dużo poprawek
 
 v9: jest wszystko poza samą mapą i gpseme
+
+v10: prawie finito, zostało tylko wykrywanie że jestem w pobliżu obiektu i dodanie achievementów i punktów do bazy danych

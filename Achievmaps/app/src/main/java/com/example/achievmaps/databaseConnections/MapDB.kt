@@ -1,14 +1,15 @@
-package com.example.achievmaps.LoginScreen.databaseConnection
+package com.example.achievmaps.databaseConnections
 
 import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
 
-object Login {
-    fun login(email: String, password: String): String {
+
+object MapDB {
+    fun getMap(nickname: String): String {
         var data = "-3"
         val url =
-            URL("https://justsomephp.000webhostapp.com/login.php?email=" + email + "&password=" + password)
+            URL("https://justsomephp.000webhostapp.com/getMap.php?nickname=" + nickname)
         var urlConnection: HttpURLConnection? = null
         try {
             urlConnection = url.openConnection() as HttpURLConnection
