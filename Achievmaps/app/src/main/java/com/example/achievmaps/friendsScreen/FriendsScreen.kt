@@ -7,9 +7,9 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.achievmaps.databaseConnections.Friends
 import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
+import com.example.achievmaps.databaseConnections.DatabaseConnections
 import kotlinx.android.synthetic.main.friends_screen.*
 import kotlinx.android.synthetic.main.login_screen.*
 
@@ -33,8 +33,10 @@ class FriendsScreen : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             var friendsData = "-3"
             val t = Thread {
-                friendsData =
-                    Friends.getFriends(LoginScreen.loggedUserID)
+                friendsData = DatabaseConnections.getTables(
+                    "https://justsomephp.000webhostapp.com/getFriends.php?personid="
+                            + LoginScreen.loggedUserID
+                )
                 list = friendsData.split('\n')
             }
             t.start()
@@ -114,8 +116,11 @@ class FriendsScreen : AppCompatActivity() {
             var isSuccess = "-3"
             var lines = listOf("0")
             val t = Thread {
-                isSuccess =
-                    Friends.addFriend(LoginScreen.loggedUserID, AddFriendNickBox.text.toString())
+                isSuccess = DatabaseConnections.getTables(
+                    "https://justsomephp.000webhostapp.com/addFriend.php?personid="
+                            + LoginScreen.loggedUserID + "&friendnick="
+                            + AddFriendNickBox.text.toString()
+                )
                 lines = isSuccess.split('\n')
             }
             t.start()
@@ -154,8 +159,11 @@ class FriendsScreen : AppCompatActivity() {
             var isSuccess = "-3"
             var lines = listOf("0")
             val t = Thread {
-                isSuccess =
-                    Friends.deleteFriend(LoginScreen.loggedUserID, AddFriendNickBox.text.toString())
+                isSuccess = DatabaseConnections.getTables(
+                    "https://justsomephp.000webhostapp.com/deleteFriend.php?personid="
+                            + LoginScreen.loggedUserID + "&friendnick="
+                            + AddFriendNickBox.text.toString()
+                )
                 lines = isSuccess.split('\n')
             }
             t.start()

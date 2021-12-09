@@ -7,13 +7,11 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.achievmaps.databaseConnections.Ranking
 import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
 import kotlinx.android.synthetic.main.ranking_screen.*
 import android.widget.Button
-import com.example.achievmaps.databaseConnections.Friends
-import kotlinx.android.synthetic.main.main_menu_screen.*
+import com.example.achievmaps.databaseConnections.DatabaseConnections
 import java.lang.Exception
 
 class RankingScreen : AppCompatActivity() {
@@ -43,8 +41,13 @@ class RankingScreen : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val t = Thread {
                 try {
-                    page = Ranking.getUserPage(id, type).toInt()
-                    maxpage = Ranking.getMaxPage().toInt()
+                    page = DatabaseConnections.getTables(
+                        "https://justsomephp.000webhostapp.com/getRankingUserPage.php?personid="
+                                + id.toString() + "&type=" + type
+                    ).toInt()
+                    maxpage =
+                        DatabaseConnections.getTables("https://justsomephp.000webhostapp.com/getRankingMaxPage.php")
+                            .toInt()
                 } catch (e: Exception) {
                     RankingErrorText.text = getString(R.string.database_conn_error3_text)
                     RankingErrorLayout.visibility = View.VISIBLE
@@ -97,16 +100,31 @@ class RankingScreen : AppCompatActivity() {
             val t = Thread {
                 try {
                     if (page == -1)
-                        page = Ranking.getUserPage(id, type).toInt()
+                        page = DatabaseConnections.getTables(
+                            "https://justsomephp.000webhostapp.com/getRankingUserPage.php?personid="
+                                    + id.toString() + "&type="
+                                    + type
+                        ).toInt()
                     if (maxpage <= page)
-                        maxpage = Ranking.getMaxPage().toInt()
+                        maxpage =
+                            DatabaseConnections.getTables("https://justsomephp.000webhostapp.com/getRankingMaxPage.php")
+                                .toInt()
 
                     if (method == 1) {
                         rankingData =
-                            Ranking.getByUser(id, type)
+                            DatabaseConnections.getTables(
+                                "https://justsomephp.000webhostapp.com/getRankingByUser.php?personid="
+                                        + id.toString() + "&type="
+                                        + type
+                            )
                     } else {
                         rankingData =
-                            Ranking.getByPage(page, type)
+                            DatabaseConnections.getTables(
+                                "https://justsomephp.000webhostapp.com/getRankingByPage.php?page="
+                                        + page.toString() + "&type="
+                                        + type
+                            )
+
                     }
                     list = rankingData.split('\n')
 

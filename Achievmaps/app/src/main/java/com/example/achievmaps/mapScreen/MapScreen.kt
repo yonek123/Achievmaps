@@ -8,6 +8,7 @@ import android.location.Location
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
 import com.example.achievmaps.R
 import android.util.TypedValue
@@ -16,29 +17,35 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.achievmaps.databaseConnections.MapDB
 
 import com.example.achievmaps.loginScreen.LoginScreen
 import com.google.android.gms.location.*
 import kotlinx.android.synthetic.main.activity_maps.*
 
 import android.util.Log
+import com.example.achievmaps.databaseConnections.DatabaseConnections
 
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.main_menu_screen.*
+import com.google.android.gms.maps.CameraUpdateFactory
+
+import com.google.android.gms.maps.model.Marker
+
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
+import kotlinx.android.synthetic.main.ranking_screen.*
+
 
 class MapScreen : AppCompatActivity(), OnMapReadyCallback {
-
     private var page = 0
     private var list = listOf("0")
     private var row = ArrayList<String>()
     private var objects = ArrayList<ArrayList<String>>()
     private var lat = 0.0
     private var long = 0.0
-    private var markers = ArrayList<Marker>()
-
+    private var mlat = 0.0
+    private var mlong = 0.0
 
     lateinit var mGoogleMap: GoogleMap
     var mapFrag: SupportMapFragment? = null
@@ -46,7 +53,6 @@ class MapScreen : AppCompatActivity(), OnMapReadyCallback {
     var mLastLocation: Location? = null
     internal var mCurrLocationMarker: Marker? = null
     internal var mFusedLocationClient: FusedLocationProviderClient? = null
-
 
     internal var mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
@@ -73,73 +79,6 @@ class MapScreen : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_maps)
-        RefreshMapButton.isEnabled = false
-        MapHelpButton.isEnabled = false
-        MapLoadingScreen.visibility = View.VISIBLE
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-        mapFrag = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFrag?.getMapAsync(this)
-
-
-    }
-
-    public override fun onPause() {
-        super.onPause()
-
-        //stop location updates when Activity is no longer active
-        mFusedLocationClient?.removeLocationUpdates(mLocationCallback)
-    }
-
-    override fun onMapReady(googleMap: GoogleMap) {
-        mGoogleMap = googleMap
-        mGoogleMap.setInfoWindowAdapter(CustomInfoWindowForGoogleMap(this))
-        mGoogleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
-        try {
-            googleMap.setMapStyle(
-                MapStyleOptions.loadRawResourceStyle(
-                    this, R.raw.style_json
-                )
-            );
-
-        } catch (e: Resources.NotFoundException) {
-            Log.e("xd", e.toString())
-        }
-        mLocationRequest = LocationRequest()
-        mLocationRequest.interval = 2000 // two minute interval
-        mLocationRequest.fastestInterval = 2000
-        mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                //Location Permission already granted
-                mFusedLocationClient?.requestLocationUpdates(
-                    mLocationRequest,
-                    mLocationCallback,
-                    Looper.myLooper()
-                )
-                mGoogleMap.isMyLocationEnabled = true
-            } else {
-                //Request Location Permission
-                checkLocationPermission()
-            }
-        } else {
-            mFusedLocationClient?.requestLocationUpdates(
-                mLocationRequest,
-                mLocationCallback,
-                Looper.myLooper()
-            )
-            mGoogleMap.isMyLocationEnabled = true
-        }
-    }
 
     private fun checkLocationPermission() {
         if (ActivityCompat.checkSelfPermission(
@@ -193,7 +132,9 @@ class MapScreen : AppCompatActivity(), OnMapReadyCallback {
         when (requestCode) {
             MY_PERMISSIONS_REQUEST_LOCATION -> {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty()
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                ) {
 
                     // permission was granted, yay! Do the
                     // location-related task you need to do.
@@ -227,6 +168,109 @@ class MapScreen : AppCompatActivity(), OnMapReadyCallback {
         val MY_PERMISSIONS_REQUEST_LOCATION = 99
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_maps)
+        RefreshMapButton.isEnabled = false
+        MapHelpButton.isEnabled = false
+        MapLoadingScreen.visibility = View.VISIBLE
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        mapFrag = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFrag?.getMapAsync(this)
+
+
+    }
+
+    public override fun onPause() {
+        super.onPause()
+        mFusedLocationClient?.removeLocationUpdates(mLocationCallback)
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        mGoogleMap = googleMap
+        mGoogleMap.setOnMarkerClickListener(OnMarkerClickListener { marker ->
+            RefreshMapButton.isEnabled = false
+            MapHelpButton.isEnabled = false
+            mlat = marker.position.latitude
+            mlong = marker.position.longitude
+
+            checkIfClose()
+
+            MapMarkerTitle.text = marker.title
+            MapMarkerText.text = marker.snippet
+            Handler(Looper.getMainLooper()).postDelayed({
+                MapMarkerLayout.visibility = View.VISIBLE
+                mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.position))
+                true
+            }, 100)
+        })
+
+        mGoogleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+        try {
+            googleMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    this, R.raw.style_json
+                )
+            );
+
+        } catch (e: Resources.NotFoundException) {
+            Log.e("xd", e.toString())
+        }
+        mLocationRequest = LocationRequest()
+        mLocationRequest.interval = 2000 // two minute interval
+        mLocationRequest.fastestInterval = 2000
+        mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                //Location Permission already granted
+                mFusedLocationClient?.requestLocationUpdates(
+                    mLocationRequest,
+                    mLocationCallback,
+                    Looper.myLooper()
+                )
+                mGoogleMap.isMyLocationEnabled = true
+            } else {
+                //Request Location Permission
+                checkLocationPermission()
+            }
+        } else {
+            mFusedLocationClient?.requestLocationUpdates(
+                mLocationRequest,
+                mLocationCallback,
+                Looper.myLooper()
+            )
+            mGoogleMap.isMyLocationEnabled = true
+        }
+    }
+
+    private fun checkIfCloseButton(view: View) {
+        checkIfClose()
+    }
+
+    private fun checkIfClose() {
+        if (lat >= (mlat - 0.001)
+            && lat <= (mlat + 0.001)
+            && long >= (mlong - 0.001)
+            && long <= (mlong + 0.001)
+        ) {
+            MapMarkerRefreshButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14F)
+            MapMarkerRefreshButton.text = getString(R.string.add_achievement_text)
+        } else {
+            MapMarkerRefreshButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20F)
+            MapMarkerRefreshButton.text = getString(R.string.reset_page_text)
+            MapMarkerRefreshButton.setOnClickListener(View.OnClickListener {
+                checkIfClose()
+            })
+        }
+    }
+
     fun myLoc(view: View) {
         getCurrLoc()
     }
@@ -247,7 +291,10 @@ class MapScreen : AppCompatActivity(), OnMapReadyCallback {
         var posData = "-3"
         val t = Thread {
             mapData =
-                MapDB.getMap(LoginScreen.loggedUserNick)
+                DatabaseConnections.getTables(
+                    "https://justsomephp.000webhostapp.com/getMap.php?nickname="
+                            + LoginScreen.loggedUserNick
+                )
             list = mapData.split('\n')
         }
         t.start()
@@ -279,16 +326,15 @@ class MapScreen : AppCompatActivity(), OnMapReadyCallback {
             t.start()
             t.join()
 
-            var marker: Marker
             for (item in objects) {
-                markers.add(mGoogleMap.addMarker(
+                mGoogleMap.addMarker(
                     MarkerOptions().position(
                         LatLng(
                             item[2].toDouble(),
                             item[3].toDouble()
                         )
                     ).title(item[0]).snippet(item[1])
-                ))
+                )
             }
             MapLoadingScreen.visibility = View.GONE
         }
@@ -353,6 +399,13 @@ class MapScreen : AppCompatActivity(), OnMapReadyCallback {
         MapHelpText.text = getString(R.string.help_page1_text)
         MapHelpPreviousButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
         MapHelpPreviousButton.isEnabled = false
+    }
+
+    fun closeMarkerLayout(view: View) {
+        page = 1
+        MapMarkerLayout.visibility = View.GONE
+        RefreshMapButton.isEnabled = true
+        MapHelpButton.isEnabled = true
     }
 
     fun closeMapErrorLayout(view: View) {

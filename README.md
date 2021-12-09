@@ -19,3 +19,5 @@ v8: dodawanie i usuwanie friendsów plus dużo poprawek
 v9: jest wszystko poza samą mapą i gpseme
 
 v10: prawie finito, zostało tylko wykrywanie że jestem w pobliżu obiektu i dodanie achievementów i punktów do bazy danych
+
+v11: zrobione dosłownie 99%, zostało ogarnąć bazę danych, zmienić trochę działanie rankingu i gituwens

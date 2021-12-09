@@ -7,7 +7,7 @@ import android.os.Looper
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.achievmaps.R
-import com.example.achievmaps.databaseConnections.News
+import com.example.achievmaps.databaseConnections.DatabaseConnections
 import kotlinx.android.synthetic.main.news_screen.*
 
 class NewsScreen : AppCompatActivity() {
@@ -36,7 +36,7 @@ class NewsScreen : AppCompatActivity() {
             var lines = listOf("0")
             val t = Thread {
                 newsData =
-                    News.loadPage()
+                    DatabaseConnections.getTables("https://justsomephp.000webhostapp.com/getNewsFirstPage.php")
                 lines = newsData.split('\n')
             }
             t.start()
@@ -68,11 +68,17 @@ class NewsScreen : AppCompatActivity() {
             var lines = listOf("0")
             val t = Thread {
                 newsData =
-                    News.getNewsText(page)
+                    DatabaseConnections.getTables(
+                        "https://justsomephp.000webhostapp.com/getNews.php?page="
+                                + page.toString()
+                    )
                 lines = newsData.split('\n')
 
                 bitmap =
-                    News.getNewsImage(page)
+                    DatabaseConnections.getImage(
+                        "https://justsomephp.000webhostapp.com/getNewsImage.php?page="
+                                + page.toString()
+                    )
             }
             t.start()
             t.join()

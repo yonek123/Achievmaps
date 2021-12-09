@@ -8,11 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.achievmaps.R
-import com.example.achievmaps.databaseConnections.Achievements
+import com.example.achievmaps.databaseConnections.DatabaseConnections
 import com.example.achievmaps.loginScreen.LoginScreen
 import kotlinx.android.synthetic.main.achievements_screen.*
 
-class AchievementsScreen : AppCompatActivity()  {
+class AchievementsScreen : AppCompatActivity() {
     private var list = listOf("0")
     private var row = ArrayList<String>()
     private var table = ArrayList<ArrayList<String>>()
@@ -25,14 +25,21 @@ class AchievementsScreen : AppCompatActivity()  {
     }
 
     fun loadAchievements() {
-        AchievementsView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        AchievementsView.addItemDecoration(
+            DividerItemDecoration(
+                this,
+                DividerItemDecoration.VERTICAL
+            )
+        )
         AchievementsLoadingScreen.visibility = View.VISIBLE
 
         Handler(Looper.getMainLooper()).postDelayed({
             var achievementsData = "-3"
             val t = Thread {
-                achievementsData =
-                    Achievements.getAchievements(LoginScreen.loggedUserNick)
+                achievementsData = DatabaseConnections.getTables(
+                    "https://justsomephp.000webhostapp.com/getAchievements.php?nickname="
+                            + LoginScreen.loggedUserNick
+                )
                 list = achievementsData.split('\n')
             }
             t.start()

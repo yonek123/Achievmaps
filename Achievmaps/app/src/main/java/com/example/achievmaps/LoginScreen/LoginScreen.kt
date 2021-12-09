@@ -9,8 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import com.example.achievmaps.R
-import com.example.achievmaps.databaseConnections.Login
-import com.example.achievmaps.databaseConnections.Register
+import com.example.achievmaps.databaseConnections.DatabaseConnections
 import com.example.achievmaps.mainMenuScreen.MainMenuScreen
 import kotlinx.android.synthetic.main.login_screen.*
 
@@ -113,8 +112,11 @@ class LoginScreen : AppCompatActivity() {
             var loggedUserData = "-3"
             var lines = listOf("0")
             val t = Thread {
-                loggedUserData =
-                    Login.login(LoginEmailField.text.toString(), LoginPasswordField.text.toString())
+                loggedUserData = DatabaseConnections.getTables(
+                    "https://justsomephp.000webhostapp.com/login.php?email="
+                            + LoginEmailField.text.toString() + "&password="
+                            + LoginPasswordField.text.toString()
+                )
                 lines = loggedUserData.split('\n')
                 loggedUserID = lines[0].toInt()
             }
@@ -173,11 +175,12 @@ class LoginScreen : AppCompatActivity() {
                 val t = Thread {
                     LoginLoadingScreen.visibility = View.VISIBLE
                     registerSuccess =
-                        Register.register(
-                            RegisterEmailField.text.toString(),
-                            RegisterNickField.text.toString(),
-                            RegisterPasswordField.text.toString()
-                        )
+                        DatabaseConnections.getTables(
+                            "https://justsomephp.000webhostapp.com/register.php?email="
+                                    + RegisterEmailField.text.toString() + "&nickname="
+                                    + RegisterNickField.text.toString() + "&password="
+                                    + RegisterPasswordField.text.toString()
+                        ).toInt()
                 }
                 t.start()
                 t.join()
