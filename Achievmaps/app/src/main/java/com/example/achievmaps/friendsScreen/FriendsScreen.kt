@@ -11,7 +11,6 @@ import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
 import com.example.achievmaps.databaseConnections.DatabaseConnections
 import kotlinx.android.synthetic.main.friends_screen.*
-import kotlinx.android.synthetic.main.login_screen.*
 
 class FriendsScreen : AppCompatActivity() {
     private var list = listOf("0")
@@ -26,7 +25,7 @@ class FriendsScreen : AppCompatActivity() {
         loadFriends()
     }
 
-    fun loadFriends() {
+    private fun loadFriends() {
         FriendsView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         FriendsLoadingScreen.visibility = View.VISIBLE
 
@@ -34,7 +33,7 @@ class FriendsScreen : AppCompatActivity() {
             var friendsData = "-3"
             val t = Thread {
                 friendsData = DatabaseConnections.getTables(
-                    "https://justsomephp.000webhostapp.com/getFriends.php?personid="
+                    getString(R.string.url_text) + "getFriends.php?personid="
                             + LoginScreen.loggedUserID
                 )
                 list = friendsData.split('\n')
@@ -79,9 +78,9 @@ class FriendsScreen : AppCompatActivity() {
     fun openAddFriendLayout(view: View) {
         FriendsAddDeleteText.text = getString(R.string.add_friend_text)
         FriendsAddDeleteButton.text = getString(R.string.add_text)
-        FriendsAddDeleteButton.setOnClickListener(View.OnClickListener {
+        FriendsAddDeleteButton.setOnClickListener {
             addFriend(it)
-        })
+        }
         FriendsAddDeleteLayout.visibility = View.VISIBLE
         AddFriendButton.isEnabled = false
         DeleteFriendButton.isEnabled = false
@@ -90,9 +89,9 @@ class FriendsScreen : AppCompatActivity() {
     fun openDeleteFriendLayout(view: View) {
         FriendsAddDeleteText.text = getString(R.string.delete_friend_text)
         FriendsAddDeleteButton.text = getString(R.string.delete_text)
-        FriendsAddDeleteButton.setOnClickListener(View.OnClickListener {
+        FriendsAddDeleteButton.setOnClickListener {
             deleteFriend(it)
-        })
+        }
         FriendsAddDeleteLayout.visibility = View.VISIBLE
         AddFriendButton.isEnabled = false
         DeleteFriendButton.isEnabled = false
@@ -117,7 +116,7 @@ class FriendsScreen : AppCompatActivity() {
             var lines = listOf("0")
             val t = Thread {
                 isSuccess = DatabaseConnections.getTables(
-                    "https://justsomephp.000webhostapp.com/addFriend.php?personid="
+                    getString(R.string.url_text) + "addFriend.php?personid="
                             + LoginScreen.loggedUserID + "&friendnick="
                             + AddFriendNickBox.text.toString()
                 )
@@ -150,7 +149,7 @@ class FriendsScreen : AppCompatActivity() {
         }, 100)
     }
 
-    fun deleteFriend(view: View) {
+    private fun deleteFriend(view: View) {
         FriendsLoadingScreen.visibility = View.VISIBLE
         FriendsAddDeleteButton.isEnabled = false
         FriendsAddDeleteCloseButton.isEnabled = false
@@ -160,7 +159,7 @@ class FriendsScreen : AppCompatActivity() {
             var lines = listOf("0")
             val t = Thread {
                 isSuccess = DatabaseConnections.getTables(
-                    "https://justsomephp.000webhostapp.com/deleteFriend.php?personid="
+                    getString(R.string.url_text) + "deleteFriend.php?personid="
                             + LoginScreen.loggedUserID + "&friendnick="
                             + AddFriendNickBox.text.toString()
                 )

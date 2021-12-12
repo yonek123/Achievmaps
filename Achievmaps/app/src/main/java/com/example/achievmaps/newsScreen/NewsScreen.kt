@@ -21,13 +21,13 @@ class NewsScreen : AppCompatActivity() {
         loadMaxPage()
     }
 
-    fun setNewsEnabled(setting: Boolean) {
+    private fun setNewsEnabled(setting: Boolean) {
         NewsFirstPage.isEnabled = setting
         NewsNextPage.isEnabled = setting
         NewsPreviousPage.isEnabled = setting
     }
 
-    fun loadMaxPage() {
+    private fun loadMaxPage() {
         NewsLoadingScreen.visibility = View.VISIBLE
         setNewsEnabled(false)
 
@@ -36,7 +36,7 @@ class NewsScreen : AppCompatActivity() {
             var lines = listOf("0")
             val t = Thread {
                 newsData =
-                    DatabaseConnections.getTables("https://justsomephp.000webhostapp.com/getNewsFirstPage.php")
+                    DatabaseConnections.getTables(getString(R.string.url_text) + "getNewsFirstPage.php")
                 lines = newsData.split('\n')
             }
             t.start()
@@ -58,7 +58,7 @@ class NewsScreen : AppCompatActivity() {
         }, 100)
     }
 
-    fun loadNews() {
+    private fun loadNews() {
         NewsLoadingScreen.visibility = View.VISIBLE
         setNewsEnabled(false)
 
@@ -69,14 +69,14 @@ class NewsScreen : AppCompatActivity() {
             val t = Thread {
                 newsData =
                     DatabaseConnections.getTables(
-                        "https://justsomephp.000webhostapp.com/getNews.php?page="
+                        getString(R.string.url_text) + "getNews.php?page="
                                 + page.toString()
                     )
                 lines = newsData.split('\n')
 
                 bitmap =
                     DatabaseConnections.getImage(
-                        "https://justsomephp.000webhostapp.com/getNewsImage.php?page="
+                        getString(R.string.url_text) + "getNewsImage.php?page="
                                 + page.toString()
                     )
             }

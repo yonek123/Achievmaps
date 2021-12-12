@@ -12,17 +12,17 @@ import com.example.achievmaps.R
 import kotlinx.android.synthetic.main.ranking_screen.*
 import android.widget.Button
 import com.example.achievmaps.databaseConnections.DatabaseConnections
-import java.lang.Exception
 
 class RankingScreen : AppCompatActivity() {
     private var list = listOf("0")
     private var row = ArrayList<String>()
-    private var table = ArrayList<ArrayList<String>>()
+    private var record = ArrayList<ArrayList<String>>()
+    private var table = ArrayList<ArrayList<ArrayList<String>>>()
     private var button1: Button? = null
-    private var button2: Button? = null
     private var id = 1
     private var type = "All"
     private var page = -1
+    private var userpage = -1
     private var maxpage = -1
 
 
@@ -31,36 +31,14 @@ class RankingScreen : AppCompatActivity() {
 
         setContentView(R.layout.ranking_screen)
         button1 = RankingAllButton
-        button2 = RankingDefaultPageButton
         id = LoginScreen.loggedUserID
         type = "All"
 
         RankingView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        RankingLoadingScreen.visibility = View.VISIBLE
-        setRankingEnabled(false)
-        Handler(Looper.getMainLooper()).postDelayed({
-            val t = Thread {
-                try {
-                    page = DatabaseConnections.getTables(
-                        "https://justsomephp.000webhostapp.com/getRankingUserPage.php?personid="
-                                + id.toString() + "&type=" + type
-                    ).toInt()
-                    maxpage =
-                        DatabaseConnections.getTables("https://justsomephp.000webhostapp.com/getRankingMaxPage.php")
-                            .toInt()
-                } catch (e: Exception) {
-                    RankingErrorText.text = getString(R.string.database_conn_error3_text)
-                    RankingErrorLayout.visibility = View.VISIBLE
-                    RankingLoadingScreen.visibility = View.GONE
-                }
-            }
-            t.start()
-            t.join()
-        }, 100)
-        changeRanking(RankingAllButton, 1)
+        getRanking(RankingAllButton)
     }
 
-    fun setRankingEnabled(setting: Boolean) {
+    private fun setRankingEnabled(setting: Boolean) {
         RankingAllButton.isEnabled = setting
         RankingNatureButton.isEnabled = setting
         RankingArchitectureButton.isEnabled = setting
@@ -76,61 +54,15 @@ class RankingScreen : AppCompatActivity() {
         this.finish()
     }
 
-    fun rankingPrepare() {
-        row.clear()
-        table.clear()
-        var poz = 0
-        for (item in list) {
-            row.add(item)
-            poz++
-            if (poz > 3) {
-                poz = 0
-                table.add(row.clone() as ArrayList<String>)
-                row.clear()
-            }
-        }
-
-        RankingView.swapAdapter(RankingAdapter(table), true)
-        RankingView.layoutManager = LinearLayoutManager(this)
-    }
-
-    fun changeRanking(b1: Button?, method: Int) {
+    private fun getRanking(b1: Button?) {
+        RankingLoadingScreen.visibility = View.VISIBLE
+        setRankingEnabled(false)
         Handler(Looper.getMainLooper()).postDelayed({
             var rankingData = "-3"
             val t = Thread {
-                try {
-                    if (page == -1)
-                        page = DatabaseConnections.getTables(
-                            "https://justsomephp.000webhostapp.com/getRankingUserPage.php?personid="
-                                    + id.toString() + "&type="
-                                    + type
-                        ).toInt()
-                    if (maxpage <= page)
-                        maxpage =
-                            DatabaseConnections.getTables("https://justsomephp.000webhostapp.com/getRankingMaxPage.php")
-                                .toInt()
-
-                    if (method == 1) {
-                        rankingData =
-                            DatabaseConnections.getTables(
-                                "https://justsomephp.000webhostapp.com/getRankingByUser.php?personid="
-                                        + id.toString() + "&type="
-                                        + type
-                            )
-                    } else {
-                        rankingData =
-                            DatabaseConnections.getTables(
-                                "https://justsomephp.000webhostapp.com/getRankingByPage.php?page="
-                                        + page.toString() + "&type="
-                                        + type
-                            )
-
-                    }
-                    list = rankingData.split('\n')
-
-                } catch (e: Exception) {
-                    rankingData = "-3"
-                }
+                rankingData =
+                    DatabaseConnections.getTables(getString(R.string.url_text) + "getRanking.php?type=" + type)
+                list = rankingData.split('\n')
             }
             t.start()
             t.join()
@@ -167,70 +99,204 @@ class RankingScreen : AppCompatActivity() {
                 } else {
                     RankingPreviousPageButton.setBackgroundColor(getColor(R.color.button_green))
                 }
-                if (button2 == RankingDefaultPageButton) {
-                    RankingDefaultPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
-                    RankingDefaultPageButton.isEnabled = false
-                } else {
-                    RankingDefaultPageButton.setBackgroundColor(getColor(R.color.button_green))
-                }
+                RankingDefaultPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+                RankingDefaultPageButton.isEnabled = false
                 button1?.isEnabled = false
             }
         }, 100)
     }
 
+    private fun rankingPrepare() {
+        val t = Thread {
+            table.clear()
+            val newArr = ArrayList<String>()
+            var prevScore = -1
+            var rank = 0
+            row.clear()
+            record.clear()
+            var poz = 0
+            var rec = 0
+            maxpage = 0
+            for (item in list) {
+                if (item == LoginScreen.loggedUserNick) {
+                    page = maxpage
+                    userpage = page
+                }
+                row.add(item)
+                poz++
+                if (poz >= 2) {
+                    if (prevScore != row[1].toInt()) {
+                        rank++
+                        prevScore = row[1].toInt()
+                    }
+                    newArr.add(rank.toString())
+                    newArr.add(row[0])
+                    newArr.add(row[1])
+                    poz = 0
+                    record.add(newArr.clone() as ArrayList<String>)
+                    row.clear()
+                    newArr.clear()
+                    rec++
+                    if (rec >= 10) {
+                        rec = 0
+                        maxpage++
+                        table.add(record.clone() as ArrayList<ArrayList<String>>)
+                        record.clear()
+                    }
+                }
+            }
+            if (rec != 0) {
+                table.add(record.clone() as ArrayList<ArrayList<String>>)
+                record.clear()
+            }
+        }
+        t.start()
+        t.join()
+
+        RankingView.swapAdapter(RankingAdapter(table[page]), true)
+        RankingView.layoutManager = LinearLayoutManager(this)
+    }
+
     fun goRankingAll(view: View) {
-        RankingLoadingScreen.visibility = View.VISIBLE
-        setRankingEnabled(false)
         type = "All"
-        button2 = RankingDefaultPageButton
-        changeRanking(RankingAllButton, 1)
+        getRanking(RankingAllButton)
     }
 
     fun goRankingNature(view: View) {
-        RankingLoadingScreen.visibility = View.VISIBLE
-        setRankingEnabled(false)
         type = "Nature"
-        button2 = RankingDefaultPageButton
-        changeRanking(RankingNatureButton, 1)
+        getRanking(RankingNatureButton)
     }
 
     fun goRankingArchitecture(view: View) {
-        RankingLoadingScreen.visibility = View.VISIBLE
-        setRankingEnabled(false)
         type = "Architecture"
-        button2 = RankingDefaultPageButton
-        changeRanking(RankingArchitectureButton, 1)
+        getRanking(RankingArchitectureButton)
     }
 
     fun goFirstPage(view: View) {
-        RankingLoadingScreen.visibility = View.VISIBLE
         setRankingEnabled(false)
         page = 0
-        button2 = RankingFirstPageButton
-        changeRanking(button1, 2)
+        Handler(Looper.getMainLooper()).postDelayed({
+            RankingView.swapAdapter(RankingAdapter(table[page]), true)
+            RankingView.layoutManager = LinearLayoutManager(this)
+            setRankingEnabled(true)
+            button1?.isEnabled = false
+            if (page == 0) {
+                RankingFirstPageButton.isEnabled = false
+                RankingFirstPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+                RankingNextPageButton.isEnabled = false
+                RankingNextPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+            } else {
+                RankingFirstPageButton.setBackgroundColor(getColor(R.color.button_green))
+                RankingNextPageButton.setBackgroundColor(getColor(R.color.button_green))
+            }
+            if (page == maxpage) {
+                RankingPreviousPageButton.isEnabled = false
+                RankingPreviousPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+            } else {
+                RankingPreviousPageButton.setBackgroundColor(getColor(R.color.button_green))
+            }
+            if (page == userpage) {
+                RankingDefaultPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+                RankingDefaultPageButton.isEnabled = false
+            } else {
+                RankingDefaultPageButton.setBackgroundColor(getColor(R.color.button_green))
+            }
+        }, 100)
     }
 
     fun goNextPage(view: View) {
-        RankingLoadingScreen.visibility = View.VISIBLE
         setRankingEnabled(false)
-        page = page - 1
-        button2 = RankingNextPageButton
-        changeRanking(button1, 2)
+        page--
+        Handler(Looper.getMainLooper()).postDelayed({
+            RankingView.swapAdapter(RankingAdapter(table[page]), true)
+            RankingView.layoutManager = LinearLayoutManager(this)
+            setRankingEnabled(true)
+            button1?.isEnabled = false
+            if (page == 0) {
+                RankingFirstPageButton.isEnabled = false
+                RankingFirstPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+                RankingNextPageButton.isEnabled = false
+                RankingNextPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+            } else {
+                RankingFirstPageButton.setBackgroundColor(getColor(R.color.button_green))
+                RankingNextPageButton.setBackgroundColor(getColor(R.color.button_green))
+            }
+            if (page == maxpage) {
+                RankingPreviousPageButton.isEnabled = false
+                RankingPreviousPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+            } else {
+                RankingPreviousPageButton.setBackgroundColor(getColor(R.color.button_green))
+            }
+            if (page == userpage) {
+                RankingDefaultPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+                RankingDefaultPageButton.isEnabled = false
+            } else {
+                RankingDefaultPageButton.setBackgroundColor(getColor(R.color.button_green))
+            }
+        }, 100)
     }
 
     fun goDefaultPage(view: View) {
-        RankingLoadingScreen.visibility = View.VISIBLE
         setRankingEnabled(false)
-        page = -1
-        button2 = RankingDefaultPageButton
-        changeRanking(button1, 2)
+        page = userpage
+        Handler(Looper.getMainLooper()).postDelayed({
+            RankingView.swapAdapter(RankingAdapter(table[page]), true)
+            RankingView.layoutManager = LinearLayoutManager(this)
+            setRankingEnabled(true)
+            button1?.isEnabled = false
+            if (page == 0) {
+                RankingFirstPageButton.isEnabled = false
+                RankingFirstPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+                RankingNextPageButton.isEnabled = false
+                RankingNextPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+            } else {
+                RankingFirstPageButton.setBackgroundColor(getColor(R.color.button_green))
+                RankingNextPageButton.setBackgroundColor(getColor(R.color.button_green))
+            }
+            if (page == maxpage) {
+                RankingPreviousPageButton.isEnabled = false
+                RankingPreviousPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+            } else {
+                RankingPreviousPageButton.setBackgroundColor(getColor(R.color.button_green))
+            }
+            if (page == userpage) {
+                RankingDefaultPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+                RankingDefaultPageButton.isEnabled = false
+            } else {
+                RankingDefaultPageButton.setBackgroundColor(getColor(R.color.button_green))
+            }
+        }, 100)
     }
 
     fun goPreviousPage(view: View) {
-        RankingLoadingScreen.visibility = View.VISIBLE
         setRankingEnabled(false)
-        page = page + 1
-        button2 = RankingPreviousPageButton
-        changeRanking(button1, 2)
+        page++
+        Handler(Looper.getMainLooper()).postDelayed({
+            RankingView.swapAdapter(RankingAdapter(table[page]), true)
+            RankingView.layoutManager = LinearLayoutManager(this)
+            setRankingEnabled(true)
+            button1?.isEnabled = false
+            if (page == 0) {
+                RankingFirstPageButton.isEnabled = false
+                RankingFirstPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+                RankingNextPageButton.isEnabled = false
+                RankingNextPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+            } else {
+                RankingFirstPageButton.setBackgroundColor(getColor(R.color.button_green))
+                RankingNextPageButton.setBackgroundColor(getColor(R.color.button_green))
+            }
+            if (page == maxpage) {
+                RankingPreviousPageButton.isEnabled = false
+                RankingPreviousPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+            } else {
+                RankingPreviousPageButton.setBackgroundColor(getColor(R.color.button_green))
+            }
+            if (page == userpage) {
+                RankingDefaultPageButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
+                RankingDefaultPageButton.isEnabled = false
+            } else {
+                RankingDefaultPageButton.setBackgroundColor(getColor(R.color.button_green))
+            }
+        }, 100)
     }
 }

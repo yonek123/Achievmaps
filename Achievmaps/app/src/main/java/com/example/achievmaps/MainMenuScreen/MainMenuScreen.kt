@@ -16,11 +16,6 @@ import com.example.achievmaps.rankingScreen.RankingScreen
 import kotlinx.android.synthetic.main.main_menu_screen.*
 
 class MainMenuScreen : AppCompatActivity() {
-
-    companion object {
-        var lines = listOf("0")
-    }
-
     override fun onResume() {
         super.onResume()
         MainMenuLoadingScreen.visibility = View.GONE
@@ -33,7 +28,7 @@ class MainMenuScreen : AppCompatActivity() {
         MenuScreenText.text = "Witaj " + LoginScreen.loggedUserNick + "!"
     }
 
-    public fun setMainMenuEnabled(setting: Boolean) {
+    private fun setMainMenuEnabled(setting: Boolean) {
         MainMenuMapSubmenu.isEnabled = setting
         MainMenuNewsSubmenu.isEnabled = setting
         MainMenuAchievementsSubmenu.isEnabled = setting

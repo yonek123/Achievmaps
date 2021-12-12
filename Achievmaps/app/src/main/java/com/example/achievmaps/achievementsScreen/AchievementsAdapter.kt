@@ -10,9 +10,9 @@ import com.example.achievmaps.R
 class AchievementsAdapter(private val achievementsPage: ArrayList<ArrayList<String>>) :
     RecyclerView.Adapter<AchievementsAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val achievementName = itemView.findViewById<TextView>(R.id.AchievementItemName)
-        val achievementDescription = itemView.findViewById<TextView>(R.id.AchievementItemDescription)
-        val achievementPoints = itemView.findViewById<TextView>(R.id.AchievementItemPoints)
+        val achievementName: TextView = itemView.findViewById(R.id.AchievementItemName)
+        val achievementDescription: TextView = itemView.findViewById(R.id.AchievementItemDescription)
+        val achievementPoints: TextView = itemView.findViewById(R.id.AchievementItemPoints)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AchievementsAdapter.ViewHolder {
@@ -23,7 +23,7 @@ class AchievementsAdapter(private val achievementsPage: ArrayList<ArrayList<Stri
     }
 
     override fun onBindViewHolder(viewHolder: AchievementsAdapter.ViewHolder, position: Int) {
-        val data: ArrayList<String> = achievementsPage.get(position)
+        val data: ArrayList<String> = achievementsPage[position]
         viewHolder.achievementName.text = data[0]
         viewHolder.achievementDescription.text = data[1]
         viewHolder.achievementPoints.text = data[2]

@@ -13,9 +13,9 @@ class RankingAdapter(private val rankingPage: ArrayList<ArrayList<String>>) :
     RecyclerView.Adapter<RankingAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val rankField = itemView.findViewById<TextView>(R.id.RankingRank)
-        val nicknameField = itemView.findViewById<TextView>(R.id.RankingNickname)
-        val pointsField = itemView.findViewById<TextView>(R.id.RankingPoints)
+        val rankField: TextView = itemView.findViewById(R.id.RankingRank)
+        val nicknameField: TextView = itemView.findViewById(R.id.RankingNickname)
+        val pointsField: TextView = itemView.findViewById(R.id.RankingPoints)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RankingAdapter.ViewHolder {
@@ -26,7 +26,7 @@ class RankingAdapter(private val rankingPage: ArrayList<ArrayList<String>>) :
     }
 
     override fun onBindViewHolder(viewHolder: RankingAdapter.ViewHolder, position: Int) {
-        val data: ArrayList<String> = rankingPage.get(position)
+        val data: ArrayList<String> = rankingPage[position]
         if (data[1] == LoginScreen.loggedUserNick) {
             viewHolder.rankField.setTextColor(Color.RED)
             viewHolder.nicknameField.setTextColor(Color.RED)

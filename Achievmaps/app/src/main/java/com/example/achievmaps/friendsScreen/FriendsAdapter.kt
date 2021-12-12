@@ -10,11 +10,11 @@ import com.example.achievmaps.R
 class FriendsAdapter(private val friendsPage: ArrayList<ArrayList<String>>) :
     RecyclerView.Adapter<FriendsAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val friendNickname = itemView.findViewById<TextView>(R.id.FriendsNickname)
-        val friendPointsAll = itemView.findViewById<TextView>(R.id.FriendsPointsAll)
-        val friendPointsNature = itemView.findViewById<TextView>(R.id.FriendsPointsNature)
-        val friendPointsArchitecture =
-            itemView.findViewById<TextView>(R.id.FriendsPointsArchitecture)
+        val friendNickname: TextView = itemView.findViewById(R.id.FriendsNickname)
+        val friendPointsAll: TextView = itemView.findViewById(R.id.FriendsPointsAll)
+        val friendPointsNature: TextView = itemView.findViewById(R.id.FriendsPointsNature)
+        val friendPointsArchitecture: TextView =
+            itemView.findViewById(R.id.FriendsPointsArchitecture)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendsAdapter.ViewHolder {
@@ -25,7 +25,7 @@ class FriendsAdapter(private val friendsPage: ArrayList<ArrayList<String>>) :
     }
 
     override fun onBindViewHolder(viewHolder: FriendsAdapter.ViewHolder, position: Int) {
-        val data: ArrayList<String> = friendsPage.get(position)
+        val data: ArrayList<String> = friendsPage[position]
         viewHolder.friendNickname.text = data[0]
         viewHolder.friendPointsAll.text = data[1]
         viewHolder.friendPointsNature.text = data[2]

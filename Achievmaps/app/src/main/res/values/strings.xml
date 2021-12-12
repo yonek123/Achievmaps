@@ -2,6 +2,7 @@
     <string name="app_name">Achievmaps</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="url_text">https://justsomephp.000webhostapp.com/</string>
 
 
     <string name="wrong_user_text">Nieprawidłowy nick!</string>
@@ -49,6 +50,7 @@
 
     <string name="please_wait_text">Trwa ładowanie</string>
 
+
     <string name="go_to_map_activity">Przejdź do mapy</string>
     <string name="go_to_news_activity">Nowości i wydarzenia</string>
     <string name="go_to_achievements_activity">Twoje osiągnięcia</string>
@@ -71,6 +73,8 @@
     <string name="rankingall_text">Ogólny</string>
     <string name="rankingnature_text">Natura</string>
     <string name="rankingarchitecture_text">Zabytki</string>
+    <string name="ranking_points_text">Punkty</string>
+    <string name="ranking_position_text">Pozycja</string>
 
 
     <string name="friends_screen_text">Znajomi</string>
@@ -95,10 +99,11 @@
     <string name="help_text">Pomoc</string>
     <string name="help_page1_text">Mapa domyślnie wyświetla twoją aktualną lokalizację. Przesuwaj mapę jednym palcem. Aby przybliżyć mapę użyj dwóch palców i zbliż je do krawędzi ekranu. Aby oddalić mapę zbliż oba palce do środka ekranu.</string>
     <string name="help_page2_text">Aby powrócić do twojej lokalizacji naciśnij zielony przycisk odświerzenia w prawym dolnym rogu ekranu.</string>
-    <string name="help_page3_text">Czerwone pinezki na mapie oznaczają obiekty które możesz odwiedzić aby zdobyć punkty. Naciśnij na pinezkę aby zobaczyć okno z nazwą i opisem obiektu. Jeśli jesteś blisko obiektu pojawi się tam także przycisk dodania obiektu do listy odwiedzonych. W ten sposób możesz zdobyć punkty które podwyższą twoją pozycję w rankingu! Jeśli nie jesteś dostatecznie blisko w jego miejscu pojawi się przycisk odświerzenia. Naciśnięcie go sprawdzi czy jesteś wystarczająco blisko.</string>
+    <string name="help_page3_text">Czerwone pinezki na mapie oznaczają obiekty które możesz odwiedzić aby zdobyć punkty. Naciśnij na pinezkę aby zobaczyć okno z nazwą i opisem obiektu. Jeśli jesteś blisko obiektu pojawi się tam także przycisk dodania obiektu do listy odwiedzonych. W ten sposób możesz zdobyć punkty które podwyższą twoją pozycję w rankingu! Jeśli nie jesteś dostatecznie blisko w jego miejscu pojawi się przycisk zamknięcia okna. Nie musisz zamykać okna i otwierać okna ponownie żeby przycisk się zaktualizował. Kiedy podejdziesz bliżej obiektu przycisk zmieni się nawet kiedy okno jest już otwarte!</string>
     <string name="help_page4_text">To wszystko co musisz wiedzieć aby używać aplikacji. Nie pozostało ci nic innego niż odwiedzić pobliskie zabytki, a następnie zaplanować gdzie wyjedziesz na wakacje.\n\nNie zapomnij zabrać ze sobą telefonu z zainstalowaną aplikacją oraz dobrego aparatu :)</string>
     <string name="location_required_text">Dostep do lokalizacji jest wymagany do działania aplikacji!</string>
     <string name="add_achievement_text">Zdobądź punkty</string>
     <string name="marker_tmp_title_text">SCP-087</string>
     <string name="marker_tmp_description_text">SCP-087 has undergone four video recorded explorations by Class-D personnel. Each subject conducting an exploration has encountered SCP-087-1, which appears as a face with no visible pupils, nostrils, or mouth. The nature of SCP-087-1 is entirely unclear, but it has been determined that it is not the source of the pleading. Subjects exhibit feelings of intense paranoia and fear when faced with SCP-087-1, but it is undetermined whether said feelings are abnormal or simply natural reactions.</string>
+    <string name="got_achievement_text">Osiągnięcie zdobyte! Sprwdź swoje osiągnięcia w zakładce osiągnięć w menu!</string>
 </resources>

@@ -85,13 +85,58 @@
                 app:cornerRadius="@dimen/button_round" />
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/RankingTop"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/RankingTopButtons">
+
+            <TextView
+                android:id="@+id/RankingRankText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/aclonica"
+                android:text="@string/ranking_position_text"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/RankingNickText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/aclonica"
+                android:text="@string/nick_field_text"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/RankingPointsText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/aclonica"
+                android:text="@string/ranking_points_text"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/RankingView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/RankingTopButtons" />
+            app:layout_constraintTop_toBottomOf="@+id/RankingTop" />
 
         <LinearLayout
             android:id="@+id/RankingBotButtons"

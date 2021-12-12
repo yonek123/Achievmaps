@@ -132,7 +132,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="40dp"
         android:background="@drawable/info_box"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -176,30 +176,16 @@
                 app:layout_constraintTop_toBottomOf="@+id/MapMarkerTitle" />
 
             <Button
-                android:id="@+id/MapMarkerRefreshButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:backgroundTint="@color/button_green"
-                android:onClick="checkIfCloseButton"
-                android:text="@string/reset_page_text"
-                android:textSize="20sp"
-                app:cornerRadius="@dimen/button_round"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/MapMarkerText"
-                tools:ignore="TextContrastCheck" />
-
-            <Button
                 android:id="@+id/MapMarkerCloseButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
                 android:backgroundTint="@color/button_green"
-                android:onClick="closeMarkerLayout"
+                android:onClick="closeMarkerLayoutButton"
                 android:text="@string/close_button_text"
                 android:textSize="14sp"
                 app:cornerRadius="@dimen/button_round"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/MapMarkerText"
                 tools:ignore="TextContrastCheck" />
 

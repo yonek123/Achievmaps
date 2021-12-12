@@ -323,7 +323,7 @@
                 android:ems="10"
                 android:hint="@string/email_field_text"
                 android:importantForAutofill="auto"
-                android:inputType="textPersonName"
+                android:inputType="textEmailAddress"
                 android:minHeight="48dp"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"

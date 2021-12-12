@@ -20,14 +20,12 @@ object DatabaseConnections {
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect()
-            }
+            urlConnection?.disconnect()
         }
         return data
     }
 
-    fun getResizedBitmap(bm: Bitmap, newHeight: Int, newWidth: Int): Bitmap? {
+    private fun getResizedBitmap(bm: Bitmap, newHeight: Int, newWidth: Int): Bitmap? {
         val width = bm.width
         val height = bm.height
         val scaleWidth = newWidth.toFloat() / width
@@ -51,18 +49,16 @@ object DatabaseConnections {
         var urlConnection: HttpURLConnection? = null
         try {
             urlConnection = url.openConnection() as HttpURLConnection
-            val input: InputStream = urlConnection.getInputStream()
+            val input: InputStream = urlConnection.inputStream
             bitmap = BitmapFactory.decodeStream(input)
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect()
-            }
+            urlConnection?.disconnect()
         }
-        if(bitmap != null)
-            return getResizedBitmap(bitmap, 1080, 1920)
+        return if(bitmap != null)
+            getResizedBitmap(bitmap, 1080, 1920)
         else
-            return null
+            null
     }
 }

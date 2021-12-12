@@ -4,6 +4,10 @@ plugins {
     id 'kotlin-android-extensions'
 }
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 android {
     compileSdk 30
     buildToolsVersion "30.0.3"

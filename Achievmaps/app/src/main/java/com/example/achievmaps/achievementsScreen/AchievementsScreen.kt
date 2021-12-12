@@ -24,7 +24,7 @@ class AchievementsScreen : AppCompatActivity() {
         loadAchievements()
     }
 
-    fun loadAchievements() {
+    private fun loadAchievements() {
         AchievementsView.addItemDecoration(
             DividerItemDecoration(
                 this,
@@ -37,7 +37,7 @@ class AchievementsScreen : AppCompatActivity() {
             var achievementsData = "-3"
             val t = Thread {
                 achievementsData = DatabaseConnections.getTables(
-                    "https://justsomephp.000webhostapp.com/getAchievements.php?nickname="
+                    getString(R.string.url_text) + "getAchievements.php?nickname="
                             + LoginScreen.loggedUserNick
                 )
                 list = achievementsData.split('\n')

@@ -59,7 +59,7 @@ class LoginScreen : AppCompatActivity() {
         }
     }
 
-    fun setLoginRegisterEnabled(setting: Boolean) {
+    private fun setLoginRegisterEnabled(setting: Boolean) {
         LoginEmailField.isEnabled = setting
         LoginPasswordField.isEnabled = setting
         LoginLoginButton.isEnabled = setting
@@ -75,15 +75,43 @@ class LoginScreen : AppCompatActivity() {
     }
 
     fun recoverPasswordLayout(view: View) {
-        PasswordRecoveryLayout.visibility = View.VISIBLE
         PasswordRecoveryP1.visibility = View.VISIBLE
         RecoverySuccessText.visibility = View.GONE
+        PasswordRecoveryLayout.visibility = View.VISIBLE
         setLoginRegisterEnabled(false)
     }
 
     fun sendRecoveryCode(view: View) {
-        PasswordRecoveryP1.visibility = View.GONE
-        RecoverySuccessText.visibility = View.VISIBLE
+        LoginLoadingScreen.visibility = View.VISIBLE
+        RecoveryCloseButton.isEnabled = false
+        PasswordRecoveryButton.isEnabled = false
+        Handler(Looper.getMainLooper()).postDelayed({
+            var password = "-3"
+            val t = Thread {
+                password = DatabaseConnections.getTables(
+                    getString(R.string.url_text) + "passwordRecovery.php?email="
+                            + RecoveryEmailField.text.toString()
+                )
+                password = password.split('\n')[0]
+            }
+            t.start()
+            t.join()
+
+            if (password == "-3") {
+                RecoverySuccessText.text = getString(R.string.database_conn_error3_text)
+            } else if (password == "-2") {
+                RecoverySuccessText.text = getString(R.string.database_conn_error3_text)
+            } else if (password == "-1") {
+                RecoverySuccessText.text = getString(R.string.wrong_email_text)
+            } else {
+                RecoverySuccessText.text = getString(R.string.recovery_code_sent_text) + '\n' + password
+            }
+            RecoverySuccessText.visibility = View.VISIBLE
+            LoginLoadingScreen.visibility = View.GONE
+            PasswordRecoveryP1.visibility = View.GONE
+            RecoveryCloseButton.isEnabled = true
+            PasswordRecoveryButton.isEnabled = true
+        }, 100)
     }
 
     fun closeRecoveryLayout(view: View) {
@@ -113,7 +141,7 @@ class LoginScreen : AppCompatActivity() {
             var lines = listOf("0")
             val t = Thread {
                 loggedUserData = DatabaseConnections.getTables(
-                    "https://justsomephp.000webhostapp.com/login.php?email="
+                    getString(R.string.url_text) + "login.php?email="
                             + LoginEmailField.text.toString() + "&password="
                             + LoginPasswordField.text.toString()
                 )
@@ -161,22 +189,26 @@ class LoginScreen : AppCompatActivity() {
             ) {
                 RegisterValidationText.text = getString(R.string.wrong_email_text)
                 RegisterValidationText.visibility = View.VISIBLE
+                setLoginRegisterEnabled(true)
             } else if (RegisterNickField.text.toString().length < 5) {
                 RegisterValidationText.text = getString(R.string.nick_too_short_text)
                 RegisterValidationText.visibility = View.VISIBLE
+                setLoginRegisterEnabled(true)
             } else if (RegisterPasswordField.text.toString().length < 8) {
                 RegisterValidationText.text = getString(R.string.password_too_short_text)
                 RegisterValidationText.visibility = View.VISIBLE
+                setLoginRegisterEnabled(true)
             } else if (RegisterPasswordField.text.toString() != RegisterRepeatPasswordField.text.toString()) {
                 RegisterValidationText.text = getString(R.string.passwords_not_equal_text)
                 RegisterValidationText.visibility = View.VISIBLE
+                setLoginRegisterEnabled(true)
             } else {
                 var registerSuccess: Int = -3
                 val t = Thread {
                     LoginLoadingScreen.visibility = View.VISIBLE
                     registerSuccess =
                         DatabaseConnections.getTables(
-                            "https://justsomephp.000webhostapp.com/register.php?email="
+                            getString(R.string.url_text) + "register.php?email="
                                     + RegisterEmailField.text.toString() + "&nickname="
                                     + RegisterNickField.text.toString() + "&password="
                                     + RegisterPasswordField.text.toString()
@@ -189,22 +221,26 @@ class LoginScreen : AppCompatActivity() {
                 if (registerSuccess == -3) {
                     RegisterValidationText.text = getString(R.string.database_conn_error3_text)
                     RegisterValidationText.visibility = View.VISIBLE
+                    setLoginRegisterEnabled(true)
                 } else if (registerSuccess == -2) {
                     RegisterValidationText.text = getString(R.string.database_conn_error2_text)
                     RegisterValidationText.visibility = View.VISIBLE
+                    setLoginRegisterEnabled(true)
                 } else if (registerSuccess == 1) {
                     RegisterValidationText.text =
                         getString(R.string.register_email_already_exist_text)
                     RegisterValidationText.visibility = View.VISIBLE
+                    setLoginRegisterEnabled(true)
                 } else if (registerSuccess == 2) {
                     RegisterValidationText.text =
                         getString(R.string.register_nick_already_exist_text)
                     RegisterValidationText.visibility = View.VISIBLE
+                    setLoginRegisterEnabled(true)
                 } else {
                     RegisterSuccessLayout.visibility = View.VISIBLE
-                    setLoginRegisterEnabled(false)
                 }
             }
+            LoginLoadingScreen.visibility = View.GONE
         }, 100)
     }
 
