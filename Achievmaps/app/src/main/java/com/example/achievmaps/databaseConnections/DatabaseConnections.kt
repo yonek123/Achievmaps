@@ -11,8 +11,7 @@ import java.net.URL
 object DatabaseConnections {
     fun getTables(connection: String): String {
         var data = "-3"
-        val url =
-            URL(connection)
+        val url = URL(connection)
         var urlConnection: HttpURLConnection? = null
         try {
             urlConnection = url.openConnection() as HttpURLConnection

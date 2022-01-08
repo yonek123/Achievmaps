@@ -23,3 +23,5 @@ v10: prawie finito, zostało tylko wykrywanie że jestem w pobliżu obiektu i do
 v11: zrobione dosłownie 99%, zostało ogarnąć bazę danych, zmienić trochę działanie rankingu i gituwens
 
 v12: FINITO MORDECZKI
+
+v13: małe popraweczki
