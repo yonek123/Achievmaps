@@ -32,6 +32,11 @@ class RankingAdapter(private val rankingPage: ArrayList<ArrayList<String>>) :
             viewHolder.nicknameField.setTextColor(Color.RED)
             viewHolder.pointsField.setTextColor(Color.RED)
         }
+        else {
+            viewHolder.rankField.setTextColor(Color.BLACK)
+            viewHolder.nicknameField.setTextColor(Color.BLACK)
+            viewHolder.pointsField.setTextColor(Color.BLACK)
+        }
         viewHolder.rankField.text = data[0]
         viewHolder.nicknameField.text = data[1]
         viewHolder.pointsField.text = data[2]
