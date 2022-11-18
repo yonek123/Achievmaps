@@ -1,4 +1,4 @@
-package com.example.achievmaps.rankingScreen
+package com.example.achievmaps.RankingScreen
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -18,14 +18,14 @@ class RankingAdapter(private val rankingPage: ArrayList<ArrayList<String>>) :
         val pointsField: TextView = itemView.findViewById(R.id.RankingPoints)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RankingAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val context = parent.context
         val inflater = LayoutInflater.from(context)
         val contactView = inflater.inflate(R.layout.ranking_item_layout, parent, false)
         return ViewHolder(contactView)
     }
 
-    override fun onBindViewHolder(viewHolder: RankingAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val data: ArrayList<String> = rankingPage[position]
         if (data[1] == LoginScreen.loggedUserNick) {
             viewHolder.rankField.setTextColor(Color.RED)

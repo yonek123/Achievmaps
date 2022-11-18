@@ -26,13 +26,13 @@ CREATE TABLE IF NOT EXISTS `AchievementList` (
   `Latitude` text,
   `Longitude` text,
   `Points` int(11) NOT NULL,
-  `OpenTime` time,
-  `CloseTime` time,
-  `OpenTimeTomorrow` time,
-  `CloseTimeTomorrow` time,
-  `OpenTimeD3` time,
-  `CloseTimeD3` time,
-  `ViewTime` time,
+  `OpenTime` varchar(255),
+  `CloseTime` varchar(255),
+  `OpenTimeTomorrow` varchar(255),
+  `CloseTimeTomorrow` varchar(255),
+  `OpenTimeD3` varchar(255),
+  `CloseTimeD3` varchar(255),
+  `ViewTime` varchar(255),
   `Requirements` int(11) NOT NULL,
   `Tags` text NOT NULL,
   PRIMARY KEY (`Achievementid`)
@@ -326,13 +326,16 @@ CREATE TABLE IF NOT EXISTS `user12Achievements` (
 --
 
 INSERT INTO `AchievementList` (`AchievementName`, `Description`, `Latitude`, `Longitude`, `Points`, `OpenTime`, `CloseTime`, `OpenTimeTomorrow`, `CloseTimeTomorrow`, `OpenTimeD3`, `CloseTimeD3`, `ViewTime`, `Requirements`, `Tags`) VALUES
-('Baszta Panieńska', 'Odwiedź Basztę Panieńską, zwaną też Basztą Siedmiu Płaszczy w Szczecinie.', '53.42631352116791', '14.562885502712085', '10', '10:00:00.00', '17:00:00.00', '10:00:00.00', '17:00:00.00', NULL, NULL, '00:30:00.00', '1', 'Europa;Polska;Architektura'),
-('Brama Królewska', 'Odwiedź Bramę Królewską w Szczecinie i napij się przepysznej czekolady Wedel.', '53.42832774717961', '14.556718555956685', '50', '00:00:00.00', '24:00:00.00', '00:00:00.00', '24:00:00.00', '00:00:00.00', '24:00:00.00', '00:30:00.00', '1', 'Europa;Polska;Architektura'),
-('Brama Portowa', 'Odwiedź Bramę Portową w Szczecinie. Wewnątrz zobaczyć można przedstawienia Teatru Kameralnego. Odwiedź ich stronę internetową po szczegóły.', '53.424932256502316', '14.550359100137214', '50', '00:00:00.00', '24:00:00.00', '00:00:00.00', '24:00:00.00', '00:00:00.00', '24:00:00.00', '00:10:00.00', '1', 'Europa;Polska;Architektura'),
-('Kamienica Loitzów', 'Zobacz przepiękną Kamienicę Loitzów w Szczecinie.', '53.425233964007774', '14.559322938759125', '20', '00:00:00.00', '24:00:00.00', '00:00:00.00', '24:00:00.00', '00:00:00.00', '24:00:00.00', '00:10:00.00', '1', 'Europa;Polska;Architektura'),
-('Kamienica Augusta Mintza', 'Zobacz Kamienicę Augusta Mintza w Szczecinie i wejdź do umieszczonej w nim zabytkowej apteki.', '53.423827139607404', '14.559419472358165', '10', NULL, NULL, NULL, NULL, NULL, NULL, '01:00:00.00', '1', 'Europa;Polska;Architektura'),
+('Baszta Panieńska', 'Odwiedź Basztę Panieńską, zwaną też Basztą Siedmiu Płaszczy, symbol miasta Szczecin.', '53.42631352116791', '14.562885502712085', '10', '10:00', '17:00', '10:00', '17:00', NULL, NULL, '00:30', '1', 'Europa;Polska;Architektura'),
+('Brama Królewska', 'Odwiedź barokową Bramę Królewską w Szczecinie i napij się przepysznej czekolady Wedel.', '53.42832774717961', '14.556718555956685', '50', '00:00', '24:00', '00:00', '24:00', '00:00', '24:00', '00:30', '1', 'Europa;Polska;Architektura'),
+('Brama Portowa', 'Odwiedź barokową Bramę Portową w Szczecinie. Wewnątrz zobaczyć można przedstawienia Teatru Kameralnego. Odwiedź ich stronę internetową po szczegóły.', '53.424932256502316', '14.550359100137214', '50', '00:00', '24:00', '00:00', '24:00', '00:00', '24:00', '00:10', '1', 'Europa;Polska;Architektura'),
+('Kamienica Loitzów', 'Zobacz przepiękną, gotycką Kamienicę Loitzów w Szczecinie.', '53.425233964007774', '14.559322938759125', '10', '00:00', '24:00', '00:00', '24:00', '00:00', '24:00', '00:10', '1', 'Europa;Polska;Architektura'),
+('Kamienica Augusta Mintza', 'Zobacz elektyczną Kamienicę Augusta Mintza w Szczecinie i wejdź do umieszczonej w nim zabytkowej apteki.', '53.423827139607404', '14.559419472358165', '10', NULL, NULL, NULL, NULL, NULL, NULL, '00:30', '1', 'Europa;Polska;Architektura'),
+('Kościół Świętego Antoniego z Padwy', 'Zobacz neogotycki Kościół Świętego Antoniego z Padwy w Szczecinie. Przyjdź w trakcie mszy aby zobaczyć wnętrze.', '53.47237445627327', '14.546551811777833', '10', '07:00', '08:30', '08:30,12:00', '10:00,13:30', '07:00', '08:30', '01:00', '1', 'Europa;Polska;Architektura'),
+('Sanktuarium Św. Andrzeja Boboli', 'Zobacz modernistyczne Sanktuarium Św. Andrzeja Boboli w Szczecinie. Odwiedź stronę kościoła aby poznać godziny mszy.', '53.42970561868568', '14.533076298284458', '20', '06:00', '19:00', '06:30', '20:00', '06:00', '19:00', '01:00', '1', 'Europa;Polska;Architektura'),
+('Kościół Świętych Apostołów Piotra i Pawła', 'Zobacz neogotycki Kościół Świętych Apostołów Piotra i Pawła w Szczecinie. Przyjdź w trakcie mszy aby zobaczyć wnętrze.', '53.36920870437769', '14.598861030824052', '20', '18:00', '19:30', '07:00,18:00', '15:00,19:30', '07:00,18:00', '08:30,19:30', '01:00', '1', 'Europa;Polska;Architektura'),
 
 ('Stare Miasto', 'Starsze niż twoja stara', NULL, NULL, '300', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '10', 'Zbiorowe;Architektura'),
-('Wały Chrobrego', 'Odwiedź Wały Chrobrego w Szczecin, Zachodniopomorskie, Polska', '53.429902750176595', '14.5650708160754', '10', '00:00:00.00', '24:00:00.00', '00:00:00.00', '00:30:00.00', 'Europa;Polska;Architektura'),
-('Brama Portowa', 'Odwiedź Brama Portowa w Szczecin, Zachodniopomorskie, Polska', '53.4250537242813', '14.55023035410361', '10', '00:00:00.00', '24:00:00.00', '00:00:00.00', '00:30:00.00', 'Europa;Polska;Architektura');
+('Wały Chrobrego', 'Odwiedź Wały Chrobrego w Szczecin, Zachodniopomorskie, Polska', '53.429902750176595', '14.5650708160754', '10', '00:00', '24:00', '00:00', '00:30', 'Europa;Polska;Architektura'),
+('Brama Portowa', 'Odwiedź Brama Portowa w Szczecin, Zachodniopomorskie, Polska', '53.4250537242813', '14.55023035410361', '10', '00:00', '24:00', '00:00', '00:30', 'Europa;Polska;Architektura');
 

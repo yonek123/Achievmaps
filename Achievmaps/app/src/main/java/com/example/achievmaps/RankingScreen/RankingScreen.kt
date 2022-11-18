@@ -11,6 +11,7 @@ import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
 import kotlinx.android.synthetic.main.ranking_screen.*
 import android.widget.Button
+import com.example.achievmaps.RankingScreen.RankingAdapter
 import com.example.achievmaps.databaseConnections.DatabaseConnections
 
 class RankingScreen : AppCompatActivity() {
