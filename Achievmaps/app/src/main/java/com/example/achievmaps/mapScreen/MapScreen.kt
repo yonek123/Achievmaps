@@ -7,42 +7,32 @@ import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.Color
 import android.location.Location
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import com.example.achievmaps.R
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-
-import com.example.achievmaps.loginScreen.LoginScreen
-import com.google.android.gms.location.*
-import kotlinx.android.synthetic.main.activity_maps.*
-
-import android.util.Log
-import android.view.MotionEvent
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.example.achievmaps.R
 import com.example.achievmaps.databaseConnections.DatabaseConnections
-
+import com.example.achievmaps.loginScreen.LoginScreen
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.*
-import kotlinx.android.synthetic.main.main_menu_screen.*
-import com.google.android.gms.maps.CameraUpdateFactory
-
-import com.google.android.gms.maps.model.Marker
-
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener
 import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener
+import com.google.android.gms.maps.model.*
 import com.google.maps.android.PolyUtil
+import kotlinx.android.synthetic.main.activity_maps.*
+import kotlinx.android.synthetic.main.main_menu_screen.*
 import org.json.JSONObject
 
 
@@ -56,12 +46,21 @@ class MapScreen : AppCompatActivity(),
     private var objects = ArrayList<ArrayList<String>>()
     private var lat = 0.0
     private var long = 0.0
-    private var mlat = 1000.0
-    private var mlong = 1000.0
+    private var markerlat = 10.0
+    private var markerlong = 10.0
+    private var routelat = 10.0
+    private var routelong = 10.0
     private var achievement = ""
     private var isTrackingOn = true
     private var doTracking = true
+    private var isRoute = false
+    private var movementMethod = "walking"
+    private var waypoints =
+        "&waypoints=53.42631352136791,14.562885502732085|53.42631322136791,14.562885222732085"
+    private var departureTime = "1669393397"
 
+    private val polyline: MutableList<Polyline> = ArrayList()
+    private val path: MutableList<List<LatLng>> = ArrayList()
     private lateinit var mGoogleMap: GoogleMap
     private var mapFrag: SupportMapFragment? = null
     private lateinit var mLocationRequest: LocationRequest
@@ -82,8 +81,10 @@ class MapScreen : AppCompatActivity(),
                 lat = location.latitude
                 long = location.longitude
                 if (doTracking)
-                    getCurrLoc()
+                    updateLocation()
                 checkIfClose()
+                if (isRoute)
+                    createRoute()
             }
         }
     }
@@ -178,7 +179,8 @@ class MapScreen : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
-        RefreshMapButton.isEnabled = false
+        TrackingMapButton.isEnabled = false
+        RouteMapButton.isEnabled = false
         MapHelpButton.isEnabled = false
         MapLoadingScreen.visibility = View.VISIBLE
 
@@ -193,6 +195,7 @@ class MapScreen : AppCompatActivity(),
         mFusedLocationClient?.removeLocationUpdates(mLocationCallback)
     }
 
+    @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
         mGoogleMap = googleMap
 
@@ -224,22 +227,24 @@ class MapScreen : AppCompatActivity(),
         mGoogleMap.uiSettings.isMapToolbarEnabled = false
 
         loadData()
-
         mGoogleMap.setOnMarkerClickListener { marker ->
-            RefreshMapButton.isEnabled = false
+            TrackingMapButton.isEnabled = false
+            RouteMapButton.isEnabled = false
             MapHelpButton.isEnabled = false
-            mlat = marker.position.latitude
-            mlong = marker.position.longitude
+            markerlat = marker.position.latitude
+            markerlong = marker.position.longitude
             achievement = marker.title
 
             checkIfClose()
 
             MapMarkerTitle.text = marker.title
             MapMarkerText.text = marker.snippet
+            if(doTracking)
+                switchTracking()
             Handler(Looper.getMainLooper()).postDelayed({
                 MapMarkerLayout.visibility = View.VISIBLE
                 mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.position))
-            }, 100)
+            }, 1000)
         }
 
         mGoogleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
@@ -253,6 +258,7 @@ class MapScreen : AppCompatActivity(),
         } catch (e: Resources.NotFoundException) {
             Log.e("xd", e.toString())
         }
+        getCurrLoc()
     }
 
     private fun closeMarkerLayoutButton(view: View) {
@@ -260,6 +266,7 @@ class MapScreen : AppCompatActivity(),
     }
 
     private fun isClose() {
+        MapMarkerRouteButton.visibility = View.GONE
         MapMarkerCloseButton.text = getString(R.string.add_achievement_text)
         MapMarkerCloseButton.setOnClickListener {
             addAchievement()
@@ -274,10 +281,10 @@ class MapScreen : AppCompatActivity(),
     }
 
     private fun checkIfClose() {
-        if (lat >= (mlat - 0.001)
-            && lat <= (mlat + 0.001)
-            && long >= (mlong - 0.001)
-            && long <= (mlong + 0.001)
+        if (lat >= (markerlat - 0.001)
+            && lat <= (markerlat + 0.001)
+            && long >= (markerlong - 0.001)
+            && long <= (markerlong + 0.001)
         ) {
             isClose()
         } else {
@@ -286,40 +293,20 @@ class MapScreen : AppCompatActivity(),
     }
 
     fun tracking(view: View) {
+        switchTracking()
+    }
+
+    private fun switchTracking() {
         if (!isTrackingOn) {
-            RefreshMapButton.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.button_green)))
+            TrackingMapButton.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.button_green)))
             getCurrLoc()
             doTracking = true
             isTrackingOn = true
         } else {
-            RefreshMapButton.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY))
+            TrackingMapButton.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY))
             doTracking = false
             isTrackingOn = false
         }
-    }
-
-    fun road(view: View) {
-        val path: MutableList<List<LatLng>> = ArrayList()
-        val urlDirections = "https://maps.googleapis.com/maps/api/directions/json?origin=" + lat + "," + long+ "&destination=53.42631352116791,14.562885502712085&key=AIzaSyDi6Eaj-EWJX3Mt6eu1PfNRglnP6GVZLC0"
-        val directionsRequest = object : StringRequest(Request.Method.GET, urlDirections, Response.Listener<String> {
-                response ->
-            val jsonResponse = JSONObject(response)
-            // Get routes
-            val routes = jsonResponse.getJSONArray("routes")
-            val legs = routes.getJSONObject(0).getJSONArray("legs")
-            val steps = legs.getJSONObject(0).getJSONArray("steps")
-            for (i in 0 until steps.length()) {
-                val points = steps.getJSONObject(i).getJSONObject("polyline").getString("points")
-                path.add(PolyUtil.decode(points))
-            }
-            for (i in 0 until path.size) {
-                mGoogleMap.addPolyline(PolylineOptions().addAll(path[i]).color(Color.RED))
-            }
-        }, Response.ErrorListener {
-                _ ->
-        }){}
-        val requestQueue = Volley.newRequestQueue(this)
-        requestQueue.add(directionsRequest)
     }
 
     @SuppressLint("MissingPermission")
@@ -333,10 +320,72 @@ class MapScreen : AppCompatActivity(),
         mGoogleMap.moveCamera(cameraUpdate)
     }
 
+    private fun updateLocation() {
+        val latLng = LatLng(lat, long)
+        val cameraUpdate = CameraUpdateFactory.newLatLng(latLng)
+        mGoogleMap.moveCamera(cameraUpdate)
+    }
+
+    private fun createRoute() {
+        path.clear()
+        for (line in polyline) {
+            line.remove()
+        }
+        val urlDirections = "https://maps.googleapis.com/maps/api/directions/json?" +
+                "origin=" + lat + "," + long +
+                "&destination=" + routelat + "," + routelong +
+                waypoints +
+                "&departure_time=" + departureTime +
+                "&mode=" + movementMethod +
+                "&key=AIzaSyDi6Eaj-EWJX3Mt6eu1PfNRglnP6GVZLC0"
+        val directionsRequest = object :
+            StringRequest(Request.Method.GET, urlDirections, Response.Listener<String> { response ->
+                val jsonResponse = JSONObject(response)
+                // Get routes
+                val routes = jsonResponse.getJSONArray("routes")
+                val legs = routes.getJSONObject(0).getJSONArray("legs")
+                val steps = legs.getJSONObject(0).getJSONArray("steps")
+                for (i in 0 until steps.length()) {
+                    val points =
+                        steps.getJSONObject(i).getJSONObject("polyline").getString("points")
+                    path.add(PolyUtil.decode(points))
+                }
+                for (i in 0 until path.size) {
+                    polyline.add(mGoogleMap.addPolyline(PolylineOptions().addAll(path[i]).color(Color.RED)))
+                }
+            }, Response.ErrorListener { _ ->
+            }) {}
+        val requestQueue = Volley.newRequestQueue(this)
+        requestQueue.add(directionsRequest)
+    }
+
+    fun route(view: View) {
+        createRoute()
+        isRoute = true
+    }
+
+    fun routeOneTarget(view: View) {
+        waypoints = ""
+        routelat = markerlat
+        routelong = markerlong
+        createRoute()
+        isRoute = true
+        page = 1
+        MapMarkerLayout.visibility = View.GONE
+        TrackingMapButton.isEnabled = true
+        RouteMapButton.isEnabled = true
+        MapHelpButton.isEnabled = true
+    }
+
     private fun addAchievement() {
         MapLoadingScreen.visibility = View.VISIBLE
         MapMarkerCloseButton.isEnabled = false
-
+        if (isRoute) {
+            for (line in polyline) {
+                line.remove()
+            }
+            isRoute = false
+        }
         Handler(Looper.getMainLooper()).postDelayed({
             var isSuccess = "-3"
             var lines = listOf("0")
@@ -362,11 +411,14 @@ class MapScreen : AppCompatActivity(),
                 MapErrorLayout.visibility = View.VISIBLE
                 MapLoadingScreen.visibility = View.GONE
             } else {
-                mGoogleMap.clear()
-                mlat = 1000.0
-                mlong = 1000.0
-                notClose()
+                MapMarkerCloseButton.isEnabled = true
+                markerlat += 1
+                MapMarkerCloseButton.text = getString(R.string.close_button_text)
+                MapMarkerCloseButton.setOnClickListener {
+                    closeMarkerLayout()
+                }
                 MapMarkerText.text = getString(R.string.got_achievement_text)
+                mGoogleMap.clear()
                 loadData()
             }
         }, 100)
@@ -421,7 +473,8 @@ class MapScreen : AppCompatActivity(),
                     ).title(item[0]).snippet(item[1])
                 )
             }
-            RefreshMapButton.isEnabled = true
+            TrackingMapButton.isEnabled = true
+            RouteMapButton.isEnabled = true
             MapHelpButton.isEnabled = true
             MapLoadingScreen.visibility = View.GONE
         }
@@ -429,7 +482,8 @@ class MapScreen : AppCompatActivity(),
 
     fun openHelp(view: View) {
         MapHelpLayout.visibility = View.VISIBLE
-        RefreshMapButton.isEnabled = false
+        TrackingMapButton.isEnabled = false
+        RouteMapButton.isEnabled = false
         MapHelpButton.isEnabled = false
     }
 
@@ -476,7 +530,8 @@ class MapScreen : AppCompatActivity(),
     fun closeHelp(view: View) {
         page = 1
         MapHelpLayout.visibility = View.GONE
-        RefreshMapButton.isEnabled = true
+        TrackingMapButton.isEnabled = true
+        RouteMapButton.isEnabled = true
         MapHelpButton.isEnabled = true
         MapHelpNextButton.text = getString(R.string.previous_page_text)
         MapHelpNextButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24F)
@@ -490,16 +545,17 @@ class MapScreen : AppCompatActivity(),
 
     private fun closeMarkerLayout() {
         page = 1
+        MapMarkerRouteButton.visibility = View.VISIBLE
         MapMarkerLayout.visibility = View.GONE
-        RefreshMapButton.isEnabled = true
+        TrackingMapButton.isEnabled = true
+        RouteMapButton.isEnabled = true
         MapHelpButton.isEnabled = true
-        mlat = 1000.0
-        mlong = 1000.0
     }
 
     fun closeMapErrorLayout(view: View) {
         MapErrorLayout.visibility = View.GONE
-        RefreshMapButton.isEnabled = true
+        TrackingMapButton.isEnabled = true
+        RouteMapButton.isEnabled = true
         MapHelpButton.isEnabled = true
         this.finish()
     }

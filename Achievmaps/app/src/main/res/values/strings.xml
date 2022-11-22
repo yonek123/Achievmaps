@@ -97,6 +97,7 @@
 
 
     <string name="help_text">Pomoc</string>
+    <string name="route_text">Trasa</string>
     <string name="help_page1_text">Mapa domyślnie wyświetla twoją aktualną lokalizację. Przesuwaj mapę jednym palcem. Aby przybliżyć mapę użyj dwóch palców i zbliż je do krawędzi ekranu. Aby oddalić mapę zbliż oba palce do środka ekranu.</string>
     <string name="help_page2_text">Aby powrócić do twojej lokalizacji naciśnij zielony przycisk odświerzenia w prawym dolnym rogu ekranu.</string>
     <string name="help_page3_text">Czerwone pinezki na mapie oznaczają obiekty które możesz odwiedzić aby zdobyć punkty. Naciśnij na pinezkę aby zobaczyć okno z nazwą i opisem obiektu. Jeśli jesteś blisko obiektu pojawi się tam także przycisk dodania obiektu do listy odwiedzonych. W ten sposób możesz zdobyć punkty które podwyższą twoją pozycję w rankingu! Jeśli nie jesteś dostatecznie blisko w jego miejscu pojawi się przycisk zamknięcia okna. Nie musisz zamykać okna i otwierać okna ponownie żeby przycisk się zaktualizował. Kiedy podejdziesz bliżej obiektu przycisk zmieni się nawet kiedy okno jest już otwarte!</string>
