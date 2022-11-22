@@ -3,7 +3,9 @@ package com.example.achievmaps.mapScreen
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.content.res.Resources
+import android.graphics.Color
 import android.location.Location
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +25,11 @@ import com.google.android.gms.location.*
 import kotlinx.android.synthetic.main.activity_maps.*
 
 import android.util.Log
+import android.view.MotionEvent
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.achievmaps.databaseConnections.DatabaseConnections
 
 import com.google.android.gms.maps.*
@@ -33,10 +40,16 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.Marker
 
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
+import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener
+import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener
+import com.google.maps.android.PolyUtil
+import org.json.JSONObject
 
 
-class MapScreen : AppCompatActivity(), OnMapReadyCallback {
+class MapScreen : AppCompatActivity(),
+    OnMapReadyCallback,
+    OnCameraMoveStartedListener,
+    OnCameraIdleListener {
     private var page = 0
     private var list = listOf("0")
     private var row = ArrayList<String>()
@@ -46,6 +59,8 @@ class MapScreen : AppCompatActivity(), OnMapReadyCallback {
     private var mlat = 1000.0
     private var mlong = 1000.0
     private var achievement = ""
+    private var isTrackingOn = true
+    private var doTracking = true
 
     private lateinit var mGoogleMap: GoogleMap
     private var mapFrag: SupportMapFragment? = null
@@ -66,12 +81,21 @@ class MapScreen : AppCompatActivity(), OnMapReadyCallback {
 
                 lat = location.latitude
                 long = location.longitude
-
+                if (doTracking)
+                    getCurrLoc()
                 checkIfClose()
             }
         }
     }
 
+    override fun onCameraMoveStarted(reason: Int) {
+        doTracking = false
+    }
+
+    override fun onCameraIdle() {
+        if (isTrackingOn)
+            doTracking = true
+    }
 
     private fun checkLocationPermission() {
         val t = Thread {
@@ -173,9 +197,13 @@ class MapScreen : AppCompatActivity(), OnMapReadyCallback {
         mGoogleMap = googleMap
 
         mLocationRequest = LocationRequest()
-        mLocationRequest.interval = 2000 // two minute interval
-        mLocationRequest.fastestInterval = 2000
+        mLocationRequest.interval = 200 // two minute interval
+        mLocationRequest.fastestInterval = 200
         mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        with(googleMap) {
+            setOnCameraMoveStartedListener(this@MapScreen)
+            setOnCameraIdleListener(this@MapScreen)
+        }
 
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -257,8 +285,41 @@ class MapScreen : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    fun myLoc(view: View) {
-        getCurrLoc()
+    fun tracking(view: View) {
+        if (!isTrackingOn) {
+            RefreshMapButton.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.button_green)))
+            getCurrLoc()
+            doTracking = true
+            isTrackingOn = true
+        } else {
+            RefreshMapButton.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY))
+            doTracking = false
+            isTrackingOn = false
+        }
+    }
+
+    fun road(view: View) {
+        val path: MutableList<List<LatLng>> = ArrayList()
+        val urlDirections = "https://maps.googleapis.com/maps/api/directions/json?origin=" + lat + "," + long+ "&destination=53.42631352116791,14.562885502712085&key=AIzaSyDi6Eaj-EWJX3Mt6eu1PfNRglnP6GVZLC0"
+        val directionsRequest = object : StringRequest(Request.Method.GET, urlDirections, Response.Listener<String> {
+                response ->
+            val jsonResponse = JSONObject(response)
+            // Get routes
+            val routes = jsonResponse.getJSONArray("routes")
+            val legs = routes.getJSONObject(0).getJSONArray("legs")
+            val steps = legs.getJSONObject(0).getJSONArray("steps")
+            for (i in 0 until steps.length()) {
+                val points = steps.getJSONObject(i).getJSONObject("polyline").getString("points")
+                path.add(PolyUtil.decode(points))
+            }
+            for (i in 0 until path.size) {
+                mGoogleMap.addPolyline(PolylineOptions().addAll(path[i]).color(Color.RED))
+            }
+        }, Response.ErrorListener {
+                _ ->
+        }){}
+        val requestQueue = Volley.newRequestQueue(this)
+        requestQueue.add(directionsRequest)
     }
 
     @SuppressLint("MissingPermission")
