@@ -38,7 +38,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginBottom="50dp"
         android:clickable="true"
-        android:onClick="route"
+        android:onClick="routeMultipleTarget"
         android:src="@android:drawable/ic_menu_directions"
         app:backgroundTint="@color/button_green"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -255,6 +255,46 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/MapErrorText"
+            tools:ignore="TextContrastCheck" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/MapRouteNotFoundLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/error_box"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/MapRouteNotFoundText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/route_not_found_error"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="16dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/MapRouteNotFoundCloseButton"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:backgroundTint="@color/button_red"
+            android:onClick="closeMapRouteNotFoundLayout"
+            android:text="@string/close_button_text"
+            android:visibility="visible"
+            app:cornerRadius="@dimen/button_round"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/MapRouteNotFoundText"
             tools:ignore="TextContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

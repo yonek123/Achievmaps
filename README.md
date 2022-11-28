@@ -29,3 +29,5 @@ v13: małe popraweczki
 v14: dodanie możliwości włączenia i wyłączenia aktywnego śledzenia użytkownika
 
 v15: rysowanie trasy
+
+v16: poprawione rysowanie trasy, kolorki w zależności od środka transportu, mniej się wywala niż wcześniej jak jest się gdzieś gdzie nie może wyznaczyć trasy
