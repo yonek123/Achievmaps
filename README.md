@@ -31,3 +31,5 @@ v14: dodanie możliwości włączenia i wyłączenia aktywnego śledzenia użytk
 v15: rysowanie trasy
 
 v16: poprawione rysowanie trasy, kolorki w zależności od środka transportu, nie wywala się jak nie znajdzie trasy
+
+v17: wyświetlanie przystanków i autobusów, początek prac nad popup-ami do wyboru środka transportu i czasu

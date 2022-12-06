@@ -337,7 +337,6 @@ INSERT INTO `AchievementList` (`AchievementName`, `Description`, `Latitude`, `Lo
 ('Kościół Chrystusa Króla', 'Zobacz gotycki Kościół Chrystusa Króla w Szczecinie. Przyjdź w trakcie mszy aby zobaczyć wnętrze.', '53.52107850025285', '14.597017413506745', '10', '18:00', '19:30', '09:00', '19:30', '18:00', '19:30', '01:00', '1', 'Europa;Polska;Architektura'),
 ('Kościół Chrystusa Króla', 'Zobacz gotycki Kościół Chrystusa Króla w Szczecinie. Przyjdź w trakcie mszy aby zobaczyć wnętrze.', '53.52107850025285', '14.597017413506745', '10', '18:00', '19:30', '09:00', '19:30', '18:00', '19:30', '01:00', '1', 'Europa;Polska;Architektura'),
 
-('Stare Miasto', 'Starsze niż twoja stara', NULL, NULL, '300', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '10', 'Zbiorowe;Architektura'),
 ('Wały Chrobrego', 'Odwiedź Wały Chrobrego w Szczecin, Zachodniopomorskie, Polska', '53.429902750176595', '14.5650708160754', '10', '00:00', '24:00', '00:00', '00:30', 'Europa;Polska;Architektura'),
 ('Brama Portowa', 'Odwiedź Brama Portowa w Szczecin, Zachodniopomorskie, Polska', '53.4250537242813', '14.55023035410361', '10', '00:00', '24:00', '00:00', '00:30', 'Europa;Polska;Architektura');
 

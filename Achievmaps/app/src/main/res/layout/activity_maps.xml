@@ -44,6 +44,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/EndRouteMapButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="10dp"
+        android:clickable="true"
+        android:onClick="stopRouteButton"
+        android:src="@android:drawable/ic_menu_directions"
+        android:visibility="gone"
+        app:backgroundTint="@color/button_red"
+        app:layout_constraintBottom_toTopOf="@+id/RouteMapButton"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ImageView
         android:id="@+id/MapHelpButton"
         android:layout_width="56dp"
@@ -56,6 +70,71 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <LinearLayout
+        android:id="@+id/TransitTop"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/background_gray"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        android:weightSum="25"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TrackingMapButton">
+
+        <TextView
+            android:id="@+id/StartName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="10"
+            android:text="@string/transit_begin"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/TransitName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:text="@string/transit_name"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/EndName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="10"
+            android:text="@string/transit_end"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/TransitScroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/background_gray"
+        android:contentDescription="@string/scroll_description"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TransitTop">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/TransitView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </ScrollView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/MapHelpLayout"
@@ -206,13 +285,131 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/button_green"
-                android:onClick="routeOneTarget"
+                android:onClick="openMapTravelMethodLayout"
                 android:text="@string/route_text"
                 android:textSize="14sp"
                 app:cornerRadius="@dimen/button_round"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/MapMarkerText"
                 tools:ignore="TextContrastCheck" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/MapTravelMethodLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:background="@drawable/info_box"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/TravelMethodChoiceBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/TravelMethodTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/aclonica"
+                android:text="@string/travel_method"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/TransitMethodRow1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/TravelMethodTitle">
+
+                <Button
+                    android:id="@+id/TravelMethodWalking"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginRight="10dp"
+                    android:backgroundTint="@color/button_green"
+                    android:onClick="setWalking"
+                    android:text="@string/walking"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    app:cornerRadius="@dimen/button_round"
+                    tools:ignore="TextContrastCheck" />
+
+                <Button
+                    android:id="@+id/TravelMethodDriving"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="10dp"
+                    android:backgroundTint="@color/button_green"
+                    android:onClick="setDriving"
+                    android:text="@string/driving"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    app:cornerRadius="@dimen/button_round"
+                    tools:ignore="TextContrastCheck" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/TransitMethodRow2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/TransitMethodRow1">
+
+                <Button
+                    android:id="@+id/TravelMethodTransit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginRight="10dp"
+                    android:backgroundTint="@color/button_green"
+                    android:onClick="setTransit"
+                    android:text="@string/transit"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    app:cornerRadius="@dimen/button_round"
+                    tools:ignore="TextContrastCheck" />
+
+                <Button
+                    android:id="@+id/TravelMethodClose"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="10dp"
+                    android:backgroundTint="@color/button_red"
+                    android:onClick="closeMapTravelMethodLayout"
+                    android:text="@string/close_button_text"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    app:cornerRadius="@dimen/button_round"
+                    tools:ignore="TextContrastCheck" />
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
