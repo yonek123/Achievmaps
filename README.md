@@ -33,3 +33,5 @@ v15: rysowanie trasy
 v16: poprawione rysowanie trasy, kolorki w zależności od środka transportu, nie wywala się jak nie znajdzie trasy
 
 v17: wyświetlanie przystanków i autobusów, początek prac nad popup-ami do wyboru środka transportu i czasu
+
+v18: cała trasa dla jednego obiektu gotowa, jest wybór metody, czasu wyruszenia, aktualizacja, powiadomienie o tym czy zdążymy itd

@@ -13,4 +13,7 @@
     <color name="grayish_green">#AB6FDC4C</color>
     <color name="button_red">#DA0F0F</color>
     <color name="grayish_red">#B4FD3030</color>
+    <color name="grayish_orange">#B0FF9133</color>
+    <color name="orange">#ff7e00</color>
+
 </resources>

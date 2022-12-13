@@ -108,15 +108,21 @@
     <string name="marker_tmp_description_text">SCP-087 has undergone four video recorded explorations by Class-D personnel. Each subject conducting an exploration has encountered SCP-087-1, which appears as a face with no visible pupils, nostrils, or mouth. The nature of SCP-087-1 is entirely unclear, but it has been determined that it is not the source of the pleading. Subjects exhibit feelings of intense paranoia and fear when faced with SCP-087-1, but it is undetermined whether said feelings are abnormal or simply natural reactions.</string>
     <string name="got_achievement_text">Osiągnięcie zdobyte! Sprwdź swoje osiągnięcia w zakładce osiągnięć w menu!</string>
 
-    <string name="route_not_found_error">Nie można wyznaczyć trasy. Spróbuj innego środka transportu lub rozpocznij podróż z innego miejsca.</string>
-    <string name="transit_begin">p. początkowy</string>
-    <string name="transit_name">linia</string>
-    <string name="transit_end">p. końcowy</string>
-    <string name="travel_method">Wybierz sposób podróży</string>
-    <string name="walking">pieszo</string>
-    <string name="driving">autem</string>
-    <string name="transit">t. miejski</string>
+    <string name="route_not_found_error_text">Nie można wyznaczyć trasy. Spróbuj innego środka transportu lub rozpocznij podróż z innego miejsca.</string>
+    <string name="time_common_text1">Na miejscu będziesz o godzinie</string>
+    <string name="time_common_text2">Czy chcesz zmienić czas wyruszenia?</string>
+    <string name="time_not_enough_text">Może nie starczyć czasu na zwiedzanie.</string>
+    <string name="time_too_early_text">Obiekt nie będzie jeszcze otwarty.</string>
+    <string name="time_too_late_text">Obiekt będzie już zamknięty.</string>
 
-
-    <string name="key">AIzaSyDi6Eaj-EWJX3Mt6eu1PfNRglnP6GVZLC0</string>
+    <string name="transit_begin_text">p. początkowy</string>
+    <string name="transit_name_text">linia</string>
+    <string name="transit_end_text">p. końcowy</string>
+    <string name="travel_method_text">Wybierz sposób podróży</string>
+    <string name="walking_text">pieszo</string>
+    <string name="driving_text">autem</string>
+    <string name="transit_text">t. miejski</string>
+    <string name="time_text">Podaj czas</string>
+    <string name="start_route_text">Rozpocznij</string>
+    <string name="map_url_text">https://maps.googleapis.com/maps/api/directions/json?origin=</string>
 </resources>

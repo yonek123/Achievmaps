@@ -37,8 +37,12 @@ import com.google.maps.android.PolyUtil
 import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.main_menu_screen.*
 import org.json.JSONObject
-import java.lang.reflect.InvocationTargetException
-import kotlin.concurrent.thread
+import java.net.URL
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.math.floor
 
 
 class MapScreen : AppCompatActivity(),
@@ -50,25 +54,34 @@ class MapScreen : AppCompatActivity(),
     private var row = ArrayList<String>()
     private var objects = ArrayList<ArrayList<String>>()
     private var achievement = ""
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+    val timeFormat = SimpleDateFormat("HH:mm")
+    val dateTimeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
 
     private var lat = 0.0
     private var long = 0.0
     private var markerlat = 10.0
     private var markerlong = 10.0
-    private var isTrackingOn = true
-    private var doTracking = true
-    private var isRoute = false
-    private var isTransit = false
     private var movementMethod = "&mode=walking"
+
     //private var waypoints = "&waypoints=53.42631352136791,14.562885502732085|53.42631322136791,14.562885222732085"
     private var departureTime = "&departure_time=1669393397"
+
     private var originlat = 0.0
     private var originlong = 0.0
     private var targetlat = 0.0
     private var targetlong = 0.0
-
+    private var isTrackingOn = true
+    private var doTracking = true
+    private var isRoute = false
+    private var isTransit = false
     private var duration = ""
     private var distance = ""
+    private var markerTimeOpen = ""
+    private var markerTimeClose = ""
+    private var markerTimeDuration = ""
+    private var yourTime = ""
+
     private val polyline: MutableList<Polyline> = ArrayList()
     private val path: MutableList<List<LatLng>> = ArrayList()
     private val polyColor: MutableList<Int> = ArrayList()
@@ -265,6 +278,7 @@ class MapScreen : AppCompatActivity(),
             }, 1000)
         }
 
+        timePicker.setIs24HourView(true)
         mGoogleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         try {
             googleMap.setMapStyle(
@@ -503,7 +517,7 @@ class MapScreen : AppCompatActivity(),
         MapHelpPreviousButton.isEnabled = false
     }
 
-    private fun closeMarkerLayoutButton(view: View) {
+    fun closeMarkerLayoutButton(view: View) {
         closeMarkerLayout()
     }
 
@@ -524,7 +538,7 @@ class MapScreen : AppCompatActivity(),
         this.finish()
     }
 
-    fun openMapNotFound() {
+    private fun openMapNotFound() {
         MapRouteNotFoundLayout.visibility = View.VISIBLE
         TrackingMapButton.isEnabled = false
         RouteMapButton.isEnabled = false
@@ -542,7 +556,7 @@ class MapScreen : AppCompatActivity(),
         stopRoute()
     }
 
-    fun stopRoute() {
+    private fun stopRoute() {
         EndRouteMapButton.visibility = View.GONE
         TransitTop.visibility = View.INVISIBLE
         val param = TrackingMapButton.layoutParams as ViewGroup.MarginLayoutParams
@@ -565,6 +579,10 @@ class MapScreen : AppCompatActivity(),
     }
 
     fun openMapTravelMethodLayout(view: View) {
+        TravelMethodWalking.isEnabled = true
+        TravelMethodDriving.isEnabled = true
+        TravelMethodTransit.isEnabled = true
+        TravelMethodClose.isEnabled = true
         MapMarkerLayout.visibility = View.GONE
         //MapRouteLayout.visibility = View.GONE
         MapTravelMethodLayout.visibility = View.VISIBLE
@@ -592,20 +610,190 @@ class MapScreen : AppCompatActivity(),
         openMapDepartureTimeLayout()
     }
 
-    fun openMapDepartureTimeLayout() {
+    private fun openMapDepartureTimeLayout() {
+        getTimes()
         MapTravelMethodLayout.visibility = View.GONE
-        //MapDepartureTimeLayout.visibility = View.VISIBLE
     }
 
     fun closeMapDepartureTimeLayout(view: View) {
-        //MapDepartureTimeLayout.visibility = View.GONE
+        closeMapDepartureTimeLayout()
+    }
+
+    private fun closeMapDepartureTimeLayout() {
+        MapTimeAssuranceBox.visibility = View.GONE
+        MapDepartureTimeLayout.visibility = View.GONE
         TrackingMapButton.isEnabled = true
         RouteMapButton.isEnabled = true
         MapHelpButton.isEnabled = true
     }
 
-    fun routeOneTarget(view: View) {
+    private fun getTimes() {
+        MapLoadingScreen.visibility = View.VISIBLE
+        TravelMethodWalking.isEnabled = false
+        TravelMethodDriving.isEnabled = false
+        TravelMethodTransit.isEnabled = false
+        TravelMethodClose.isEnabled = false
+        timePicker.isEnabled = true
+        DepartureTimeAccept.isEnabled = true
+        DepartureTimeClose.isEnabled = true
+        Handler(Looper.getMainLooper()).postDelayed({
+            var isSuccess = "-3"
+            var lines = listOf("0")
+            val t = Thread {
+                isSuccess = DatabaseConnections.getTables(
+                    getString(R.string.url_text) + "getTimes.php?achievement="
+                            + achievement
+                )
+                lines = isSuccess.split('\n')
+            }
+            t.start()
+            t.join()
+
+            if (lines[0] == "-3") {
+                MapMarkerLayout.visibility = View.GONE
+                MapErrorText.text = getString(R.string.database_conn_error3_text)
+                MapErrorLayout.visibility = View.VISIBLE
+                MapLoadingScreen.visibility = View.GONE
+            } else if (lines[0] == "-2") {
+                MapMarkerLayout.visibility = View.GONE
+                MapErrorText.text = getString(R.string.database_conn_error2_text)
+                MapErrorLayout.visibility = View.VISIBLE
+                MapLoadingScreen.visibility = View.GONE
+            } else {
+                markerTimeOpen = lines[0]
+                markerTimeClose = lines[1]
+                markerTimeDuration = lines[2]
+                val tmpText = "Godzina otwarcia: " + markerTimeOpen +
+                        "\nGodzina zamknięcia: " + markerTimeClose +
+                        "\nŚredni czas zwiedzania: " + markerTimeDuration
+                var formatter = DateTimeFormatter.ofPattern("HH")
+                timePicker.hour = LocalDateTime.now().format(formatter).toInt()
+                formatter = DateTimeFormatter.ofPattern("mm")
+                timePicker.minute = LocalDateTime.now().format(formatter).toInt()
+                DepartureTimeText.text = tmpText
+                MapLoadingScreen.visibility = View.GONE
+                MapDepartureTimeLayout.visibility = View.VISIBLE
+            }
+        }, 100)
+    }
+
+    fun startRoute(view: View) {
+        timePicker.isEnabled = false
+        DepartureTimeAccept.isEnabled = false
+        DepartureTimeClose.isEnabled = false
+        val currentDate = dateFormat.format(Date())
+        val myDate = currentDate + " " + timePicker.hour + ":" + timePicker.minute
+        val date = dateTimeFormat.parse(myDate)
+        departureTime = "&departure_time=" + date.time
+        departureTime = departureTime.dropLast(3)
+        var flag = false
+
+        val t = Thread {
+            flag = isTimeOk()
+        }
+        t.start()
+        t.join()
+
+        if (!flag) {
+            closeMapDepartureTimeLayout()
+            openMapNotFound()
+        } else {
+
+            var timeOnPlace =
+                timePicker.hour * 3600 + timePicker.minute * 60 + duration.toInt() + 3600
+            while (timeOnPlace >= 86400)
+                timeOnPlace = timeOnPlace - 86400
+
+            var timeOpen = timeFormat.parse(markerTimeOpen).time / 1000 + 3600
+            var timeClose = timeFormat.parse(markerTimeClose).time / 1000 + 3600
+            var timeDuration = timeFormat.parse(markerTimeDuration).time / 1000 + 3600
+            System.out.println(timeOnPlace)
+
+            if (timeOnPlace >= timeOpen && timeOnPlace < timeClose) {
+                if ((timeOnPlace + timeDuration) > timeClose) {
+                    val hours = floor((timeOnPlace + timeDuration) / 3600.0).toInt()
+                    val minutes = floor((timeOnPlace + timeDuration) % 3600 / 60.0).toInt()
+                    val timeString = String.format("%02d:%02d", hours, minutes)
+                    yourTime = timeString + "\n"
+                    openTimeAssuranceBox(3)
+                } else {
+                    updateRoute()
+                    MapDepartureTimeLayout.visibility = View.GONE
+                    TrackingMapButton.isEnabled = true
+                    RouteMapButton.isEnabled = true
+                    MapHelpButton.isEnabled = true
+                }
+            } else {
+                if (timeOnPlace < timeOpen) {
+                    val hours = floor((timeOnPlace + timeDuration) / 3600.0).toInt()
+                    val minutes = floor((timeOnPlace + timeDuration) % 3600 / 60.0).toInt()
+                    val timeString = String.format("%02d:%02d", hours, minutes)
+                    yourTime = timeString + "\n"
+                    openTimeAssuranceBox(1)
+                } else {
+                    val hours = floor((timeOnPlace + timeDuration) / 3600.0).toInt()
+                    val minutes = floor((timeOnPlace + timeDuration) % 3600 / 60.0).toInt()
+                    val timeString = String.format("%02d:%02d", hours, minutes)
+                    yourTime = timeString + "\n"
+                    openTimeAssuranceBox(2)
+                }
+            }
+        }
+    }
+
+    private fun openTimeAssuranceBox(variant: Int) {
+        if (variant == 1) {
+            MapTimeAssuranceText.text = getString(R.string.time_common_text1) + " " + yourTime +
+                    getString(R.string.time_too_early_text) + " " + getString(R.string.time_common_text2)
+        } else if (variant == 2) {
+            MapTimeAssuranceText.text = getString(R.string.time_common_text1) + " " + yourTime +
+                    getString(R.string.time_too_late_text) + " " + getString(R.string.time_common_text2)
+        } else {
+            MapTimeAssuranceText.text = getString(R.string.time_common_text1) + " " + yourTime +
+                    getString(R.string.time_not_enough_text) + " " + getString(R.string.time_common_text2)
+        }
+        MapTimeAssuranceBox.visibility = View.VISIBLE
+    }
+
+    fun closeTimeAssuranceBox(view: View) {
         updateRoute()
+        MapDepartureTimeLayout.visibility = View.GONE
+        TrackingMapButton.isEnabled = true
+        RouteMapButton.isEnabled = true
+        MapHelpButton.isEnabled = true
+        closeMapDepartureTimeLayout()
+    }
+
+    fun openMapDepartureTimeButton(view: View) {
+        MapTimeAssuranceBox.visibility = View.GONE
+        timePicker.isEnabled = true
+        DepartureTimeAccept.isEnabled = true
+        DepartureTimeClose.isEnabled = true
+    }
+
+    private fun isTimeOk(): Boolean {
+        originlat = lat
+        originlong = long
+        targetlat = markerlat
+        targetlong = markerlong
+        val urlDirections =
+            getString(R.string.map_url_text) +
+                    originlat + "," + originlong +
+                    "&destination=" + targetlat + "," + targetlong +
+                    movementMethod + departureTime +
+                    "&key=" + getString(R.string.google_maps_key)
+        System.out.println(urlDirections)
+        val apiResponse = URL(urlDirections).readText()
+        val jsonResponse = JSONObject(apiResponse)
+        val routes = jsonResponse.getJSONArray("routes")
+        return if (routes.isNull(0))
+            false
+        else {
+            val legs = routes.getJSONObject(0).getJSONArray("legs")
+            duration = legs.getJSONObject(0).getJSONObject("duration")
+                .getString("value")
+            true
+        }
     }
 
     fun routeMultipleTarget(view: View) {
@@ -624,8 +812,11 @@ class MapScreen : AppCompatActivity(),
         transitTable.clear()
         //"https://maps.googleapis.com/maps/api/directions/json?origin=53.45237680317154,14.537924413421782&destination=53.388689987076354,14.515383062995541&mode=transit&key=AIzaSyDi6Eaj-EWJX3Mt6eu1PfNRglnP6GVZLC0"
         val urlDirections =
-            "https://maps.googleapis.com/maps/api/directions/json?origin=" + lat + "," + long + "&destination=53.388689987076354,14.515383062995541&mode=transit&key=AIzaSyDi6Eaj-EWJX3Mt6eu1PfNRglnP6GVZLC0"
-
+            getString(R.string.map_url_text) +
+                    originlat + "," + originlong +
+                    "&destination=" + targetlat + "," + targetlong +
+                    movementMethod + departureTime +
+                    "&key=" + getString(R.string.google_maps_key)
         val directionsRequest = object :
             StringRequest(
                 Request.Method.GET,
@@ -641,9 +832,9 @@ class MapScreen : AppCompatActivity(),
                         isTransit = false
                         val legs = routes.getJSONObject(0).getJSONArray("legs")
                         distance = legs.getJSONObject(0).getJSONObject("distance")
-                            .getString("text")
+                            .getString("value")
                         duration = legs.getJSONObject(0).getJSONObject("duration")
-                            .getString("text")
+                            .getString("value")
                         val steps = legs.getJSONObject(0).getJSONArray("steps")
                         for (i in 0 until steps.length()) {
                             val points =
