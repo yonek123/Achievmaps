@@ -1,5 +1,6 @@
 package com.example.achievmaps.newsScreen
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
@@ -10,6 +11,7 @@ import com.example.achievmaps.R
 import com.example.achievmaps.databaseConnections.DatabaseConnections
 import kotlinx.android.synthetic.main.news_screen.*
 
+@Suppress("UNUSED_PARAMETER", "VARIABLE_WITH_REDUNDANT_INITIALIZER")
 class NewsScreen : AppCompatActivity() {
     private var page = 0
     private var maxpage = 0
@@ -58,6 +60,7 @@ class NewsScreen : AppCompatActivity() {
         }, 100)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun loadNews() {
         NewsLoadingScreen.visibility = View.VISIBLE
         setNewsEnabled(false)
@@ -136,12 +139,12 @@ class NewsScreen : AppCompatActivity() {
     }
 
     fun goNextPage(view: View) {
-        page = page + 1
+        page += 1
         loadNews()
     }
 
     fun goPreviousPage(view: View) {
-        page = page - 1
+        page -= 1
         loadNews()
     }
 }

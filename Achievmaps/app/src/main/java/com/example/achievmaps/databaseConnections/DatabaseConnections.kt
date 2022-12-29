@@ -1,3 +1,5 @@
+@file:Suppress("SameParameterValue")
+
 package com.example.achievmaps.databaseConnections
 
 import android.graphics.Bitmap
@@ -55,7 +57,7 @@ object DatabaseConnections {
         } finally {
             urlConnection?.disconnect()
         }
-        return if(bitmap != null)
+        return if (bitmap != null)
             getResizedBitmap(bitmap, 1080, 1920)
         else
             null

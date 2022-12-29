@@ -142,7 +142,7 @@
             android:text="@string/unknown_error_text"
             android:textAlignment="center"
             android:textColor="#000000"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -192,7 +192,7 @@
                 android:text="@string/add_friend_text"
                 android:textAlignment="center"
                 android:textColor="#000000"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -215,8 +215,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:ems="10"
-                android:inputType="textPersonName"
                 android:hint="@string/nick_field_text"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/FriendsAddDeleteText" />
@@ -268,7 +269,7 @@
                 android:text="@string/friend_added_text"
                 android:textAlignment="center"
                 android:textColor="#000000"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -310,7 +311,7 @@
             android:text="@string/please_wait_text"
             android:textAlignment="center"
             android:textColor="#000000"
-            android:textSize="16dp"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -342,7 +343,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_input_add"
-        tools:ignore="SpeakableTextPresentCheck" />
+        tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/DeleteFriendButton"
@@ -356,6 +357,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/ic_delete"
-        tools:ignore="SpeakableTextPresentCheck" />
+        tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,11 +11,11 @@
         android:id="@+id/MenuScreenBg"
         android:layout_width="536dp"
         android:layout_height="891dp"
+        android:contentDescription="@string/bg_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/bg_description"
         app:srcCompat="@drawable/tlo_fale3" />
 
     <TextView
@@ -303,7 +303,7 @@
             android:text="@string/unknown_error_text"
             android:textAlignment="center"
             android:textColor="#000000"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -343,7 +343,7 @@
             android:text="@string/please_wait_text"
             android:textAlignment="center"
             android:textColor="#000000"
-            android:textSize="16dp"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

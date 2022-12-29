@@ -1,44 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:weightSum="25"
+    android:orientation="horizontal"
     android:paddingTop="10dp"
     android:paddingBottom="10dp"
-    >
+    android:weightSum="25">
 
     <TextView
         android:id="@+id/StartName"
         android:layout_width="0dp"
-        android:layout_gravity="center"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="10"
         android:textAlignment="center"
         android:textColor="#000000"
-        android:textSize="12sp"
-        />
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/TransitName"
         android:layout_width="0dp"
-        android:layout_gravity="center"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="5"
         android:textAlignment="center"
         android:textColor="#000000"
-        android:textSize="12sp"
-        />
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/EndName"
         android:layout_width="0dp"
-        android:layout_gravity="center"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="10"
         android:textAlignment="center"
         android:textColor="#000000"
-        android:textSize="12sp"
-        />
+        android:textSize="12sp" />
 </LinearLayout>

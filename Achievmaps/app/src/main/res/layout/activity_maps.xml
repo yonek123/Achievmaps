@@ -7,7 +7,7 @@
     android:background="@color/background_gray"
     tools:context=".mapScreen.MapScreen">
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
@@ -29,7 +29,8 @@
         android:src="@android:drawable/ic_menu_mylocation"
         app:backgroundTint="@color/button_green"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="ContentDescription" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/RouteMapButton"
@@ -42,7 +43,8 @@
         android:src="@android:drawable/ic_menu_directions"
         app:backgroundTint="@color/button_green"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="ContentDescription" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/EndRouteMapButton"
@@ -56,7 +58,8 @@
         android:visibility="gone"
         app:backgroundTint="@color/button_red"
         app:layout_constraintBottom_toTopOf="@+id/RouteMapButton"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/MapHelpButton"
@@ -68,7 +71,8 @@
         android:onClick="openHelp"
         android:src="@drawable/help_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <LinearLayout
         android:id="@+id/TransitTop"
@@ -180,7 +184,7 @@
                 android:text="@string/help_page1_text"
                 android:textAlignment="center"
                 android:textColor="#000000"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -262,7 +266,7 @@
                 android:text="@string/marker_tmp_description_text"
                 android:textAlignment="center"
                 android:textColor="#000000"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -348,7 +352,7 @@
                     android:id="@+id/TravelMethodWalking"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/button_green"
                     android:onClick="setWalking"
@@ -356,13 +360,13 @@
                     android:textAlignment="center"
                     android:textSize="14sp"
                     app:cornerRadius="@dimen/button_round"
-                    tools:ignore="TextContrastCheck" />
+                    tools:ignore="ButtonStyle,TextContrastCheck" />
 
                 <Button
                     android:id="@+id/TravelMethodDriving"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/button_green"
                     android:onClick="setDriving"
@@ -370,7 +374,7 @@
                     android:textAlignment="center"
                     android:textSize="14sp"
                     app:cornerRadius="@dimen/button_round"
-                    tools:ignore="TextContrastCheck" />
+                    tools:ignore="ButtonStyle,TextContrastCheck" />
             </LinearLayout>
 
             <LinearLayout
@@ -387,7 +391,7 @@
                     android:id="@+id/TravelMethodTransit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/button_green"
                     android:onClick="setTransit"
@@ -395,13 +399,13 @@
                     android:textAlignment="center"
                     android:textSize="14sp"
                     app:cornerRadius="@dimen/button_round"
-                    tools:ignore="TextContrastCheck" />
+                    tools:ignore="ButtonStyle,TextContrastCheck" />
 
                 <Button
                     android:id="@+id/TravelMethodClose"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/button_red"
                     android:onClick="closeMapTravelMethodLayout"
@@ -409,8 +413,118 @@
                     android:textAlignment="center"
                     android:textSize="14sp"
                     app:cornerRadius="@dimen/button_round"
-                    tools:ignore="TextContrastCheck" />
+                    tools:ignore="ButtonStyle,TextContrastCheck" />
             </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/MapOriginLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:background="@drawable/info_box"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/OriginChoiceBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/OriginTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/aclonica"
+                android:text="@string/origin_text"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/OriginField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:ems="10"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/OriginTitle"
+                tools:ignore="DuplicateSpeakableTextCheck,LabelFor,TextContrastCheck" />
+
+            <LinearLayout
+                android:id="@+id/OriginRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/OriginField">
+
+                <Button
+                    android:id="@+id/OriginHere"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/button_green"
+                    android:onClick="checkIfOriginCorrectLatLong"
+                    android:text="@string/here_text"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    app:cornerRadius="@dimen/button_round"
+                    tools:ignore="ButtonStyle,TextContrastCheck" />
+
+                <Button
+                    android:id="@+id/OriginThere"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/button_green"
+                    android:onClick="checkIfOriginCorrectPlace"
+                    android:text="@string/there_text"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    app:cornerRadius="@dimen/button_round"
+                    tools:ignore="ButtonStyle,TextContrastCheck" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/OriginClose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/button_red"
+                android:onClick="closeMapOriginLayout"
+                android:text="@string/close_button_text"
+                android:textAlignment="center"
+                android:textSize="14sp"
+                app:cornerRadius="@dimen/button_round"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/OriginRow"
+                tools:ignore="ButtonStyle,TextContrastCheck" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -459,7 +573,7 @@
                 android:text="@string/marker_tmp_description_text"
                 android:textAlignment="center"
                 android:textColor="#000000"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -524,7 +638,7 @@
             android:text="@string/unknown_error_text"
             android:textAlignment="center"
             android:textColor="#000000"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -564,7 +678,7 @@
             android:text="@string/route_not_found_error_text"
             android:textAlignment="center"
             android:textColor="#000000"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -604,7 +718,7 @@
             android:text="@string/time_common_text2"
             android:textAlignment="center"
             android:textColor="#000000"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -655,7 +769,7 @@
             android:text="@string/please_wait_text"
             android:textAlignment="center"
             android:textColor="#000000"
-            android:textSize="16dp"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

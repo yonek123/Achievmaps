@@ -11,9 +11,9 @@ import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
 import kotlinx.android.synthetic.main.ranking_screen.*
 import android.widget.Button
-import com.example.achievmaps.RankingScreen.RankingAdapter
 import com.example.achievmaps.databaseConnections.DatabaseConnections
 
+@Suppress("UNCHECKED_CAST", "UNUSED_PARAMETER", "VARIABLE_WITH_REDUNDANT_INITIALIZER")
 class RankingScreen : AppCompatActivity() {
     private var list = listOf("0")
     private var row = ArrayList<String>()

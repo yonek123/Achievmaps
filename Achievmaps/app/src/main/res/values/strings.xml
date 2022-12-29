@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Achievmaps</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="title_activity_login">LoginActivity</string>
@@ -32,7 +32,7 @@
     <string name="remember_me_text">Zapamiętaj</string>
 
     <string name="password_recovery_text">Wpisz email konta, którego\nhasło chcesz odzyskać</string>
-    <string name="recovery_code_sent_text">Kod odzyskiwania wysłany\nna podany adres e-mail!</string>
+    <string name="recovery_code_sent_text" tools:ignore="Typos">Kod odzyskiwania wysłany\nna podany adres e-mail!</string>
 
     <string name="basic_validation_text">Coś poszło nie tak</string>
 
@@ -98,14 +98,14 @@
 
     <string name="help_text">Pomoc</string>
     <string name="route_text">Trasa</string>
-    <string name="help_page1_text">Mapa domyślnie wyświetla twoją aktualną lokalizację. Przesuwaj mapę jednym palcem. Aby przybliżyć mapę użyj dwóch palców i zbliż je do krawędzi ekranu. Aby oddalić mapę zbliż oba palce do środka ekranu.</string>
+    <string name="help_page1_text" tools:ignore="Typos">Mapa domyślnie wyświetla twoją aktualną lokalizację. Przesuwaj mapę jednym palcem. Aby przybliżyć mapę użyj dwóch palców i zbliż je do krawędzi ekranu. Aby oddalić mapę zbliż oba palce do środka ekranu.</string>
     <string name="help_page2_text">Aby powrócić do twojej lokalizacji naciśnij zielony przycisk odświerzenia w prawym dolnym rogu ekranu.</string>
     <string name="help_page3_text">Czerwone pinezki na mapie oznaczają obiekty które możesz odwiedzić aby zdobyć punkty. Naciśnij na pinezkę aby zobaczyć okno z nazwą i opisem obiektu. Jeśli jesteś blisko obiektu pojawi się tam także przycisk dodania obiektu do listy odwiedzonych. W ten sposób możesz zdobyć punkty które podwyższą twoją pozycję w rankingu! Jeśli nie jesteś dostatecznie blisko w jego miejscu pojawi się przycisk zamknięcia okna. Nie musisz zamykać okna i otwierać okna ponownie żeby przycisk się zaktualizował. Kiedy podejdziesz bliżej obiektu przycisk zmieni się nawet kiedy okno jest już otwarte!</string>
     <string name="help_page4_text">To wszystko co musisz wiedzieć aby używać aplikacji. Nie pozostało ci nic innego niż odwiedzić pobliskie zabytki, a następnie zaplanować gdzie wyjedziesz na wakacje.\n\nNie zapomnij zabrać ze sobą telefonu z zainstalowaną aplikacją oraz dobrego aparatu :)</string>
     <string name="location_required_text">Dostep do lokalizacji jest wymagany do działania aplikacji!</string>
     <string name="add_achievement_text">Zdobądź punkty</string>
     <string name="marker_tmp_title_text">SCP-087</string>
-    <string name="marker_tmp_description_text">SCP-087 has undergone four video recorded explorations by Class-D personnel. Each subject conducting an exploration has encountered SCP-087-1, which appears as a face with no visible pupils, nostrils, or mouth. The nature of SCP-087-1 is entirely unclear, but it has been determined that it is not the source of the pleading. Subjects exhibit feelings of intense paranoia and fear when faced with SCP-087-1, but it is undetermined whether said feelings are abnormal or simply natural reactions.</string>
+    <string name="marker_tmp_description_text" tools:ignore="TypographyDashes">SCP-087 has undergone four video recorded explorations by Class-D personnel. Each subject conducting an exploration has encountered SCP-087-1, which appears as a face with no visible pupils, nostrils, or mouth. The nature of SCP-087-1 is entirely unclear, but it has been determined that it is not the source of the pleading. Subjects exhibit feelings of intense paranoia and fear when faced with SCP-087-1, but it is undetermined whether said feelings are abnormal or simply natural reactions.</string>
     <string name="got_achievement_text">Osiągnięcie zdobyte! Sprwdź swoje osiągnięcia w zakładce osiągnięć w menu!</string>
 
     <string name="route_not_found_error_text">Nie można wyznaczyć trasy. Spróbuj innego środka transportu lub rozpocznij podróż z innego miejsca.</string>
@@ -115,6 +115,9 @@
     <string name="time_too_early_text">Obiekt nie będzie jeszcze otwarty.</string>
     <string name="time_too_late_text">Obiekt będzie już zamknięty.</string>
 
+    <string name="origin_text">Wpisz miejsce rozpoczęcia podróży</string>
+    <string name="here_text">Aktualne</string>
+    <string name="there_text">Wpisane</string>
     <string name="transit_begin_text">p. początkowy</string>
     <string name="transit_name_text">linia</string>
     <string name="transit_end_text">p. końcowy</string>

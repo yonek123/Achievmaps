@@ -11,11 +11,15 @@ class AchievementsAdapter(private val achievementsPage: ArrayList<ArrayList<Stri
     RecyclerView.Adapter<AchievementsAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val achievementName: TextView = itemView.findViewById(R.id.AchievementItemName)
-        val achievementDescription: TextView = itemView.findViewById(R.id.AchievementItemDescription)
+        val achievementDescription: TextView =
+            itemView.findViewById(R.id.AchievementItemDescription)
         val achievementPoints: TextView = itemView.findViewById(R.id.AchievementItemPoints)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AchievementsAdapter.ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): AchievementsAdapter.ViewHolder {
         val context = parent.context
         val inflater = LayoutInflater.from(context)
         val contactView = inflater.inflate(R.layout.achievements_item_layout, parent, false)

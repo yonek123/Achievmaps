@@ -12,6 +12,7 @@ import com.example.achievmaps.databaseConnections.DatabaseConnections
 import com.example.achievmaps.loginScreen.LoginScreen
 import kotlinx.android.synthetic.main.achievements_screen.*
 
+@Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER", "UNCHECKED_CAST", "UNUSED_PARAMETER")
 class AchievementsScreen : AppCompatActivity() {
     private var list = listOf("0")
     private var row = ArrayList<String>()

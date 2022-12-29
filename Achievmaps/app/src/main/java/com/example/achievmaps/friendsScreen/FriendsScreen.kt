@@ -1,9 +1,11 @@
 package com.example.achievmaps.friendsScreen
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,6 +14,7 @@ import com.example.achievmaps.R
 import com.example.achievmaps.databaseConnections.DatabaseConnections
 import kotlinx.android.synthetic.main.friends_screen.*
 
+@Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER", "UNCHECKED_CAST", "UNUSED_PARAMETER")
 class FriendsScreen : AppCompatActivity() {
     private var list = listOf("0")
     private var row = ArrayList<String>()
@@ -98,6 +101,8 @@ class FriendsScreen : AppCompatActivity() {
     }
 
     fun closeAddFriendLayout(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(view.windowToken, 0)
         FriendsChoiceBox.visibility = View.VISIBLE
         AddDeleteFriendCloseBox.visibility = View.GONE
         FriendsAddDeleteLayout.visibility = View.GONE
@@ -107,6 +112,8 @@ class FriendsScreen : AppCompatActivity() {
     }
 
     fun addFriend(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(view.windowToken, 0)
         FriendsLoadingScreen.visibility = View.VISIBLE
         FriendsAddDeleteButton.isEnabled = false
         FriendsAddDeleteCloseButton.isEnabled = false
@@ -150,6 +157,8 @@ class FriendsScreen : AppCompatActivity() {
     }
 
     private fun deleteFriend(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(view.windowToken, 0)
         FriendsLoadingScreen.visibility = View.VISIBLE
         FriendsAddDeleteButton.isEnabled = false
         FriendsAddDeleteCloseButton.isEnabled = false

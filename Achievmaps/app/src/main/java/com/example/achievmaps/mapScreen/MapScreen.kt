@@ -2,6 +2,7 @@ package com.example.achievmaps.mapScreen
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Resources
@@ -14,6 +15,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -21,7 +23,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -45,6 +46,10 @@ import java.util.*
 import kotlin.math.floor
 
 
+@Suppress(
+    "DEPRECATION", "NAME_SHADOWING", "UNCHECKED_CAST", "UNUSED_PARAMETER",
+    "VARIABLE_WITH_REDUNDANT_INITIALIZER"
+)
 class MapScreen : AppCompatActivity(),
     OnMapReadyCallback,
     OnCameraMoveStartedListener,
@@ -54,8 +59,14 @@ class MapScreen : AppCompatActivity(),
     private var row = ArrayList<String>()
     private var objects = ArrayList<ArrayList<String>>()
     private var achievement = ""
+
+    @SuppressLint("SimpleDateFormat")
     val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+
+    @SuppressLint("SimpleDateFormat")
     val timeFormat = SimpleDateFormat("HH:mm")
+
+    @SuppressLint("SimpleDateFormat")
     val dateTimeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
 
     private var lat = 0.0
@@ -181,11 +192,13 @@ class MapScreen : AppCompatActivity(),
                         ) == PackageManager.PERMISSION_GRANTED
                     ) {
 
-                        mFusedLocationClient?.requestLocationUpdates(
-                            mLocationRequest,
-                            mLocationCallback,
-                            Looper.myLooper()
-                        )
+                        Looper.myLooper()?.let {
+                            mFusedLocationClient?.requestLocationUpdates(
+                                mLocationRequest,
+                                mLocationCallback,
+                                it
+                            )
+                        }
                         mGoogleMap.isMyLocationEnabled = true
                     }
 
@@ -244,11 +257,13 @@ class MapScreen : AppCompatActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            mFusedLocationClient?.requestLocationUpdates(
-                mLocationRequest,
-                mLocationCallback,
-                Looper.myLooper()
-            )
+            Looper.myLooper()?.let {
+                mFusedLocationClient?.requestLocationUpdates(
+                    mLocationRequest,
+                    mLocationCallback,
+                    it
+                )
+            }
             mGoogleMap.isMyLocationEnabled = true
         } else {
             checkLocationPermission()
@@ -326,12 +341,13 @@ class MapScreen : AppCompatActivity(),
 
     private fun switchTracking() {
         if (!isTrackingOn) {
-            TrackingMapButton.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.button_green)))
+            TrackingMapButton.backgroundTintList =
+                ColorStateList.valueOf(getColor(R.color.button_green))
             getCurrLoc()
             doTracking = true
             isTrackingOn = true
         } else {
-            TrackingMapButton.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY))
+            TrackingMapButton.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
             doTracking = false
             isTrackingOn = false
         }
@@ -501,7 +517,7 @@ class MapScreen : AppCompatActivity(),
         }
     }
 
-    fun closeHelp(view: View) {
+    private fun closeHelp(view: View) {
         page = 1
         MapHelpLayout.visibility = View.GONE
         TrackingMapButton.isEnabled = true
@@ -509,9 +525,9 @@ class MapScreen : AppCompatActivity(),
         MapHelpButton.isEnabled = true
         MapHelpNextButton.text = getString(R.string.previous_page_text)
         MapHelpNextButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24F)
-        MapHelpNextButton.setOnClickListener(View.OnClickListener {
+        MapHelpNextButton.setOnClickListener {
             goNextPage(it)
-        })
+        }
         MapHelpText.text = getString(R.string.help_page1_text)
         MapHelpPreviousButton.setBackgroundColor(getColor(R.color.button_grayishgreen))
         MapHelpPreviousButton.isEnabled = false
@@ -597,17 +613,98 @@ class MapScreen : AppCompatActivity(),
 
     fun setWalking(view: View) {
         movementMethod = "&mode=walking"
-        openMapDepartureTimeLayout()
+        openMapOriginLayout()
     }
 
     fun setDriving(view: View) {
         movementMethod = "&mode=driving"
-        openMapDepartureTimeLayout()
+        openMapOriginLayout()
     }
 
     fun setTransit(view: View) {
         movementMethod = "&mode=transit"
-        openMapDepartureTimeLayout()
+        openMapOriginLayout()
+    }
+
+    private fun openMapOriginLayout() {
+        MapTravelMethodLayout.visibility = View.GONE
+        //MapRouteLayout.visibility = View.GONE
+        MapOriginLayout.visibility = View.VISIBLE
+        originlat = lat
+        originlong = long
+    }
+
+    fun closeMapOriginLayout(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(view.windowToken, 0)
+        MapOriginLayout.visibility = View.GONE
+        TrackingMapButton.isEnabled = true
+        RouteMapButton.isEnabled = true
+        MapHelpButton.isEnabled = true
+    }
+
+    fun checkIfOriginCorrectPlace(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(view.windowToken, 0)
+        var flag = false
+        val tmpText = OriginField.text.replace(" ".toRegex(), "+")
+        val urlDirections =
+            "https://maps.googleapis.com/maps/api/geocode/json?address=" + tmpText +
+                    "&key=" + getString(R.string.google_maps_key)
+        println(urlDirections)
+        val t = Thread {
+            val apiResponse = URL(urlDirections).readText()
+            val jsonResponse = JSONObject(apiResponse)
+            val results = jsonResponse.getJSONArray("results")
+            if (results.isNull(0)) {
+                flag = false
+            } else {
+                val geometry = results.getJSONObject(0).getJSONObject("geometry")
+                val location = geometry.getJSONObject("location")
+                originlat = location.getString("lat").toDouble()
+                originlong = location.getString("lng").toDouble()
+                flag = true
+            }
+        }
+        t.start()
+        t.join()
+
+        if (!flag) {
+            MapOriginLayout.visibility = View.GONE
+            openMapNotFound()
+        } else {
+            checkIfOriginCorrectLatLong(view)
+        }
+    }
+
+    fun checkIfOriginCorrectLatLong(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(view.windowToken, 0)
+        var flag = false
+        targetlat = markerlat
+        targetlong = markerlong
+        val urlDirections =
+            getString(R.string.map_url_text) +
+                    originlat + "," + originlong +
+                    "&destination=" + targetlat + "," + targetlong +
+                    movementMethod +
+                    "&key=" + getString(R.string.google_maps_key)
+        println(urlDirections)
+        val t = Thread {
+            val apiResponse = URL(urlDirections).readText()
+            val jsonResponse = JSONObject(apiResponse)
+            val routes = jsonResponse.getJSONArray("routes")
+            flag = !routes.isNull(0)
+        }
+        t.start()
+        t.join()
+        if (!flag) {
+            MapOriginLayout.visibility = View.GONE
+            openMapNotFound()
+        } else {
+            closeMapOriginLayout(view)
+            openMapDepartureTimeLayout()
+        }
     }
 
     private fun openMapDepartureTimeLayout() {
@@ -684,7 +781,9 @@ class MapScreen : AppCompatActivity(),
         val currentDate = dateFormat.format(Date())
         val myDate = currentDate + " " + timePicker.hour + ":" + timePicker.minute
         val date = dateTimeFormat.parse(myDate)
-        departureTime = "&departure_time=" + date.time
+        if (date != null) {
+            departureTime = "&departure_time=" + date.time
+        }
         departureTime = departureTime.dropLast(3)
         var flag = false
 
@@ -702,14 +801,14 @@ class MapScreen : AppCompatActivity(),
             var timeOnPlace =
                 timePicker.hour * 3600 + timePicker.minute * 60 + duration.toInt() + 3600
             while (timeOnPlace >= 86400)
-                timeOnPlace = timeOnPlace - 86400
+                timeOnPlace -= 86400
 
-            var timeOpen = timeFormat.parse(markerTimeOpen).time / 1000 + 3600
-            var timeClose = timeFormat.parse(markerTimeClose).time / 1000 + 3600
-            var timeDuration = timeFormat.parse(markerTimeDuration).time / 1000 + 3600
-            System.out.println(timeOnPlace)
+            val timeOpen = timeFormat.parse(markerTimeOpen)!!.time / 1000 + 3600
+            val timeClose = timeFormat.parse(markerTimeClose)!!.time / 1000 + 3600
+            val timeDuration = timeFormat.parse(markerTimeDuration)!!.time / 1000 + 3600
+            println(timeOnPlace)
 
-            if (timeOnPlace >= timeOpen && timeOnPlace < timeClose) {
+            if (timeOnPlace in (timeOpen until timeClose)) {
                 if ((timeOnPlace + timeDuration) > timeClose) {
                     val hours = floor((timeOnPlace + timeDuration) / 3600.0).toInt()
                     val minutes = floor((timeOnPlace + timeDuration) % 3600 / 60.0).toInt()
@@ -741,16 +840,21 @@ class MapScreen : AppCompatActivity(),
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun openTimeAssuranceBox(variant: Int) {
-        if (variant == 1) {
-            MapTimeAssuranceText.text = getString(R.string.time_common_text1) + " " + yourTime +
-                    getString(R.string.time_too_early_text) + " " + getString(R.string.time_common_text2)
-        } else if (variant == 2) {
-            MapTimeAssuranceText.text = getString(R.string.time_common_text1) + " " + yourTime +
-                    getString(R.string.time_too_late_text) + " " + getString(R.string.time_common_text2)
-        } else {
-            MapTimeAssuranceText.text = getString(R.string.time_common_text1) + " " + yourTime +
-                    getString(R.string.time_not_enough_text) + " " + getString(R.string.time_common_text2)
+        when (variant) {
+            1 -> {
+                MapTimeAssuranceText.text = getString(R.string.time_common_text1) + " " + yourTime +
+                        getString(R.string.time_too_early_text) + " " + getString(R.string.time_common_text2)
+            }
+            2 -> {
+                MapTimeAssuranceText.text = getString(R.string.time_common_text1) + " " + yourTime +
+                        getString(R.string.time_too_late_text) + " " + getString(R.string.time_common_text2)
+            }
+            else -> {
+                MapTimeAssuranceText.text = getString(R.string.time_common_text1) + " " + yourTime +
+                        getString(R.string.time_not_enough_text) + " " + getString(R.string.time_common_text2)
+            }
         }
         MapTimeAssuranceBox.visibility = View.VISIBLE
     }
@@ -782,7 +886,7 @@ class MapScreen : AppCompatActivity(),
                     "&destination=" + targetlat + "," + targetlong +
                     movementMethod + departureTime +
                     "&key=" + getString(R.string.google_maps_key)
-        System.out.println(urlDirections)
+        println(urlDirections)
         val apiResponse = URL(urlDirections).readText()
         val jsonResponse = JSONObject(apiResponse)
         val routes = jsonResponse.getJSONArray("routes")
@@ -810,6 +914,7 @@ class MapScreen : AppCompatActivity(),
 
     private fun drawRoute() {
         transitTable.clear()
+        path.clear()
         //"https://maps.googleapis.com/maps/api/directions/json?origin=53.45237680317154,14.537924413421782&destination=53.388689987076354,14.515383062995541&mode=transit&key=AIzaSyDi6Eaj-EWJX3Mt6eu1PfNRglnP6GVZLC0"
         val urlDirections =
             getString(R.string.map_url_text) +
@@ -819,9 +924,9 @@ class MapScreen : AppCompatActivity(),
                     "&key=" + getString(R.string.google_maps_key)
         val directionsRequest = object :
             StringRequest(
-                Request.Method.GET,
+                Method.GET,
                 urlDirections,
-                Response.Listener<String> { response ->
+                Response.Listener { response ->
                     val jsonResponse = JSONObject(response)
                     // Get routes
                     val routes = jsonResponse.getJSONArray("routes")
@@ -847,17 +952,17 @@ class MapScreen : AppCompatActivity(),
 
                                 TransitTop.visibility = View.VISIBLE
 
-                                val transit_details =
+                                val transitDetails =
                                     steps.getJSONObject(i).getJSONObject("transit_details")
                                 transitRow.add(
-                                    transit_details.getJSONObject("departure_stop")
+                                    transitDetails.getJSONObject("departure_stop")
                                         .getString("name")
                                 )
                                 transitRow.add(
-                                    transit_details.getJSONObject("line").getString("short_name")
+                                    transitDetails.getJSONObject("line").getString("short_name")
                                 )
                                 transitRow.add(
-                                    transit_details.getJSONObject("arrival_stop").getString("name")
+                                    transitDetails.getJSONObject("arrival_stop").getString("name")
                                 )
                                 transitTable.add(transitRow.clone() as ArrayList<String>)
                                 transitRow.clear()
@@ -892,7 +997,7 @@ class MapScreen : AppCompatActivity(),
                         EndRouteMapButton.visibility = View.VISIBLE
                     }
                 },
-                Response.ErrorListener { _ ->
+                Response.ErrorListener {
                 }) {}
         val requestQueue = Volley.newRequestQueue(this)
         requestQueue.add(directionsRequest)

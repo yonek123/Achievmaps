@@ -1,4 +1,4 @@
-package com.example.achievmaps.RankingScreen
+package com.example.achievmaps.rankingScreen
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -31,8 +31,7 @@ class RankingAdapter(private val rankingPage: ArrayList<ArrayList<String>>) :
             viewHolder.rankField.setTextColor(Color.RED)
             viewHolder.nicknameField.setTextColor(Color.RED)
             viewHolder.pointsField.setTextColor(Color.RED)
-        }
-        else {
+        } else {
             viewHolder.rankField.setTextColor(Color.BLACK)
             viewHolder.nicknameField.setTextColor(Color.BLACK)
             viewHolder.pointsField.setTextColor(Color.BLACK)

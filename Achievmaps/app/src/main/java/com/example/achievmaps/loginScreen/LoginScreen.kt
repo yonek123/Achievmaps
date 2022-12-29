@@ -1,5 +1,6 @@
 package com.example.achievmaps.loginScreen
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -14,6 +15,7 @@ import com.example.achievmaps.mainMenuScreen.MainMenuScreen
 import kotlinx.android.synthetic.main.login_screen.*
 
 
+@Suppress("UNUSED_PARAMETER", "VARIABLE_WITH_REDUNDANT_INITIALIZER", "CascadeIf")
 class LoginScreen : AppCompatActivity() {
     private val sharedPrefFile = "AchievmapsPref"
 
@@ -81,6 +83,7 @@ class LoginScreen : AppCompatActivity() {
         setLoginRegisterEnabled(false)
     }
 
+    @SuppressLint("SetTextI18n")
     fun sendRecoveryCode(view: View) {
         LoginLoadingScreen.visibility = View.VISIBLE
         RecoveryCloseButton.isEnabled = false
@@ -104,7 +107,8 @@ class LoginScreen : AppCompatActivity() {
             } else if (password == "-1") {
                 RecoverySuccessText.text = getString(R.string.wrong_email_text)
             } else {
-                RecoverySuccessText.text = getString(R.string.recovery_code_sent_text) + '\n' + password
+                RecoverySuccessText.text =
+                    getString(R.string.recovery_code_sent_text) + '\n' + password
             }
             RecoverySuccessText.visibility = View.VISIBLE
             LoginLoadingScreen.visibility = View.GONE

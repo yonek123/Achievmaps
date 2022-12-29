@@ -1,5 +1,6 @@
 package com.example.achievmaps.mainMenuScreen
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -15,6 +16,7 @@ import com.example.achievmaps.newsScreen.NewsScreen
 import com.example.achievmaps.rankingScreen.RankingScreen
 import kotlinx.android.synthetic.main.main_menu_screen.*
 
+@Suppress("UNUSED_PARAMETER")
 class MainMenuScreen : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
@@ -22,6 +24,7 @@ class MainMenuScreen : AppCompatActivity() {
         setMainMenuEnabled(true)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_menu_screen)
