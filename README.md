@@ -37,3 +37,5 @@ v17: wyświetlanie przystanków i autobusów, początek prac nad popup-ami do wy
 v18: cała trasa dla jednego obiektu gotowa, jest wybór metody, czasu wyruszenia, aktualizacja, powiadomienie o tym czy zdążymy itd
 
 v19: dużo poprawek estetycznych i mniejszych, dodanie możliwości wybrania miejsca startu
+
+v20: poprawki w sprawie zapychania pamięci i kilka innych błędów

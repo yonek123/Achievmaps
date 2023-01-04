@@ -85,6 +85,7 @@ class MapScreen : AppCompatActivity(),
     private var isTrackingOn = true
     private var doTracking = true
     private var isRoute = false
+    private var isRouteStatic = false
     private var isTransit = false
     private var duration = ""
     private var distance = ""
@@ -279,7 +280,7 @@ class MapScreen : AppCompatActivity(),
             MapHelpButton.isEnabled = false
             markerlat = marker.position.latitude
             markerlong = marker.position.longitude
-            achievement = marker.title
+            achievement = marker.title.toString()
 
             checkIfClose()
 
@@ -559,6 +560,7 @@ class MapScreen : AppCompatActivity(),
         TrackingMapButton.isEnabled = false
         RouteMapButton.isEnabled = false
         MapHelpButton.isEnabled = false
+        isRouteStatic = false
     }
 
     fun closeMapRouteNotFoundLayout(view: View) {
@@ -573,6 +575,7 @@ class MapScreen : AppCompatActivity(),
     }
 
     private fun stopRoute() {
+        isRouteStatic = false
         EndRouteMapButton.visibility = View.GONE
         TransitTop.visibility = View.INVISIBLE
         val param = TrackingMapButton.layoutParams as ViewGroup.MarginLayoutParams
@@ -591,6 +594,7 @@ class MapScreen : AppCompatActivity(),
         for (line in polyline) {
             line.remove()
         }
+        polyColor.clear()
         isRoute = false
     }
 
@@ -673,6 +677,7 @@ class MapScreen : AppCompatActivity(),
             MapOriginLayout.visibility = View.GONE
             openMapNotFound()
         } else {
+            isRouteStatic = true
             checkIfOriginCorrectLatLong(view)
         }
     }
@@ -806,7 +811,6 @@ class MapScreen : AppCompatActivity(),
             val timeOpen = timeFormat.parse(markerTimeOpen)!!.time / 1000 + 3600
             val timeClose = timeFormat.parse(markerTimeClose)!!.time / 1000 + 3600
             val timeDuration = timeFormat.parse(markerTimeDuration)!!.time / 1000 + 3600
-            println(timeOnPlace)
 
             if (timeOnPlace in (timeOpen until timeClose)) {
                 if ((timeOnPlace + timeDuration) > timeClose) {
@@ -816,7 +820,7 @@ class MapScreen : AppCompatActivity(),
                     yourTime = timeString + "\n"
                     openTimeAssuranceBox(3)
                 } else {
-                    updateRoute()
+                    drawRoute()
                     MapDepartureTimeLayout.visibility = View.GONE
                     TrackingMapButton.isEnabled = true
                     RouteMapButton.isEnabled = true
@@ -860,7 +864,7 @@ class MapScreen : AppCompatActivity(),
     }
 
     fun closeTimeAssuranceBox(view: View) {
-        updateRoute()
+        drawRoute()
         MapDepartureTimeLayout.visibility = View.GONE
         TrackingMapButton.isEnabled = true
         RouteMapButton.isEnabled = true
@@ -876,10 +880,6 @@ class MapScreen : AppCompatActivity(),
     }
 
     private fun isTimeOk(): Boolean {
-        originlat = lat
-        originlong = long
-        targetlat = markerlat
-        targetlong = markerlong
         val urlDirections =
             getString(R.string.map_url_text) +
                     originlat + "," + originlong +
@@ -913,8 +913,6 @@ class MapScreen : AppCompatActivity(),
     }
 
     private fun drawRoute() {
-        transitTable.clear()
-        path.clear()
         //"https://maps.googleapis.com/maps/api/directions/json?origin=53.45237680317154,14.537924413421782&destination=53.388689987076354,14.515383062995541&mode=transit&key=AIzaSyDi6Eaj-EWJX3Mt6eu1PfNRglnP6GVZLC0"
         val urlDirections =
             getString(R.string.map_url_text) +
@@ -933,8 +931,12 @@ class MapScreen : AppCompatActivity(),
                     if (routes.isNull(0) && !isRoute)
                         openMapNotFound()
                     else if (!routes.isNull(0)) {
-                        isRoute = true
+                        if (!isRouteStatic)
+                            isRoute = true
                         isTransit = false
+                        polyColor.clear()
+                        transitTable.clear()
+                        path.clear()
                         val legs = routes.getJSONObject(0).getJSONArray("legs")
                         distance = legs.getJSONObject(0).getJSONObject("distance")
                             .getString("value")
