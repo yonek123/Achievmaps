@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.*
 import com.google.maps.android.PolyUtil
 import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.main_menu_screen.*
+import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URL
 import java.text.SimpleDateFormat
@@ -48,7 +49,7 @@ import kotlin.math.floor
 
 @Suppress(
     "DEPRECATION", "NAME_SHADOWING", "UNCHECKED_CAST", "UNUSED_PARAMETER",
-    "VARIABLE_WITH_REDUNDANT_INITIALIZER"
+    "VARIABLE_WITH_REDUNDANT_INITIALIZER", "CascadeIf"
 )
 class MapScreen : AppCompatActivity(),
     OnMapReadyCallback,
@@ -58,6 +59,7 @@ class MapScreen : AppCompatActivity(),
     private var list = listOf("0")
     private var row = ArrayList<String>()
     private var objects = ArrayList<ArrayList<String>>()
+    private var rmObjects = ArrayList<RMObject>()
     private var achievement = ""
 
     @SuppressLint("SimpleDateFormat")
@@ -93,9 +95,13 @@ class MapScreen : AppCompatActivity(),
     private var markerTimeClose = ""
     private var markerTimeDuration = ""
     private var yourTime = ""
+    private var isMultiple = false
+    private var isSimpleRM = false
 
     private val polyline: MutableList<Polyline> = ArrayList()
     private val path: MutableList<List<LatLng>> = ArrayList()
+    private var waypoints: MutableList<LatLng> = ArrayList()
+    private var waypointsNames: MutableList<String> = ArrayList()
     private val polyColor: MutableList<Int> = ArrayList()
     private var transitRow = ArrayList<String>()
     private var transitTable = ArrayList<ArrayList<String>>()
@@ -233,6 +239,12 @@ class MapScreen : AppCompatActivity(),
                 DividerItemDecoration.VERTICAL
             )
         )
+        RMView.addItemDecoration(
+            DividerItemDecoration(
+                this,
+                DividerItemDecoration.VERTICAL
+            )
+        )
     }
 
     public override fun onPause() {
@@ -272,7 +284,6 @@ class MapScreen : AppCompatActivity(),
 
         mGoogleMap.uiSettings.isMyLocationButtonEnabled = false
         mGoogleMap.uiSettings.isMapToolbarEnabled = false
-
         loadData()
         mGoogleMap.setOnMarkerClickListener { marker ->
             TrackingMapButton.isEnabled = false
@@ -374,7 +385,7 @@ class MapScreen : AppCompatActivity(),
     private fun addAchievement() {
         MapLoadingScreen.visibility = View.VISIBLE
         MapMarkerCloseButton.isEnabled = false
-        if (isRoute) {
+        if (isRoute and waypoints.isEmpty()) {
             stopRoute()
         }
         Handler(Looper.getMainLooper()).postDelayed({
@@ -403,7 +414,6 @@ class MapScreen : AppCompatActivity(),
                 MapLoadingScreen.visibility = View.GONE
             } else {
                 MapMarkerCloseButton.isEnabled = true
-                markerlat += 1
                 MapMarkerCloseButton.text = getString(R.string.close_button_text)
                 MapMarkerCloseButton.setOnClickListener {
                     closeMarkerLayout()
@@ -411,6 +421,15 @@ class MapScreen : AppCompatActivity(),
                 MapMarkerText.text = getString(R.string.got_achievement_text)
                 mGoogleMap.clear()
                 loadData()
+            }
+            if (isRoute and waypoints.isNotEmpty()) {
+                markerlat = waypoints[0].latitude
+                targetlat = waypoints[0].latitude
+                markerlong = waypoints[0].longitude
+                targetlong = waypoints[0].longitude
+                achievement = waypointsNames[0]
+                waypoints.removeAt(0)
+                waypointsNames.removeAt(0)
             }
         }, 100)
     }
@@ -444,7 +463,7 @@ class MapScreen : AppCompatActivity(),
                 for (item in list) {
                     row.add(item)
                     poz++
-                    if (poz > 3) {
+                    if (poz > 5) {
                         poz = 0
                         objects.add(row.clone() as ArrayList<String>)
                         row.clear()
@@ -464,6 +483,13 @@ class MapScreen : AppCompatActivity(),
                     ).title(item[0]).snippet(item[1])
                 )
             }
+            rmObjects.clear()
+            objects.sortBy { it[0] }
+            for (item in objects) {
+                rmObjects.add(RMObject(item[0], item[2].toDouble(), item[3].toDouble(), false))
+            }
+            RMView.swapAdapter(RMAdapter(rmObjects), true)
+            RMView.layoutManager = LinearLayoutManager(this)
             TrackingMapButton.isEnabled = true
             RouteMapButton.isEnabled = true
             MapHelpButton.isEnabled = true
@@ -599,11 +625,29 @@ class MapScreen : AppCompatActivity(),
     }
 
     fun openMapTravelMethodLayout(view: View) {
+        if (isMultiple) {
+            var flag = true
+            for (obj in rmObjects) {
+                if (obj.isSelected) {
+                    if (flag) {
+                        markerlat = obj.lat
+                        markerlong = obj.long
+                        achievement = obj.name
+                        flag = false
+                    } else {
+                        waypoints.add(LatLng(obj.lat, obj.long))
+                        waypointsNames.add(obj.name)
+                    }
+                }
+            }
+            isMultiple = false
+        }
         TravelMethodWalking.isEnabled = true
         TravelMethodDriving.isEnabled = true
         TravelMethodTransit.isEnabled = true
         TravelMethodClose.isEnabled = true
         MapMarkerLayout.visibility = View.GONE
+        MapRMLayout.visibility = View.GONE
         //MapRouteLayout.visibility = View.GONE
         MapTravelMethodLayout.visibility = View.VISIBLE
     }
@@ -655,7 +699,6 @@ class MapScreen : AppCompatActivity(),
         val urlDirections =
             "https://maps.googleapis.com/maps/api/geocode/json?address=" + tmpText +
                     "&key=" + getString(R.string.google_maps_key)
-        println(urlDirections)
         val t = Thread {
             val apiResponse = URL(urlDirections).readText()
             val jsonResponse = JSONObject(apiResponse)
@@ -694,7 +737,6 @@ class MapScreen : AppCompatActivity(),
                     "&destination=" + targetlat + "," + targetlong +
                     movementMethod +
                     "&key=" + getString(R.string.google_maps_key)
-        println(urlDirections)
         val t = Thread {
             val apiResponse = URL(urlDirections).readText()
             val jsonResponse = JSONObject(apiResponse)
@@ -708,7 +750,15 @@ class MapScreen : AppCompatActivity(),
             openMapNotFound()
         } else {
             closeMapOriginLayout(view)
-            openMapDepartureTimeLayout()
+            if (isSimpleRM) {
+                isSimpleRM = false
+                departureTime = ""
+                drawRoute()
+                TrackingMapButton.isEnabled = true
+                RouteMapButton.isEnabled = true
+                MapHelpButton.isEnabled = true
+            } else
+                openMapDepartureTimeLayout()
         }
     }
 
@@ -842,6 +892,12 @@ class MapScreen : AppCompatActivity(),
                 }
             }
         }
+        departureTime = ""
+        drawRoute()
+        MapDepartureTimeLayout.visibility = View.GONE
+        TrackingMapButton.isEnabled = true
+        RouteMapButton.isEnabled = true
+        MapHelpButton.isEnabled = true
     }
 
     @SuppressLint("SetTextI18n")
@@ -886,7 +942,6 @@ class MapScreen : AppCompatActivity(),
                     "&destination=" + targetlat + "," + targetlong +
                     movementMethod + departureTime +
                     "&key=" + getString(R.string.google_maps_key)
-        println(urlDirections)
         val apiResponse = URL(urlDirections).readText()
         val jsonResponse = JSONObject(apiResponse)
         val routes = jsonResponse.getJSONArray("routes")
@@ -900,8 +955,31 @@ class MapScreen : AppCompatActivity(),
         }
     }
 
-    fun routeMultipleTarget(view: View) {
-        updateRoute()
+    fun openRouteMultipleSimpleChoiceLayout(view: View) {
+        isMultiple = true
+        RMSimpleChoiceLayout.visibility = View.VISIBLE
+        TrackingMapButton.isEnabled = false
+        RouteMapButton.isEnabled = false
+        MapHelpButton.isEnabled = false
+    }
+
+    fun setSimpleRM(view: View) {
+        isSimpleRM = true
+        RMSimpleChoiceLayout.visibility = View.INVISIBLE
+        MapRMLayout.visibility = View.VISIBLE
+    }
+
+    fun setAdvancedRM(view: View) {
+        isSimpleRM = false
+        RMSimpleChoiceLayout.visibility = View.INVISIBLE
+        MapRMLayout.visibility = View.VISIBLE
+    }
+
+    fun closeRouteMultipleLayout(view: View) {
+        MapRMLayout.visibility = View.GONE
+        TrackingMapButton.isEnabled = true
+        RouteMapButton.isEnabled = true
+        MapHelpButton.isEnabled = true
     }
 
     private fun updateRoute() {
@@ -920,6 +998,7 @@ class MapScreen : AppCompatActivity(),
                     "&destination=" + targetlat + "," + targetlong +
                     movementMethod + departureTime +
                     "&key=" + getString(R.string.google_maps_key)
+        println(urlDirections)
         val directionsRequest = object :
             StringRequest(
                 Method.GET,
@@ -964,7 +1043,8 @@ class MapScreen : AppCompatActivity(),
                                     transitDetails.getJSONObject("line").getString("short_name")
                                 )
                                 transitRow.add(
-                                    transitDetails.getJSONObject("arrival_stop").getString("name")
+                                    transitDetails.getJSONObject("arrival_stop")
+                                        .getString("name")
                                 )
                                 transitTable.add(transitRow.clone() as ArrayList<String>)
                                 transitRow.clear()
@@ -981,11 +1061,14 @@ class MapScreen : AppCompatActivity(),
                                 TransitView.swapAdapter(TransitAdapter(transitTable), true)
                                 TransitView.layoutManager = LinearLayoutManager(this)
 
-                            } else if (steps.getJSONObject(i).getString("travel_mode") == "WALKING")
+                            } else if (steps.getJSONObject(i)
+                                    .getString("travel_mode") == "WALKING"
+                            )
                                 polyColor.add(Color.RED)
                             else
                                 polyColor.add(Color.GREEN)
                         }
+
                         for (line in polyline) {
                             line.remove()
                         }

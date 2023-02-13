@@ -27,7 +27,6 @@ class TransitAdapter(private val transitPage: ArrayList<ArrayList<String>>) :
         viewHolder.startName.text = data[0]
         viewHolder.transitName.text = data[1]
         viewHolder.endName.text = data[2]
-        println(data[2])
     }
 
     override fun getItemCount(): Int {

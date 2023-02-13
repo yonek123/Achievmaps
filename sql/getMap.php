@@ -18,7 +18,7 @@ if (!$con) {
 
 $nickname = $_GET['nickname'];
 $table = $nickname . "Achievements";
-$result = mysqli_query($con,"SELECT AchievementList.AchievementName, AchievementList.Description, AchievementList.Latitude, AchievementList.Longitude
+$result = mysqli_query($con,"SELECT AchievementList.AchievementName, AchievementList.Description, AchievementList.Latitude, AchievementList.Longitude, AchievementList.OpenTime, AchievementList.CloseTime
   FROM $table INNER JOIN AchievementList ON $table.Achievementid=AchievementList.Achievementid 
   WHERE $table.Progress=0 AND AchievementList.Latitude IS NOT NULL");
 

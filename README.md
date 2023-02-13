@@ -39,3 +39,5 @@ v18: cała trasa dla jednego obiektu gotowa, jest wybór metody, czasu wyruszeni
 v19: dużo poprawek estetycznych i mniejszych, dodanie możliwości wybrania miejsca startu
 
 v20: poprawki w sprawie zapychania pamięci i kilka innych błędów
+
+v21: trasa dla wielu punktów działa, ale jeszcze bez czasu (z tym będzie trzeba się pomęczyć bo dla każdego obiektu trzeba sprawdzić otwarcie, zamknięcie, czas zwiedzania i czas trasy)

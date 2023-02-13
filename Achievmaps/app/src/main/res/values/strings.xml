@@ -13,6 +13,7 @@
     <string name="send_button_text">Wyślij</string>
     <string name="back_button_text">Wróć</string>
     <string name="close_button_text">Zamknij</string>
+    <string name="continue_button_text">Dalej</string>
     <string name="welcome_text">Witaj użytkowniku!</string>
     <string name="unknown_error_text">Wystąpił nieznany błąd</string>
     <string name="first_page_text">&#60;&#60;</string>
