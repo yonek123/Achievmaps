@@ -9,9 +9,9 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
 import com.example.achievmaps.databaseConnections.DatabaseConnections
+import com.example.achievmaps.loginScreen.LoginScreen
 import kotlinx.android.synthetic.main.friends_screen.*
 
 @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER", "UNCHECKED_CAST", "UNUSED_PARAMETER")

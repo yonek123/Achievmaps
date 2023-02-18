@@ -7,10 +7,10 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
 import com.example.achievmaps.achievementsScreen.AchievementsScreen
 import com.example.achievmaps.friendsScreen.FriendsScreen
+import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.mapScreen.MapScreen
 import com.example.achievmaps.newsScreen.NewsScreen
 import com.example.achievmaps.rankingScreen.RankingScreen

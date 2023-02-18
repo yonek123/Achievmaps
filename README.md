@@ -41,3 +41,7 @@ v19: dużo poprawek estetycznych i mniejszych, dodanie możliwości wybrania mie
 v20: poprawki w sprawie zapychania pamięci i kilka innych błędów
 
 v21: trasa dla wielu punktów działa, ale jeszcze bez czasu (z tym będzie trzeba się pomęczyć bo dla każdego obiektu trzeba sprawdzić otwarcie, zamknięcie, czas zwiedzania i czas trasy)
+
+v22: wywalenie niektórych looperów coby skrócić czas ładowania niektórych elementów, czytelniejsze wyświetlanie trasy dla wielu obiektów, dużo poprawek mniejszych i większych bo błędy się sypały w rzeczach o których istnieniu zdążyłem już zapomnieć
+
+v23: dodanie proto algorytmu do drawRouteRM

@@ -1,13 +1,12 @@
 package com.example.achievmaps.mapScreen
 
-import androidx.recyclerview.widget.RecyclerView
-import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
-import com.example.achievmaps.R
-import android.widget.TextView
+import android.view.ViewGroup
 import android.widget.CheckBox
-import java.util.ArrayList
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.example.achievmaps.R
 
 class RMAdapter(private val arrayList: ArrayList<RMObject>) :
     RecyclerView.Adapter<RMAdapter.ViewHolder>() {

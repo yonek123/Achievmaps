@@ -1,14 +1,14 @@
 package com.example.achievmaps.loginScreen
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.view.View
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 import com.example.achievmaps.R
 import com.example.achievmaps.databaseConnections.DatabaseConnections
 import com.example.achievmaps.mainMenuScreen.MainMenuScreen

@@ -37,7 +37,6 @@ import com.google.android.gms.maps.model.*
 import com.google.maps.android.PolyUtil
 import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.main_menu_screen.*
-import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URL
 import java.text.SimpleDateFormat
@@ -423,11 +422,6 @@ class MapScreen : AppCompatActivity(),
                 loadData()
             }
             if (isRoute and waypoints.isNotEmpty()) {
-                markerlat = waypoints[0].latitude
-                targetlat = waypoints[0].latitude
-                markerlong = waypoints[0].longitude
-                targetlong = waypoints[0].longitude
-                achievement = waypointsNames[0]
                 waypoints.removeAt(0)
                 waypointsNames.removeAt(0)
             }
@@ -625,30 +619,25 @@ class MapScreen : AppCompatActivity(),
     }
 
     fun openMapTravelMethodLayout(view: View) {
-        if (isMultiple) {
-            var flag = true
-            for (obj in rmObjects) {
-                if (obj.isSelected) {
-                    if (flag) {
-                        markerlat = obj.lat
-                        markerlong = obj.long
-                        achievement = obj.name
-                        flag = false
-                    } else {
-                        waypoints.add(LatLng(obj.lat, obj.long))
-                        waypointsNames.add(obj.name)
-                    }
-                }
-            }
-            isMultiple = false
-        }
+        isMultiple = false
         TravelMethodWalking.isEnabled = true
         TravelMethodDriving.isEnabled = true
         TravelMethodTransit.isEnabled = true
         TravelMethodClose.isEnabled = true
         MapMarkerLayout.visibility = View.GONE
-        MapRMLayout.visibility = View.GONE
         //MapRouteLayout.visibility = View.GONE
+        TravelMethodWalking.setOnClickListener {
+            movementMethod = "&mode=walking"
+            openMapOriginLayout()
+        }
+        TravelMethodDriving.setOnClickListener {
+            movementMethod = "&mode=driving"
+            openMapOriginLayout()
+        }
+        TravelMethodTransit.setOnClickListener {
+            movementMethod = "&mode=transit"
+            openMapOriginLayout()
+        }
         MapTravelMethodLayout.visibility = View.VISIBLE
     }
 
@@ -657,21 +646,6 @@ class MapScreen : AppCompatActivity(),
         TrackingMapButton.isEnabled = true
         RouteMapButton.isEnabled = true
         MapHelpButton.isEnabled = true
-    }
-
-    fun setWalking(view: View) {
-        movementMethod = "&mode=walking"
-        openMapOriginLayout()
-    }
-
-    fun setDriving(view: View) {
-        movementMethod = "&mode=driving"
-        openMapOriginLayout()
-    }
-
-    fun setTransit(view: View) {
-        movementMethod = "&mode=transit"
-        openMapOriginLayout()
     }
 
     private fun openMapOriginLayout() {
@@ -753,7 +727,7 @@ class MapScreen : AppCompatActivity(),
             if (isSimpleRM) {
                 isSimpleRM = false
                 departureTime = ""
-                drawRoute()
+                drawRouteRM()
                 TrackingMapButton.isEnabled = true
                 RouteMapButton.isEnabled = true
                 MapHelpButton.isEnabled = true
@@ -768,10 +742,6 @@ class MapScreen : AppCompatActivity(),
     }
 
     fun closeMapDepartureTimeLayout(view: View) {
-        closeMapDepartureTimeLayout()
-    }
-
-    private fun closeMapDepartureTimeLayout() {
         MapTimeAssuranceBox.visibility = View.GONE
         MapDepartureTimeLayout.visibility = View.GONE
         TrackingMapButton.isEnabled = true
@@ -836,6 +806,7 @@ class MapScreen : AppCompatActivity(),
         val currentDate = dateFormat.format(Date())
         val myDate = currentDate + " " + timePicker.hour + ":" + timePicker.minute
         val date = dateTimeFormat.parse(myDate)
+        date.time = date.time + 86400000
         if (date != null) {
             departureTime = "&departure_time=" + date.time
         }
@@ -849,7 +820,7 @@ class MapScreen : AppCompatActivity(),
         t.join()
 
         if (!flag) {
-            closeMapDepartureTimeLayout()
+            closeMapDepartureTimeLayout(view)
             openMapNotFound()
         } else {
 
@@ -871,10 +842,7 @@ class MapScreen : AppCompatActivity(),
                     openTimeAssuranceBox(3)
                 } else {
                     drawRoute()
-                    MapDepartureTimeLayout.visibility = View.GONE
-                    TrackingMapButton.isEnabled = true
-                    RouteMapButton.isEnabled = true
-                    MapHelpButton.isEnabled = true
+                    closeMapDepartureTimeLayout(view)
                 }
             } else {
                 if (timeOnPlace < timeOpen) {
@@ -892,12 +860,12 @@ class MapScreen : AppCompatActivity(),
                 }
             }
         }
-        departureTime = ""
+        /*departureTime = ""
         drawRoute()
         MapDepartureTimeLayout.visibility = View.GONE
         TrackingMapButton.isEnabled = true
         RouteMapButton.isEnabled = true
-        MapHelpButton.isEnabled = true
+        MapHelpButton.isEnabled = true*/
     }
 
     @SuppressLint("SetTextI18n")
@@ -921,11 +889,7 @@ class MapScreen : AppCompatActivity(),
 
     fun closeTimeAssuranceBox(view: View) {
         drawRoute()
-        MapDepartureTimeLayout.visibility = View.GONE
-        TrackingMapButton.isEnabled = true
-        RouteMapButton.isEnabled = true
-        MapHelpButton.isEnabled = true
-        closeMapDepartureTimeLayout()
+        closeMapDepartureTimeLayout(view)
     }
 
     fun openMapDepartureTimeButton(view: View) {
@@ -942,6 +906,7 @@ class MapScreen : AppCompatActivity(),
                     "&destination=" + targetlat + "," + targetlong +
                     movementMethod + departureTime +
                     "&key=" + getString(R.string.google_maps_key)
+        //println(urlDirections)
         val apiResponse = URL(urlDirections).readText()
         val jsonResponse = JSONObject(apiResponse)
         val routes = jsonResponse.getJSONArray("routes")
@@ -954,6 +919,8 @@ class MapScreen : AppCompatActivity(),
             true
         }
     }
+
+    //początek dla multiple (można by dawać warunki w istniejących funkcjach, ale tak będzie mi prościej na prezentacji pokazać co i jak)
 
     fun openRouteMultipleSimpleChoiceLayout(view: View) {
         isMultiple = true
@@ -982,12 +949,52 @@ class MapScreen : AppCompatActivity(),
         MapHelpButton.isEnabled = true
     }
 
+    fun openMapTravelMethodLayoutRM(view: View) {
+        for (obj in rmObjects) {
+            if (obj.isSelected) {
+                waypoints.add(LatLng(obj.lat, obj.long))
+                waypointsNames.add(obj.name)
+            }
+        }
+        markerlat = waypoints[0].latitude
+        markerlong = waypoints[0].longitude
+        achievement = waypointsNames[0]
+        TravelMethodWalking.isEnabled = true
+        TravelMethodDriving.isEnabled = true
+        TravelMethodTransit.isEnabled = true
+        TravelMethodClose.isEnabled = true
+        MapRMLayout.visibility = View.GONE
+        //MapRouteLayout.visibility = View.GONE
+        TravelMethodWalking.setOnClickListener {
+            movementMethod = "&mode=walking"
+            openMapOriginLayoutRM()
+        }
+        TravelMethodDriving.setOnClickListener {
+            movementMethod = "&mode=driving"
+            openMapOriginLayoutRM()
+        }
+        TravelMethodTransit.setOnClickListener {
+            movementMethod = "&mode=transit"
+            openMapOriginLayoutRM()
+        }
+        MapTravelMethodLayout.visibility = View.VISIBLE
+    }
+
+    private fun openMapOriginLayoutRM() {
+        MapTravelMethodLayout.visibility = View.GONE
+        //MapRouteLayout.visibility = View.GONE
+        originlat = lat
+        originlong = long
+        MapOriginLayout.visibility = View.VISIBLE
+    }
+
     private fun updateRoute() {
         originlat = lat
         originlong = long
-        targetlat = markerlat
-        targetlong = markerlong
-        drawRoute()
+        if (isMultiple)
+            drawRouteRM()
+        else
+            drawRoute()
     }
 
     private fun drawRoute() {
@@ -998,7 +1005,7 @@ class MapScreen : AppCompatActivity(),
                     "&destination=" + targetlat + "," + targetlong +
                     movementMethod + departureTime +
                     "&key=" + getString(R.string.google_maps_key)
-        println(urlDirections)
+        //println(urlDirections)
         val directionsRequest = object :
             StringRequest(
                 Method.GET,
@@ -1086,5 +1093,127 @@ class MapScreen : AppCompatActivity(),
                 }) {}
         val requestQueue = Volley.newRequestQueue(this)
         requestQueue.add(directionsRequest)
+    }
+
+    private fun drawRouteRM() {
+        //"https://maps.googleapis.com/maps/api/directions/json?origin=53.45237680317154,14.537924413421782&destination=53.388689987076354,14.515383062995541&mode=transit&key=AIzaSyDi6Eaj-EWJX3Mt6eu1PfNRglnP6GVZLC0"
+        val t = Thread {
+            var urlDirections: String
+            for (point in 0 until waypoints.size) {
+                if (point == 0)
+                    urlDirections =
+                        getString(R.string.map_url_text) +
+                                originlat + "," + originlong +
+                                "&destination=" + waypoints[point].latitude +
+                                "," + waypoints[point].longitude +
+                                movementMethod + departureTime +
+                                "&key=" + getString(R.string.google_maps_key)
+                else
+                    urlDirections =
+                        getString(R.string.map_url_text) +
+                                waypoints[point - 1].latitude +
+                                "," + waypoints[point - 1].longitude +
+                                "&destination=" + waypoints[point].latitude +
+                                "," + waypoints[point].longitude +
+                                movementMethod + departureTime +
+                                "&key=" + getString(R.string.google_maps_key)
+                //println(urlDirections)
+                val apiResponse = URL(urlDirections).readText()
+                val jsonResponse = JSONObject(apiResponse)
+
+                // Get routes
+                val routes = jsonResponse.getJSONArray("routes")
+                if (routes.isNull(0) && !isRoute)
+                    openMapNotFound()
+                else if (!routes.isNull(0)) {
+                    if (!isRouteStatic)
+                        isRoute = true
+                    isTransit = false
+                    if (point == 0) {
+                        polyColor.clear()
+                        transitTable.clear()
+                        path.clear()
+                    }
+                    val legs = routes.getJSONObject(0).getJSONArray("legs")
+                    distance = legs.getJSONObject(0).getJSONObject("distance")
+                        .getString("value")
+                    duration = legs.getJSONObject(0).getJSONObject("duration")
+                        .getString("value")
+                    val steps = legs.getJSONObject(0).getJSONArray("steps")
+                    for (i in 0 until steps.length()) {
+                        val points =
+                            steps.getJSONObject(i).getJSONObject("polyline")
+                                .getString("points")
+                        path.add(PolyUtil.decode(points))
+                        if (steps.getJSONObject(i)
+                                .getString("travel_mode") == "TRANSIT"
+                        ) {
+                            if (point == 0)
+                                polyColor.add(Color.BLUE)
+                            else
+                                polyColor.add(Color.GRAY)
+                            isTransit = true
+
+                            TransitTop.visibility = View.VISIBLE
+
+                            val transitDetails =
+                                steps.getJSONObject(i).getJSONObject("transit_details")
+                            transitRow.add(
+                                transitDetails.getJSONObject("departure_stop")
+                                    .getString("name")
+                            )
+                            transitRow.add(
+                                transitDetails.getJSONObject("line")
+                                    .getString("short_name")
+                            )
+                            transitRow.add(
+                                transitDetails.getJSONObject("arrival_stop")
+                                    .getString("name")
+                            )
+                            transitTable.add(transitRow.clone() as ArrayList<String>)
+                            transitRow.clear()
+
+                            val param =
+                                TrackingMapButton.layoutParams as ViewGroup.MarginLayoutParams
+                            param.setMargins(0, 0, 20, 600)
+                            TrackingMapButton.layoutParams = param
+                            val param2 =
+                                RouteMapButton.layoutParams as ViewGroup.MarginLayoutParams
+                            param2.setMargins(20, 0, 0, 600)
+                            RouteMapButton.layoutParams = param2
+
+                            TransitView.swapAdapter(TransitAdapter(transitTable), true)
+                            TransitView.layoutManager = LinearLayoutManager(this)
+
+                        } else if (steps.getJSONObject(i)
+                                .getString("travel_mode") == "WALKING"
+                        )
+                            if (point == 0)
+                                polyColor.add(Color.RED)
+                            else
+                                polyColor.add(Color.GRAY)
+                        else
+                            if (point == 0)
+                                polyColor.add(Color.GREEN)
+                            else
+                                polyColor.add(Color.GRAY)
+                    }
+                }
+            }
+        }
+        t.start()
+        t.join()
+
+        for (line in polyline) {
+            line.remove()
+        }
+        for (i in path.size - 1 downTo 0) {
+            polyline.add(
+                mGoogleMap.addPolyline(
+                    PolylineOptions().addAll(path[i]).color(polyColor[i])
+                )
+            )
+        }
+        EndRouteMapButton.visibility = View.VISIBLE
     }
 }

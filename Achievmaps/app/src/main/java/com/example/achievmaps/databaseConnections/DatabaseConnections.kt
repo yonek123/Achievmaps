@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import java.io.InputStream
-import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
 

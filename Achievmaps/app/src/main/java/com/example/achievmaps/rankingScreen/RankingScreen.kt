@@ -4,14 +4,14 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.achievmaps.loginScreen.LoginScreen
 import com.example.achievmaps.R
-import kotlinx.android.synthetic.main.ranking_screen.*
-import android.widget.Button
 import com.example.achievmaps.databaseConnections.DatabaseConnections
+import com.example.achievmaps.loginScreen.LoginScreen
+import kotlinx.android.synthetic.main.ranking_screen.*
 
 @Suppress("UNCHECKED_CAST", "UNUSED_PARAMETER", "VARIABLE_WITH_REDUNDANT_INITIALIZER")
 class RankingScreen : AppCompatActivity() {
