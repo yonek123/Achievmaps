@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.*
 import com.google.maps.android.PolyUtil
 import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.main_menu_screen.*
+import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URL
 import java.text.SimpleDateFormat
@@ -96,6 +97,7 @@ class MapScreen : AppCompatActivity(),
     private var yourTime = ""
     private var isMultiple = false
     private var isSimpleRM = false
+    private var totalDuration = 0
 
     private val polyline: MutableList<Polyline> = ArrayList()
     private val path: MutableList<List<LatLng>> = ArrayList()
@@ -725,12 +727,10 @@ class MapScreen : AppCompatActivity(),
         } else {
             closeMapOriginLayout(view)
             if (isSimpleRM) {
+                MapLoadingScreen.visibility = View.VISIBLE
                 isSimpleRM = false
                 departureTime = ""
-                drawRouteRM()
-                TrackingMapButton.isEnabled = true
-                RouteMapButton.isEnabled = true
-                MapHelpButton.isEnabled = true
+                drawRouteRMSetWaypoints()
             } else
                 openMapDepartureTimeLayout()
         }
@@ -1215,5 +1215,151 @@ class MapScreen : AppCompatActivity(),
             )
         }
         EndRouteMapButton.visibility = View.VISIBLE
+    }
+
+    private fun drawRouteRMSetWaypoints() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            totalDuration = 0
+            //"https://maps.googleapis.com/maps/api/directions/json?origin=53.45237680317154,14.537924413421782&destination=53.388689987076354,14.515383062995541&mode=transit&key=AIzaSyDi6Eaj-EWJX3Mt6eu1PfNRglnP6GVZLC0"
+            val t = Thread {
+                var urlDirections: String
+                for (point in 0 until waypoints.size) {
+                    var minLegs = JSONArray()
+                    var minDuration = 0
+                    for (p in point until waypoints.size) {
+                        if (point == 0)
+                            urlDirections =
+                                getString(R.string.map_url_text) +
+                                        originlat + "," + originlong +
+                                        "&destination=" + waypoints[point].latitude +
+                                        "," + waypoints[point].longitude +
+                                        movementMethod + departureTime +
+                                        "&key=" + getString(R.string.google_maps_key)
+                        else
+                            urlDirections =
+                                getString(R.string.map_url_text) +
+                                        waypoints[point - 1].latitude +
+                                        "," + waypoints[point - 1].longitude +
+                                        "&destination=" + waypoints[point].latitude +
+                                        "," + waypoints[point].longitude +
+                                        movementMethod + departureTime +
+                                        "&key=" + getString(R.string.google_maps_key)
+                        //println(urlDirections)
+                        val apiResponse = URL(urlDirections).readText()
+                        val jsonResponse = JSONObject(apiResponse)
+
+                        // Get routes
+                        val routes = jsonResponse.getJSONArray("routes")
+                        if (routes.isNull(0) && !isRoute)
+                            openMapNotFound()
+                        else if (!routes.isNull(0)) {
+                            if (!isRouteStatic)
+                                isRoute = true
+                            isTransit = false
+                            if (point == 0) {
+                                polyColor.clear()
+                                transitTable.clear()
+                                path.clear()
+                            }
+                            val legs = routes.getJSONObject(0).getJSONArray("legs")
+                            distance = legs.getJSONObject(0).getJSONObject("distance")
+                                .getString("value")
+                            duration = legs.getJSONObject(0).getJSONObject("duration")
+                                .getString("value")
+                            if (duration.toInt() < minDuration || p == point) {
+                                minDuration = duration.toInt()
+                                val tmpWaypoint = waypoints[point]
+                                waypoints[point] = waypoints[p]
+                                waypoints[p] = tmpWaypoint
+                                val tmpName = waypointsNames[point]
+                                waypointsNames[point] = waypointsNames[p]
+                                waypointsNames[p] = tmpName
+                                minLegs = legs
+                            }
+                        }
+                    }
+                    totalDuration += minLegs.getJSONObject(0).getJSONObject("duration")
+                        .getString("value").toInt()
+                    val steps = minLegs.getJSONObject(0).getJSONArray("steps")
+                    for (i in 0 until steps.length()) {
+                        val points =
+                            steps.getJSONObject(i).getJSONObject("polyline")
+                                .getString("points")
+                        path.add(PolyUtil.decode(points))
+                        if (steps.getJSONObject(i)
+                                .getString("travel_mode") == "TRANSIT"
+                        ) {
+                            if (point == 0)
+                                polyColor.add(Color.BLUE)
+                            else
+                                polyColor.add(Color.GRAY)
+                            isTransit = true
+
+                            TransitTop.visibility = View.VISIBLE
+
+                            val transitDetails =
+                                steps.getJSONObject(i).getJSONObject("transit_details")
+                            transitRow.add(
+                                transitDetails.getJSONObject("departure_stop")
+                                    .getString("name")
+                            )
+                            transitRow.add(
+                                transitDetails.getJSONObject("line")
+                                    .getString("short_name")
+                            )
+                            transitRow.add(
+                                transitDetails.getJSONObject("arrival_stop")
+                                    .getString("name")
+                            )
+                            transitTable.add(transitRow.clone() as ArrayList<String>)
+                            transitRow.clear()
+
+                            val param =
+                                TrackingMapButton.layoutParams as ViewGroup.MarginLayoutParams
+                            param.setMargins(0, 0, 20, 600)
+                            TrackingMapButton.layoutParams = param
+                            val param2 =
+                                RouteMapButton.layoutParams as ViewGroup.MarginLayoutParams
+                            param2.setMargins(20, 0, 0, 600)
+                            RouteMapButton.layoutParams = param2
+
+                            TransitView.swapAdapter(TransitAdapter(transitTable), true)
+                            TransitView.layoutManager = LinearLayoutManager(this)
+
+                        } else if (steps.getJSONObject(i)
+                                .getString("travel_mode") == "WALKING"
+                        )
+                            if (point == 0)
+                                polyColor.add(Color.RED)
+                            else
+                                polyColor.add(Color.GRAY)
+                        else
+                            if (point == 0)
+                                polyColor.add(Color.GREEN)
+                            else
+                                polyColor.add(Color.GRAY)
+                    }
+                }
+            }
+            t.start()
+            t.join()
+
+            for (line in polyline) {
+                line.remove()
+            }
+            for (i in path.size - 1 downTo 0) {
+                polyline.add(
+                    mGoogleMap.addPolyline(
+                        PolylineOptions().addAll(path[i]).color(polyColor[i])
+                    )
+                )
+            }
+            EndRouteMapButton.visibility = View.VISIBLE
+
+            MapLoadingScreen.visibility = View.GONE
+        }, 100)
+        TrackingMapButton.isEnabled = true
+        RouteMapButton.isEnabled = true
+        MapHelpButton.isEnabled = true
     }
 }

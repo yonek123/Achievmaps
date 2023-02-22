@@ -44,4 +44,6 @@ v21: trasa dla wielu punktów działa, ale jeszcze bez czasu (z tym będzie trze
 
 v22: wywalenie niektórych looperów coby skrócić czas ładowania niektórych elementów, czytelniejsze wyświetlanie trasy dla wielu obiektów, dużo poprawek mniejszych i większych bo błędy się sypały w rzeczach o których istnieniu zdążyłem już zapomnieć
 
-v23: dodanie proto algorytmu do drawRouteRM
+v23: dodanie proto algorytmu komiwojażera dla wersji bez czasu, teraz czas na czas
+
+v24: dodanie trasy dla wielu obiektów ze sprawdzaniem czasu otwarcia i zamknięcia
