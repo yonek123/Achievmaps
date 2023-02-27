@@ -26,7 +26,7 @@ v12: FINITO
 
 v13: małe popraweczki
 
-v14: dodanie możliwości włączenia i wyłączenia aktywnego śledzenia użytkownika
+v14: dodanie możliwości włączenia i wyłączenia aktywnego śledzenia użytkownika 
 
 v15: rysowanie trasy
 
@@ -46,4 +46,4 @@ v22: wywalenie niektórych looperów coby skrócić czas ładowania niektórych 
 
 v23: dodanie proto algorytmu komiwojażera dla wersji bez czasu, teraz czas na czas
 
-v24: dodanie trasy dla wielu obiektów ze sprawdzaniem czasu otwarcia i zamknięcia
+v24: dodanie trasy dla wielu obiektów ze sprawdzaniem czasu otwarcia i zamknięcia, poprawienie działania równoległych wątków dla wielu obiektów

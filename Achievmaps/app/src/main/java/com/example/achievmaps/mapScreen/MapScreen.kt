@@ -57,9 +57,7 @@ class MapScreen : AppCompatActivity(),
     OnCameraIdleListener {
     private var page = 0
     private var list = listOf("0")
-    private var row = ArrayList<String>()
-    private var objects = ArrayList<ArrayList<String>>()
-    private var rmObjects = ArrayList<RMObject>()
+    private val rmObjects = ArrayList<RMObject>()
     private var achievement = ""
 
     @SuppressLint("SimpleDateFormat")
@@ -98,14 +96,14 @@ class MapScreen : AppCompatActivity(),
     private var isMultiple = false
     private var isSimpleRM = false
     private var totalDuration = 0
+    private var isRMThreadOn = false
 
     private val polyline: MutableList<Polyline> = ArrayList()
     private val path: MutableList<List<LatLng>> = ArrayList()
-    private var waypoints: MutableList<LatLng> = ArrayList()
-    private var waypointsNames: MutableList<String> = ArrayList()
+    private val waypoints: MutableList<LatLng> = ArrayList()
+    private val waypointsNames: MutableList<String> = ArrayList()
     private val polyColor: MutableList<Int> = ArrayList()
-    private var transitRow = ArrayList<String>()
-    private var transitTable = ArrayList<ArrayList<String>>()
+    private val transitTable = ArrayList<ArrayList<String>>()
     private lateinit var mGoogleMap: GoogleMap
     private var mapFrag: SupportMapFragment? = null
     private lateinit var mLocationRequest: LocationRequest
@@ -452,22 +450,19 @@ class MapScreen : AppCompatActivity(),
             MapErrorLayout.visibility = View.VISIBLE
             MapLoadingScreen.visibility = View.GONE
         } else {
-            val t = Thread {
-                var poz = 0
-                row.clear()
-                objects.clear()
-                for (item in list) {
-                    row.add(item)
-                    poz++
-                    if (poz > 5) {
-                        poz = 0
-                        objects.add(row.clone() as ArrayList<String>)
-                        row.clear()
-                    }
+            var poz = 0
+            val row = ArrayList<String>()
+            val objects = ArrayList<ArrayList<String>>()
+            objects.clear()
+            for (item in list) {
+                row.add(item)
+                poz++
+                if (poz > 5) {
+                    poz = 0
+                    objects.add(row.clone() as ArrayList<String>)
+                    row.clear()
                 }
             }
-            t.start()
-            t.join()
 
             for (item in objects) {
                 mGoogleMap.addMarker(
@@ -950,6 +945,8 @@ class MapScreen : AppCompatActivity(),
     }
 
     fun openMapTravelMethodLayoutRM(view: View) {
+        waypoints.clear()
+        waypointsNames.clear()
         for (obj in rmObjects) {
             if (obj.isSelected) {
                 waypoints.add(LatLng(obj.lat, obj.long))
@@ -992,13 +989,13 @@ class MapScreen : AppCompatActivity(),
         originlat = lat
         originlong = long
         if (isMultiple)
-            drawRouteRM()
-        else
-            drawRoute()
+            if (!isRMThreadOn)
+                drawRouteRM()
+            else
+                drawRoute()
     }
 
     private fun drawRoute() {
-        //"https://maps.googleapis.com/maps/api/directions/json?origin=53.45237680317154,14.537924413421782&destination=53.388689987076354,14.515383062995541&mode=transit&key=AIzaSyDi6Eaj-EWJX3Mt6eu1PfNRglnP6GVZLC0"
         val urlDirections =
             getString(R.string.map_url_text) +
                     originlat + "," + originlong +
@@ -1039,7 +1036,7 @@ class MapScreen : AppCompatActivity(),
                                 isTransit = true
 
                                 TransitTop.visibility = View.VISIBLE
-
+                                val transitRow = ArrayList<String>()
                                 val transitDetails =
                                     steps.getJSONObject(i).getJSONObject("transit_details")
                                 transitRow.add(
@@ -1096,8 +1093,8 @@ class MapScreen : AppCompatActivity(),
     }
 
     private fun drawRouteRM() {
-        //"https://maps.googleapis.com/maps/api/directions/json?origin=53.45237680317154,14.537924413421782&destination=53.388689987076354,14.515383062995541&mode=transit&key=AIzaSyDi6Eaj-EWJX3Mt6eu1PfNRglnP6GVZLC0"
         val t = Thread {
+            isRMThreadOn = true
             var urlDirections: String
             for (point in 0 until waypoints.size) {
                 if (point == 0)
@@ -1155,7 +1152,7 @@ class MapScreen : AppCompatActivity(),
                             isTransit = true
 
                             TransitTop.visibility = View.VISIBLE
-
+                            val transitRow = ArrayList<String>()
                             val transitDetails =
                                 steps.getJSONObject(i).getJSONObject("transit_details")
                             transitRow.add(
@@ -1200,27 +1197,30 @@ class MapScreen : AppCompatActivity(),
                     }
                 }
             }
+
+            val mainHandler = Handler(Looper.getMainLooper())
+
+            val myRunnable = Runnable {
+                for (line in polyline) {
+                    line.remove()
+                }
+                for (i in path.size - 1 downTo 0) {
+                    polyline.add(
+                        mGoogleMap.addPolyline(
+                            PolylineOptions().addAll(path[i]).color(polyColor[i])
+                        )
+                    )
+                }
+            }
+            mainHandler.post(myRunnable)
+            isRMThreadOn = false
         }
         t.start()
-        t.join()
-
-        for (line in polyline) {
-            line.remove()
-        }
-        for (i in path.size - 1 downTo 0) {
-            polyline.add(
-                mGoogleMap.addPolyline(
-                    PolylineOptions().addAll(path[i]).color(polyColor[i])
-                )
-            )
-        }
-        EndRouteMapButton.visibility = View.VISIBLE
     }
 
     private fun drawRouteRMSetWaypoints() {
         Handler(Looper.getMainLooper()).postDelayed({
             totalDuration = 0
-            //"https://maps.googleapis.com/maps/api/directions/json?origin=53.45237680317154,14.537924413421782&destination=53.388689987076354,14.515383062995541&mode=transit&key=AIzaSyDi6Eaj-EWJX3Mt6eu1PfNRglnP6GVZLC0"
             val t = Thread {
                 var urlDirections: String
                 for (point in 0 until waypoints.size) {
@@ -1296,7 +1296,7 @@ class MapScreen : AppCompatActivity(),
                             isTransit = true
 
                             TransitTop.visibility = View.VISIBLE
-
+                            val transitRow = ArrayList<String>()
                             val transitDetails =
                                 steps.getJSONObject(i).getJSONObject("transit_details")
                             transitRow.add(
