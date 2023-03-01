@@ -46,4 +46,6 @@ v22: wywalenie niektórych looperów coby skrócić czas ładowania niektórych 
 
 v23: dodanie proto algorytmu komiwojażera dla wersji bez czasu, teraz czas na czas
 
-v24: dodanie trasy dla wielu obiektów ze sprawdzaniem czasu otwarcia i zamknięcia, poprawienie działania równoległych wątków dla wielu obiektów
+v24: poprawienie działania równoległych wątków dla wielu obiektów, poprawienie kilku błędów
+
+v25: dodanie trasy dla wielu obiektów ze sprawdzaniem czasu otwarcia i zamknięcia
