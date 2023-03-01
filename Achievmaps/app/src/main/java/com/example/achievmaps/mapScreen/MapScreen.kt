@@ -593,26 +593,41 @@ class MapScreen : AppCompatActivity(),
 
     private fun stopRoute() {
         isRouteStatic = false
-        EndRouteMapButton.visibility = View.GONE
-        TransitTop.visibility = View.INVISIBLE
-        val param = TrackingMapButton.layoutParams as ViewGroup.MarginLayoutParams
-        param.setMargins(0, 0, 20, 50)
-        TrackingMapButton.layoutParams = param
-
-        val param2 = RouteMapButton.layoutParams as ViewGroup.MarginLayoutParams
-        param2.setMargins(20, 0, 0, 50)
-        RouteMapButton.layoutParams = param2
-
-        transitTable.clear()
-        TransitView.swapAdapter(TransitAdapter(transitTable), true)
-        TransitView.layoutManager = LinearLayoutManager(this)
-
-        path.clear()
-        for (line in polyline) {
-            line.remove()
-        }
-        polyColor.clear()
         isRoute = false
+        val t = Thread {
+            while (isRMThreadOn) {
+                isRouteStatic = true
+                isRoute = false
+                Thread.sleep(1000)
+            }
+            val mainHandler = Handler(Looper.getMainLooper())
+
+            val myRunnable = Runnable {
+                isRouteStatic = false
+                EndRouteMapButton.visibility = View.GONE
+                TransitTop.visibility = View.INVISIBLE
+                val param = TrackingMapButton.layoutParams as ViewGroup.MarginLayoutParams
+                param.setMargins(0, 0, 20, 50)
+                TrackingMapButton.layoutParams = param
+
+                val param2 = RouteMapButton.layoutParams as ViewGroup.MarginLayoutParams
+                param2.setMargins(20, 0, 0, 50)
+                RouteMapButton.layoutParams = param2
+
+                transitTable.clear()
+                TransitView.swapAdapter(TransitAdapter(transitTable), true)
+                TransitView.layoutManager = LinearLayoutManager(this)
+
+                path.clear()
+                polyColor.clear()
+
+                for (line in polyline) {
+                    line.remove()
+                }
+            }
+            mainHandler.post(myRunnable)
+        }
+        t.start()
     }
 
     fun openMapTravelMethodLayout(view: View) {
@@ -855,12 +870,6 @@ class MapScreen : AppCompatActivity(),
                 }
             }
         }
-        /*departureTime = ""
-        drawRoute()
-        MapDepartureTimeLayout.visibility = View.GONE
-        TrackingMapButton.isEnabled = true
-        RouteMapButton.isEnabled = true
-        MapHelpButton.isEnabled = true*/
     }
 
     @SuppressLint("SetTextI18n")
@@ -1231,8 +1240,8 @@ class MapScreen : AppCompatActivity(),
                             urlDirections =
                                 getString(R.string.map_url_text) +
                                         originlat + "," + originlong +
-                                        "&destination=" + waypoints[point].latitude +
-                                        "," + waypoints[point].longitude +
+                                        "&destination=" + waypoints[p].latitude +
+                                        "," + waypoints[p].longitude +
                                         movementMethod + departureTime +
                                         "&key=" + getString(R.string.google_maps_key)
                         else
@@ -1240,8 +1249,8 @@ class MapScreen : AppCompatActivity(),
                                 getString(R.string.map_url_text) +
                                         waypoints[point - 1].latitude +
                                         "," + waypoints[point - 1].longitude +
-                                        "&destination=" + waypoints[point].latitude +
-                                        "," + waypoints[point].longitude +
+                                        "&destination=" + waypoints[p].latitude +
+                                        "," + waypoints[p].longitude +
                                         movementMethod + departureTime +
                                         "&key=" + getString(R.string.google_maps_key)
                         //println(urlDirections)
