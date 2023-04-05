@@ -111,6 +111,8 @@ class MapScreen : AppCompatActivity(),
     internal var mCurrLocationMarker: Marker? = null
     private var mFusedLocationClient: FusedLocationProviderClient? = null
 
+    val sortedTimes: MutableList<RMObject> = ArrayList()
+
     private var mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val locationList = locationResult.locations
@@ -457,7 +459,7 @@ class MapScreen : AppCompatActivity(),
             for (item in list) {
                 row.add(item)
                 poz++
-                if (poz > 5) {
+                if (poz > 6) {
                     poz = 0
                     objects.add(row.clone() as ArrayList<String>)
                     row.clear()
@@ -477,7 +479,24 @@ class MapScreen : AppCompatActivity(),
             rmObjects.clear()
             objects.sortBy { it[0] }
             for (item in objects) {
-                rmObjects.add(RMObject(item[0], item[2].toDouble(), item[3].toDouble(), false))
+                if (item[4].equals(""))
+                    item[4] = "00:00"
+                if (item[5].equals(""))
+                    item[5] = "24:00"
+                val timeOpen = timeFormat.parse(item[4])!!.time / 1000 + 3600
+                val timeClose = timeFormat.parse(item[5])!!.time / 1000 + 3600
+                val timeDuration = timeFormat.parse(item[6])!!.time / 1000 + 3600
+                rmObjects.add(
+                    RMObject(
+                        item[0],
+                        item[2].toDouble(),
+                        item[3].toDouble(),
+                        timeOpen,
+                        timeClose,
+                        timeDuration,
+                        false
+                    )
+                )
             }
             RMView.swapAdapter(RMAdapter(rmObjects), true)
             RMView.layoutManager = LinearLayoutManager(this)
@@ -632,6 +651,7 @@ class MapScreen : AppCompatActivity(),
 
     fun openMapTravelMethodLayout(view: View) {
         isMultiple = false
+        isSimpleRM = false
         TravelMethodWalking.isEnabled = true
         TravelMethodDriving.isEnabled = true
         TravelMethodTransit.isEnabled = true
@@ -741,13 +761,20 @@ class MapScreen : AppCompatActivity(),
                 isSimpleRM = false
                 departureTime = ""
                 drawRouteRMSetWaypoints()
+            } else if (isMultiple) {
+                openMapDepartureTimeRMLayout(view)
             } else
-                openMapDepartureTimeLayout()
+                openMapDepartureTimeLayout(view)
         }
     }
 
-    private fun openMapDepartureTimeLayout() {
-        getTimes()
+    private fun openMapDepartureTimeLayout(view: View) {
+        getTimes(view)
+        MapTravelMethodLayout.visibility = View.GONE
+    }
+
+    private fun openMapDepartureTimeRMLayout(view: View) {
+        getTimesRM(view)
         MapTravelMethodLayout.visibility = View.GONE
     }
 
@@ -759,13 +786,14 @@ class MapScreen : AppCompatActivity(),
         MapHelpButton.isEnabled = true
     }
 
-    private fun getTimes() {
+    private fun getTimes(view: View) {
         MapLoadingScreen.visibility = View.VISIBLE
         TravelMethodWalking.isEnabled = false
         TravelMethodDriving.isEnabled = false
         TravelMethodTransit.isEnabled = false
         TravelMethodClose.isEnabled = false
         timePicker.isEnabled = true
+        DepartureTimeAccept.setOnClickListener() { startRoute(view) }
         DepartureTimeAccept.isEnabled = true
         DepartureTimeClose.isEnabled = true
         Handler(Looper.getMainLooper()).postDelayed({
@@ -809,6 +837,26 @@ class MapScreen : AppCompatActivity(),
         }, 100)
     }
 
+    private fun getTimesRM(view: View) {
+        MapLoadingScreen.visibility = View.VISIBLE
+        TravelMethodWalking.isEnabled = false
+        TravelMethodDriving.isEnabled = false
+        TravelMethodTransit.isEnabled = false
+        TravelMethodClose.isEnabled = false
+        timePicker.isEnabled = true
+        DepartureTimeAccept.setOnClickListener() { startRouteRM(view) }
+        DepartureTimeAccept.isEnabled = true
+        DepartureTimeClose.isEnabled = true
+
+        var formatter = DateTimeFormatter.ofPattern("HH")
+        timePicker.hour = LocalDateTime.now().format(formatter).toInt()
+        formatter = DateTimeFormatter.ofPattern("mm")
+        timePicker.minute = LocalDateTime.now().format(formatter).toInt()
+        DepartureTimeText.text = ""
+        MapLoadingScreen.visibility = View.GONE
+        MapDepartureTimeLayout.visibility = View.VISIBLE
+    }
+
     fun startRoute(view: View) {
         timePicker.isEnabled = false
         DepartureTimeAccept.isEnabled = false
@@ -836,8 +884,7 @@ class MapScreen : AppCompatActivity(),
 
             var timeOnPlace =
                 timePicker.hour * 3600 + timePicker.minute * 60 + duration.toInt() + 3600
-            while (timeOnPlace >= 86400)
-                timeOnPlace -= 86400
+            timeOnPlace = timeOnPlace.mod(86400) + 1
 
             val timeOpen = timeFormat.parse(markerTimeOpen)!!.time / 1000 + 3600
             val timeClose = timeFormat.parse(markerTimeClose)!!.time / 1000 + 3600
@@ -849,7 +896,7 @@ class MapScreen : AppCompatActivity(),
                     val minutes = floor((timeOnPlace + timeDuration) % 3600 / 60.0).toInt()
                     val timeString = String.format("%02d:%02d", hours, minutes)
                     yourTime = timeString + "\n"
-                    openTimeAssuranceBox(3)
+                    openTimeAssuranceBox(3, view)
                 } else {
                     drawRoute()
                     closeMapDepartureTimeLayout(view)
@@ -860,20 +907,85 @@ class MapScreen : AppCompatActivity(),
                     val minutes = floor((timeOnPlace + timeDuration) % 3600 / 60.0).toInt()
                     val timeString = String.format("%02d:%02d", hours, minutes)
                     yourTime = timeString + "\n"
-                    openTimeAssuranceBox(1)
+                    openTimeAssuranceBox(1, view)
                 } else {
                     val hours = floor((timeOnPlace + timeDuration) / 3600.0).toInt()
                     val minutes = floor((timeOnPlace + timeDuration) % 3600 / 60.0).toInt()
                     val timeString = String.format("%02d:%02d", hours, minutes)
                     yourTime = timeString + "\n"
-                    openTimeAssuranceBox(2)
+                    openTimeAssuranceBox(2, view)
                 }
             }
         }
     }
 
+    fun startRouteRM(view: View) {
+        timePicker.isEnabled = false
+        DepartureTimeAccept.isEnabled = false
+        DepartureTimeClose.isEnabled = false
+        val currentDate = dateFormat.format(Date())
+        val myDate = currentDate + " " + timePicker.hour + ":" + timePicker.minute
+        val date = dateTimeFormat.parse(myDate)
+        date.time = date.time + 86400000
+        if (date != null) {
+            departureTime = "&departure_time=" + date.time
+        }
+        departureTime = departureTime.dropLast(3)
+
+        var timeOnPlace =
+            timePicker.hour * 3600 + timePicker.minute * 60 + 3600
+        timeOnPlace = timeOnPlace.mod(86400) + 1
+
+        var tmpText = "Nie starczy czasu na zwiedzenie obiektów: "
+
+        for (obj in rmObjects) {
+            if (obj.isSelected) {
+                println(obj.close)
+                println(timeOnPlace)
+                if (obj.close > timeOnPlace)
+                    sortedTimes.add(obj)
+                else
+                    tmpText += obj.name + ", "
+            }
+        }
+
+        tmpText.dropLast(2)
+        tmpText += ".\nObiekty zostały usunięte z listy. Jeśli koniecznie chcesz je odwiedzić ponownie wybierz obiekty i wyznacz trasę od innej godziny lub z innego miejsca."
+
+        if (!tmpText.equals("")) {
+            MapTimeAssuranceText.text = tmpText
+            TimeAssuranceAccept.visibility = View.GONE
+            TimeAssuranceClose.text = "OK"
+            TimeAssuranceClose.setOnClickListener() { closeMapDepartureTimeLayout(view) }
+            MapTimeAssuranceBox.visibility = View.VISIBLE
+        }
+
+        if (!sortedTimes.isEmpty()) {
+            sortedTimes.sortBy { it.close }
+
+            var tmpPriority = 0
+            sortedTimes[0].prior = tmpPriority
+
+            sortedTimes.forEachIndexed { index, obj ->
+                if (index > 0) {
+                    if (obj.close > sortedTimes[index - 1].close) {
+                        tmpPriority++
+                    }
+                    obj.prior = tmpPriority
+                }
+            }
+        }
+        MapDepartureTimeLayout.visibility = View.GONE
+        TrackingMapButton.isEnabled = true
+        RouteMapButton.isEnabled = true
+        MapHelpButton.isEnabled = true
+    }
+
     @SuppressLint("SetTextI18n")
-    private fun openTimeAssuranceBox(variant: Int) {
+    private fun openTimeAssuranceBox(variant: Int, view: View) {
+        TimeAssuranceAccept.visibility = View.VISIBLE
+        TimeAssuranceClose.text = "Nie"
+        TimeAssuranceClose.setOnClickListener() { closeTimeAssuranceBox(view) }
         when (variant) {
             1 -> {
                 MapTimeAssuranceText.text = getString(R.string.time_common_text1) + " " + yourTime +
@@ -956,34 +1068,38 @@ class MapScreen : AppCompatActivity(),
     fun openMapTravelMethodLayoutRM(view: View) {
         waypoints.clear()
         waypointsNames.clear()
-        for (obj in rmObjects) {
-            if (obj.isSelected) {
-                waypoints.add(LatLng(obj.lat, obj.long))
-                waypointsNames.add(obj.name)
+        if (rmObjects.isEmpty())
+            closeRouteMultipleLayout(view)
+        else {
+            for (obj in rmObjects) {
+                if (obj.isSelected) {
+                    waypoints.add(LatLng(obj.lat, obj.long))
+                    waypointsNames.add(obj.name)
+                }
             }
+            markerlat = waypoints[0].latitude
+            markerlong = waypoints[0].longitude
+            achievement = waypointsNames[0]
+            TravelMethodWalking.isEnabled = true
+            TravelMethodDriving.isEnabled = true
+            TravelMethodTransit.isEnabled = true
+            TravelMethodClose.isEnabled = true
+            MapRMLayout.visibility = View.GONE
+            //MapRouteLayout.visibility = View.GONE
+            TravelMethodWalking.setOnClickListener {
+                movementMethod = "&mode=walking"
+                openMapOriginLayoutRM()
+            }
+            TravelMethodDriving.setOnClickListener {
+                movementMethod = "&mode=driving"
+                openMapOriginLayoutRM()
+            }
+            TravelMethodTransit.setOnClickListener {
+                movementMethod = "&mode=transit"
+                openMapOriginLayoutRM()
+            }
+            MapTravelMethodLayout.visibility = View.VISIBLE
         }
-        markerlat = waypoints[0].latitude
-        markerlong = waypoints[0].longitude
-        achievement = waypointsNames[0]
-        TravelMethodWalking.isEnabled = true
-        TravelMethodDriving.isEnabled = true
-        TravelMethodTransit.isEnabled = true
-        TravelMethodClose.isEnabled = true
-        MapRMLayout.visibility = View.GONE
-        //MapRouteLayout.visibility = View.GONE
-        TravelMethodWalking.setOnClickListener {
-            movementMethod = "&mode=walking"
-            openMapOriginLayoutRM()
-        }
-        TravelMethodDriving.setOnClickListener {
-            movementMethod = "&mode=driving"
-            openMapOriginLayoutRM()
-        }
-        TravelMethodTransit.setOnClickListener {
-            movementMethod = "&mode=transit"
-            openMapOriginLayoutRM()
-        }
-        MapTravelMethodLayout.visibility = View.VISIBLE
     }
 
     private fun openMapOriginLayoutRM() {
