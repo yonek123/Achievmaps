@@ -76,7 +76,7 @@ class MapScreen : AppCompatActivity(),
     private var movementMethod = "&mode=walking"
 
     //private var waypoints = "&waypoints=53.42631352136791,14.562885502732085|53.42631322136791,14.562885222732085"
-    private var departureTime = "&departure_time=1669393397"
+    private var departureTime = "1669393397"
 
     private var originlat = 0.0
     private var originlong = 0.0
@@ -110,8 +110,6 @@ class MapScreen : AppCompatActivity(),
     var mLastLocation: Location? = null
     internal var mCurrLocationMarker: Marker? = null
     private var mFusedLocationClient: FusedLocationProviderClient? = null
-
-    val sortedTimes: MutableList<RMObject> = ArrayList()
 
     private var mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
@@ -866,7 +864,7 @@ class MapScreen : AppCompatActivity(),
         val date = dateTimeFormat.parse(myDate)
         date.time = date.time + 86400000
         if (date != null) {
-            departureTime = "&departure_time=" + date.time
+            departureTime = date.time.toString()
         }
         departureTime = departureTime.dropLast(3)
         var flag = false
@@ -928,7 +926,7 @@ class MapScreen : AppCompatActivity(),
         val date = dateTimeFormat.parse(myDate)
         date.time = date.time + 86400000
         if (date != null) {
-            departureTime = "&departure_time=" + date.time
+            departureTime = date.time.toString()
         }
         departureTime = departureTime.dropLast(3)
 
@@ -936,33 +934,23 @@ class MapScreen : AppCompatActivity(),
             timePicker.hour * 3600 + timePicker.minute * 60 + 3600
         timeOnPlace = timeOnPlace.mod(86400) + 1
 
-        var tmpText = "Nie starczy czasu na zwiedzenie obiektów: "
+        val sortedTimes: MutableList<RMObject> = ArrayList()
 
+        var tmpText = "Nie starczy czasu na zwiedzenie obiektów: "
+        var tmpFlag = true;
         for (obj in rmObjects) {
             if (obj.isSelected) {
-                println(obj.close)
-                println(timeOnPlace)
                 if (obj.close > timeOnPlace)
                     sortedTimes.add(obj)
-                else
+                else {
                     tmpText += obj.name + ", "
+                    tmpFlag = false
+                }
             }
-        }
-
-        tmpText.dropLast(2)
-        tmpText += ".\nObiekty zostały usunięte z listy. Jeśli koniecznie chcesz je odwiedzić ponownie wybierz obiekty i wyznacz trasę od innej godziny lub z innego miejsca."
-
-        if (!tmpText.equals("")) {
-            MapTimeAssuranceText.text = tmpText
-            TimeAssuranceAccept.visibility = View.GONE
-            TimeAssuranceClose.text = "OK"
-            TimeAssuranceClose.setOnClickListener() { closeMapDepartureTimeLayout(view) }
-            MapTimeAssuranceBox.visibility = View.VISIBLE
         }
 
         if (!sortedTimes.isEmpty()) {
             sortedTimes.sortBy { it.close }
-
             var tmpPriority = 0
             sortedTimes[0].prior = tmpPriority
 
@@ -974,11 +962,56 @@ class MapScreen : AppCompatActivity(),
                     obj.prior = tmpPriority
                 }
             }
+
+            waypoints.clear()
+            var tmpDepTime = departureTime
+            sortedTimes.forEachIndexed { index, obj ->
+                if (index > 0) {
+                    tmpDepTime = routeMultipleCheckTimes(obj, sortedTimes[index - 1], tmpDepTime)
+                }
+                if (obj.isSelected)
+                    waypoints.add(LatLng(obj.lat, obj.long))
+                else {
+                    tmpText += obj.name + ", "
+                    tmpFlag = false
+                }
+
+                tmpDepTime = (tmpDepTime.toLong() + obj.duration).toString()
+            }
+
+            tmpText.dropLast(2)
+            tmpText += ".\nObiekty zostały usunięte z listy. Jeśli koniecznie chcesz je odwiedzić ponownie wybierz obiekty i wyznacz trasę od innej godziny lub z innego miejsca."
+
+            if (!tmpFlag) {
+                MapTimeAssuranceText.text = tmpText
+                TimeAssuranceAccept.visibility = View.GONE
+                TimeAssuranceClose.text = "OK"
+                TimeAssuranceClose.setOnClickListener() {
+                    MapLoadingScreen.visibility = View.VISIBLE
+                    drawRouteRMSetWaypoints()
+                    closeMapDepartureTimeLayout(view)
+                }
+                MapTimeAssuranceBox.visibility = View.VISIBLE
+            } else {
+                MapLoadingScreen.visibility = View.VISIBLE
+                drawRouteRMSetWaypoints()
+                MapDepartureTimeLayout.visibility = View.GONE
+                TrackingMapButton.isEnabled = true
+                RouteMapButton.isEnabled = true
+                MapHelpButton.isEnabled = true
+            }
+        } else {
+            MapTimeAssuranceText.text =
+                "Wszystkie obiekty są zamknięte albo brak obiektów na liście"
+            TimeAssuranceAccept.visibility = View.GONE
+            TimeAssuranceClose.text = "OK"
+            TimeAssuranceClose.setOnClickListener() { closeMapDepartureTimeLayout(view) }
+            MapTimeAssuranceBox.visibility = View.VISIBLE
+            MapDepartureTimeLayout.visibility = View.GONE
+            TrackingMapButton.isEnabled = true
+            RouteMapButton.isEnabled = true
+            MapHelpButton.isEnabled = true
         }
-        MapDepartureTimeLayout.visibility = View.GONE
-        TrackingMapButton.isEnabled = true
-        RouteMapButton.isEnabled = true
-        MapHelpButton.isEnabled = true
     }
 
     @SuppressLint("SetTextI18n")
@@ -1020,7 +1053,7 @@ class MapScreen : AppCompatActivity(),
             getString(R.string.map_url_text) +
                     originlat + "," + originlong +
                     "&destination=" + targetlat + "," + targetlong +
-                    movementMethod + departureTime +
+                    movementMethod + "&departure_time=" + departureTime +
                     "&key=" + getString(R.string.google_maps_key)
         //println(urlDirections)
         val apiResponse = URL(urlDirections).readText()
@@ -1039,6 +1072,9 @@ class MapScreen : AppCompatActivity(),
     //początek dla multiple (można by dawać warunki w istniejących funkcjach, ale tak będzie mi prościej na prezentacji pokazać co i jak)
 
     fun openRouteMultipleSimpleChoiceLayout(view: View) {
+        rmObjects.forEach { obj ->
+            obj.isSelected = false
+        }
         isMultiple = true
         RMSimpleChoiceLayout.visibility = View.VISIBLE
         TrackingMapButton.isEnabled = false
@@ -1125,7 +1161,7 @@ class MapScreen : AppCompatActivity(),
             getString(R.string.map_url_text) +
                     originlat + "," + originlong +
                     "&destination=" + targetlat + "," + targetlong +
-                    movementMethod + departureTime +
+                    movementMethod + "&departure_time=" + departureTime +
                     "&key=" + getString(R.string.google_maps_key)
         //println(urlDirections)
         val directionsRequest = object :
@@ -1228,7 +1264,7 @@ class MapScreen : AppCompatActivity(),
                                 originlat + "," + originlong +
                                 "&destination=" + waypoints[point].latitude +
                                 "," + waypoints[point].longitude +
-                                movementMethod + departureTime +
+                                movementMethod + "&departure_time=" + departureTime +
                                 "&key=" + getString(R.string.google_maps_key)
                 else
                     urlDirections =
@@ -1237,7 +1273,7 @@ class MapScreen : AppCompatActivity(),
                                 "," + waypoints[point - 1].longitude +
                                 "&destination=" + waypoints[point].latitude +
                                 "," + waypoints[point].longitude +
-                                movementMethod + departureTime +
+                                movementMethod + "&departure_time=" + departureTime +
                                 "&key=" + getString(R.string.google_maps_key)
                 //println(urlDirections)
                 val apiResponse = URL(urlDirections).readText()
@@ -1358,7 +1394,7 @@ class MapScreen : AppCompatActivity(),
                                         originlat + "," + originlong +
                                         "&destination=" + waypoints[p].latitude +
                                         "," + waypoints[p].longitude +
-                                        movementMethod + departureTime +
+                                        movementMethod + "&departure_time=" + departureTime +
                                         "&key=" + getString(R.string.google_maps_key)
                         else
                             urlDirections =
@@ -1367,7 +1403,7 @@ class MapScreen : AppCompatActivity(),
                                         "," + waypoints[point - 1].longitude +
                                         "&destination=" + waypoints[p].latitude +
                                         "," + waypoints[p].longitude +
-                                        movementMethod + departureTime +
+                                        movementMethod + "&departure_time=" + departureTime +
                                         "&key=" + getString(R.string.google_maps_key)
                         //println(urlDirections)
                         val apiResponse = URL(urlDirections).readText()
@@ -1486,5 +1522,47 @@ class MapScreen : AppCompatActivity(),
         TrackingMapButton.isEnabled = true
         RouteMapButton.isEnabled = true
         MapHelpButton.isEnabled = true
+    }
+
+    private fun routeMultipleCheckTimes(
+        obj: RMObject,
+        prevObj: RMObject,
+        tmpDepTime: String
+    ): String {
+        var returnVal = tmpDepTime
+        val t = Thread {
+            val urlDirections =
+                getString(R.string.map_url_text) +
+                        originlat + "," + originlong +
+                        "&destination=" + prevObj.lat +
+                        "," + prevObj.long +
+                        movementMethod + tmpDepTime +
+                        "&key=" + getString(R.string.google_maps_key)
+
+            val apiResponse = URL(urlDirections).readText()
+            val jsonResponse = JSONObject(apiResponse)
+
+            // Get routes
+            val routes = jsonResponse.getJSONArray("routes")
+            if (routes.isNull(0)) {
+                obj.isSelected = true
+            } else {
+                val legs = routes.getJSONObject(0).getJSONArray("legs")
+                val tmpDuration = legs.getJSONObject(0).getJSONObject("duration")
+                    .getString("value")
+                if ((tmpDepTime.toLong() + tmpDuration.toLong()).mod(86400) < obj.close &&
+                    (tmpDepTime.toLong() + tmpDuration.toLong()).mod(86400) > obj.open
+                ) {
+                    obj.isSelected = true
+                    returnVal = (tmpDepTime.toLong() + tmpDuration.toLong()).toString()
+                } else {
+                    obj.isSelected = false
+                    returnVal = tmpDepTime
+                }
+            }
+        }
+        t.start()
+        t.join()
+        return returnVal
     }
 }

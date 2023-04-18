@@ -48,4 +48,4 @@ v23: dodanie proto algorytmu komiwojażera dla wersji bez czasu, teraz czas na c
 
 v24: poprawienie działania równoległych wątków dla wielu obiektów, poprawienie kilku błędów
 
-v25: dodanie trasy dla wielu obiektów ze sprawdzaniem czasu otwarcia i zamknięcia
+v25: dodanie trasy dla wielu obiektów ze sprawdzaniem czasu otwarcia i zamknięcia, czyli wszystko skończone i można implementować algorytmy komiwojażera, są małe bugi, ale nie wpływają one na badania
