@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.achievmaps.R
 
-class RMAdapter(private val arrayList: ArrayList<RMObject>) :
+class RMAdapter(private val arrayList: ArrayList<TagObj>) :
     RecyclerView.Adapter<RMAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RMAdapter.ViewHolder {

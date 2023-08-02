@@ -293,7 +293,7 @@
         android:id="@+id/MapRMLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginHorizontal="20dp"
+        android:layout_marginHorizontal="50dp"
         android:layout_marginVertical="130dp"
         android:background="@drawable/info_box"
         android:visibility="gone"
@@ -692,42 +692,30 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/DepartureTimeTitle"
+            <DatePicker
+                android:id="@+id/datePicker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/aclonica"
-                android:text="@string/time_text"
-                android:textAlignment="center"
-                android:textColor="#000000"
-                android:textSize="20sp"
+                android:layout_gravity="center"
                 android:visibility="visible"
+                android:datePickerMode="spinner"
+                android:calendarViewShown="false"
+                android:scaleX="0.90"
+                android:scaleY="0.90"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/DepartureTimeText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/marker_tmp_description_text"
-                android:textAlignment="center"
-                android:textColor="#000000"
-                android:textSize="16sp"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/DepartureTimeTitle" />
 
             <TimePicker
                 android:id="@+id/timePicker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:timePickerMode="clock"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/DepartureTimeText" />
+                app:layout_constraintTop_toBottomOf="@+id/datePicker" />
 
             <Button
                 android:id="@+id/DepartureTimeAccept"

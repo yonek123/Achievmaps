@@ -45,7 +45,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.math.floor
-import kotlin.system.measureTimeMillis
 
 
 @Suppress(
@@ -99,6 +98,7 @@ class MapScreen : AppCompatActivity(),
     private var isRMThreadOn = false
 
     private val TSPwaypoints: MutableList<Pair<Int, MutableList<LatLng>>> = ArrayList()
+    val tagArr: ArrayList<TagObj> = arrayListOf()
 
     private val polyline: MutableList<Polyline> = ArrayList()
     private val path: MutableList<List<LatLng>> = ArrayList()
@@ -459,7 +459,7 @@ class MapScreen : AppCompatActivity(),
             for (item in list) {
                 row.add(item)
                 poz++
-                if (poz > 7) {
+                if (poz > 9) {
                     poz = 0
                     objects.add(row.clone() as ArrayList<String>)
                     row.clear()
@@ -495,11 +495,22 @@ class MapScreen : AppCompatActivity(),
                         timeClose,
                         timeDuration,
                         item[7],
+                        item[8],
+                        item[9].toInt(),
                         false
                     )
                 )
             }
-            RMView.swapAdapter(RMAdapter(rmObjects), true)
+            tagArr.add(TagObj("outdoors", false))
+            tagArr.add(TagObj("indoors", false))
+            tagArr.add(TagObj("museum", false))
+            tagArr.add(TagObj("church", false))
+            tagArr.add(TagObj("castle", false))
+            tagArr.add(TagObj("cementary", false))
+            tagArr.add(TagObj("statue", false))
+            tagArr.add(TagObj("park", false))
+            tagArr.add(TagObj("other", false))
+            RMView.swapAdapter(RMAdapter(tagArr), true)
             RMView.layoutManager = LinearLayoutManager(this)
             TrackingMapButton.isEnabled = true
             RouteMapButton.isEnabled = true
@@ -509,7 +520,6 @@ class MapScreen : AppCompatActivity(),
     }
 
     fun openHelp(view: View) {
-        TSPAlgo()
         MapHelpLayout.visibility = View.VISIBLE
         TrackingMapButton.isEnabled = false
         RouteMapButton.isEnabled = false
@@ -778,6 +788,8 @@ class MapScreen : AppCompatActivity(),
     private fun openMapDepartureTimeRMLayout(view: View) {
         getTimesRM(view)
         MapTravelMethodLayout.visibility = View.GONE
+        TrackingMapButton.visibility = View.GONE
+        RouteMapButton.visibility = View.GONE
     }
 
     fun closeMapDepartureTimeLayout(view: View) {
@@ -832,7 +844,6 @@ class MapScreen : AppCompatActivity(),
                 timePicker.hour = LocalDateTime.now().format(formatter).toInt()
                 formatter = DateTimeFormatter.ofPattern("mm")
                 timePicker.minute = LocalDateTime.now().format(formatter).toInt()
-                DepartureTimeText.text = tmpText
                 MapLoadingScreen.visibility = View.GONE
                 MapDepartureTimeLayout.visibility = View.VISIBLE
             }
@@ -854,7 +865,6 @@ class MapScreen : AppCompatActivity(),
         timePicker.hour = LocalDateTime.now().format(formatter).toInt()
         formatter = DateTimeFormatter.ofPattern("mm")
         timePicker.minute = LocalDateTime.now().format(formatter).toInt()
-        DepartureTimeText.text = ""
         MapLoadingScreen.visibility = View.GONE
         MapDepartureTimeLayout.visibility = View.VISIBLE
     }
@@ -1068,6 +1078,9 @@ class MapScreen : AppCompatActivity(),
         rmObjects.forEach { obj ->
             obj.isSelected = false
         }
+        tagArr.forEach { obj ->
+            obj.isSelected = false
+        }
         isMultiple = true
         RMSimpleChoiceLayout.visibility = View.VISIBLE
         TrackingMapButton.isEnabled = false
@@ -1097,6 +1110,14 @@ class MapScreen : AppCompatActivity(),
     fun openMapTravelMethodLayoutRM(view: View) {
         waypoints.clear()
         waypointsNames.clear()
+        for (obj in rmObjects)
+            for (tag in tagArr)
+                if (tag.isSelected)
+                    if (obj.tags.contains(tag.name)) {
+                        obj.isSelected = true
+                        break
+                    }
+
         if (rmObjects.isEmpty())
             closeRouteMultipleLayout(view)
         else {
@@ -1559,247 +1580,50 @@ class MapScreen : AppCompatActivity(),
         return returnVal
     }
 
-    var numa = 0
-    private fun TSPAlgo() {
-        val tmpLat = 53.41904081498391
-        val tmpLong = 14.55116280845876
-        val timeStamp = 1690192800
-        var points: MutableList<LatLng> = ArrayList()
-        val algo = 2
-        val test = 2
-        if (test == 0) {
-            for (i in rmObjects) {
-                if (i.tags.contains("outdoors"))
-                    points.add(LatLng(i.lat, i.long))
-            }
-            movementMethod = "&mode=walking"
-        } else if (test == 1) {
-            for (i in rmObjects) {
-                if (i.tags.contains("museum"))
-                    points.add(LatLng(i.lat, i.long))
-            }
-            movementMethod = "&mode=walking"
-        } else if (test == 2) {
-            for (i in rmObjects) {
-                if (i.tags.contains("church"))
-                    points.add(LatLng(i.lat, i.long))
-            }
-            movementMethod = "&mode=driving"
-        }
-        var wp = ""
-        for (i in points) {
-            wp = wp + "via:" + i.latitude + "," + i.longitude + "|"
-        }
-        wp.dropLast(1)
-
-        var urlDirections =
-            getString(R.string.map_url_text) +
-                    tmpLat + "," + tmpLong +
-                    "&waypoints=" + wp +
-                    "&destination=" + tmpLat + "," + tmpLong +
-                    movementMethod + "&departure_time=" + timeStamp +
-                    "&key=" + getString(R.string.google_maps_key)
-
-        if (algo == 0) {
-            points.clear()
-            for (i in rmObjects) {
-                if (i.tags.contains("museum"))
-                    points.add(LatLng(i.lat, i.long))
-            }
-            wp = ""
-            for (i in points) {
-                wp = wp + "via:" + i.latitude + "," + i.longitude + "|"
-            }
-            wp.dropLast(1)
-            var urlDirections =
-                getString(R.string.map_url_text) +
-                        tmpLat + "," + tmpLong +
-                        "&waypoints=" + wp +
-                        "&destination=" + tmpLat + "," + tmpLong +
-                        movementMethod + "&departure_time=" + timeStamp +
-                        "&key=" + getString(R.string.google_maps_key)
-            val timeInMillis = measureTimeMillis {
-                BruteForceIterate(0, points)
-            }
-            var result = TSPwaypoints[0]
-            for (i in TSPwaypoints)
-                if (i.first > 0 && i.first < result.first)
-                    result = i
-            println("Bruteforce")
-            println(urlDirections)
-            println("Result time: " + result)
-            println("Work time: " + timeInMillis)
-        } else if (algo == 1) {
-            val timeInMillis = measureTimeMillis {
-                TSP(points)
-            }
-            println("B&B")
-            println("Minimum cost : " + final_res)
-            println("Path Taken : ")
-            for (i in 0..N) {
-                print(final_path[i])
-            }
-            println()
-            println(timeInMillis)
-        } else if (algo == 2) {
-            val timeInMillis = measureTimeMillis {
-                NearestNeighbour(points)
-            }
-            println("Nearest neighbour")
-            println("Work time: " + timeInMillis)
-        }
-    }
-
-    /// Brute force search
-    private fun BruteForceIterate(index: Int, points: MutableList<LatLng>) {
-        if (index == 1) {
-            println(numa)
-            numa += 1
-        }
-        if (index == points.size - 1) {
-            val tmpLat = 53.41904081498391
-            val tmpLong = 14.55116280845876
-            val timeStamp = 1690192800
-            var wp = ""
-            var resultTime = -1
-            for (i in points) {
-                wp = wp + "via:" + i.latitude + "," + i.longitude + "|"
-            }
-            wp.dropLast(1)
-            val t = Thread {
-                var urlDirections =
-                    getString(R.string.map_url_text) +
-                            tmpLat + "," + tmpLong +
-                            "&waypoints=" + wp +
-                            "&destination=" + tmpLat + "," + tmpLong +
-                            movementMethod + "&departure_time=" + timeStamp +
-                            "&key=" + getString(R.string.google_maps_key)
-                val apiResponse = URL(urlDirections).readText()
-                val jsonResponse = JSONObject(apiResponse)
-
-                val routes = jsonResponse.getJSONArray("routes")
-                if (!routes.isNull(0)) {
-                    resultTime += 1
-                    val legs = routes.getJSONObject(0).getJSONArray("legs")
-                    resultTime = legs.getJSONObject(0).getJSONObject("duration")
-                        .getString("value").toInt()
-                }
-            }
-            t.start()
-            t.join()
-            TSPwaypoints.add(Pair(resultTime, points.toMutableList()))
-        } else {
-            for (i in index until points.size) {
-                if (i == index)
-                    BruteForceIterate(index + 1, points)
-                else {
-                    var tmpPoints = points.toMutableList()
-                    var tmp = tmpPoints[i]
-                    tmpPoints[i] = tmpPoints[index]
-                    tmpPoints[index] = tmp
-                    BruteForceIterate(index + 1, tmpPoints)
-                }
-            }
-        }
-    }
-
-
-    ///Branch and bound
-    private var N = 11
-    private var final_path = IntArray(N + 1)
-    private var visited = BooleanArray(N)
-    private var final_res = Int.MAX_VALUE
-    private fun copyToFinal(curr_path: IntArray) {
-        for (i in 0 until N) final_path[i] = curr_path[i]
-        final_path[N] = curr_path[0]
-    }
-
-    private fun firstMin(adj: Array<IntArray>, i: Int): Int {
+    fun minKey(key: MutableList<Int>, mstSet: MutableList<Boolean>): Int {
         var min = Int.MAX_VALUE
-        for (k in 0 until N) if (adj[i][k] < min && i != k) min = adj[i][k]
-        return min
-    }
-
-    private fun secondMin(adj: Array<IntArray>, i: Int): Int {
-        var first = Int.MAX_VALUE
-        var second = Int.MAX_VALUE
-        for (j in 0 until N) {
-            if (i == j) continue
-            if (adj[i][j] <= first) {
-                second = first
-                first = adj[i][j]
-            } else if (adj[i][j] <= second &&
-                adj[i][j] != first
-            ) second = adj[i][j]
+        var min_index = -1
+        for (v in 0 until waypoints.size) {
+            if (mstSet[v] == false && key[v] < min) {
+                min = key[v]
+                min_index = v
+            }
         }
-        return second
+        mechanizmWnioskujacy("Szczecin", mutableListOf("outdoors", "museum"), 1690192800, 3)
+        return min_index
     }
 
-    private fun TSPRec(
-        adj: Array<IntArray>, curr_bound: Int, curr_weight: Int,
-        level: Int, curr_path: IntArray
+    fun mechanizmWnioskujacy(
+        city: String,
+        tags: MutableList<String>,
+        tripDate: Long,
+        minScore: Int
     ) {
-        var curr_bound = curr_bound
-        var curr_weight = curr_weight
-        if (level == N) {
-            if (adj[curr_path[level - 1]][curr_path[0]] != 0) {
-                val curr_res = curr_weight +
-                        adj[curr_path[level - 1]][curr_path[0]]
-
-                if (curr_res < final_res) {
-                    copyToFinal(curr_path)
-                    final_res = curr_res
-                }
-            }
-            return
-        }
-
-        for (i in 0 until N) {
-            if (adj[curr_path[level - 1]][i] != 0 &&
-                visited[i] == false
-            ) {
-                val temp = curr_bound
-                curr_weight += adj[curr_path[level - 1]][i]
-
-                curr_bound -= if (level == 1) (firstMin(adj, curr_path[level - 1]) +
-                        firstMin(adj, i)) / 2 else (secondMin(adj, curr_path[level - 1]) +
-                        firstMin(adj, i)) / 2
-
-                if (curr_bound + curr_weight < final_res) {
-                    curr_path[level] = i
-                    visited[i] = true
-
-                    TSPRec(
-                        adj, curr_bound, curr_weight, level + 1,
-                        curr_path
-                    )
-                }
-
-                curr_weight -= adj[curr_path[level - 1]][i]
-                curr_bound = temp
-
-                Arrays.fill(visited, false)
-                for (j in 0..level - 1) visited[curr_path[j]] = true
-            }
-        }
+        for (obj in rmObjects)
+            if (obj.city == city)
+                for (t in tags)
+                    if (t in obj.tags &&
+                            obj.open <= tripDate &&
+                            obj.close >= tripDate &&
+                            obj.score >= minScore) {
+                        waypoints.add(LatLng(obj.lat, obj.long))
+                        break
+                    }
     }
 
-    private fun TSP(points: MutableList<LatLng>) {
-        val tmpLat = 53.41904081498391
-        val tmpLong = 14.55116280845876
-        val timeStamp = 1690192800
-        points.add(0, LatLng(tmpLat, tmpLong))
-        println(points.size)
-        var adj: Array<IntArray> = Array(N) { IntArray(N) }
-        for (i in 0 until points.size) {
-            for (j in 0 until points.size) {
-                if (i != j) {
-                    val t = Thread {
+    fun christofides() {
+        val tmpPoints = waypoints.toMutableList()
+        tmpPoints.add(0, LatLng(originlat, originlong))
+        var graph: Array<IntArray> = Array(tmpPoints.size) { IntArray(tmpPoints.size) }
+        val t = Thread {
+            for (i in 0 until tmpPoints.size) {
+                for (j in 0 until tmpPoints.size) {
+                    if (i != j) {
                         var urlDirections =
                             getString(R.string.map_url_text) +
-                                    points[i].latitude + "," + points[i].longitude +
-                                    "&destination=" + points[j].latitude + "," + points[j].longitude +
-                                    movementMethod + "&departure_time=" + timeStamp +
+                                    tmpPoints[i].latitude + "," + tmpPoints[i].longitude +
+                                    "&destination=" + tmpPoints[j].latitude + "," + tmpPoints[j].longitude +
+                                    movementMethod + "&departure_time=" + departureTime +
                                     "&key=" + getString(R.string.google_maps_key)
                         val apiResponse = URL(urlDirections).readText()
                         val jsonResponse = JSONObject(apiResponse)
@@ -1807,60 +1631,587 @@ class MapScreen : AppCompatActivity(),
                         val routes = jsonResponse.getJSONArray("routes")
                         if (!routes.isNull(0)) {
                             val legs = routes.getJSONObject(0).getJSONArray("legs")
-                            adj[i][j] = legs.getJSONObject(0).getJSONObject("duration")
+                            graph[i][j] = legs.getJSONObject(0).getJSONObject("duration")
                                 .getString("value").toInt()
                         }
                     }
-                    t.start()
-                    t.join()
+                    print(graph[i][j])
+                }
+            }
+            println()
+        }
+        t.start()
+        t.join()
+
+        for (i in graph) {
+            for (j in i)
+                print(j.toString() + " ")
+            println()
+        }
+
+        val parent = IntArray(tmpPoints.size)
+        val key: MutableList<Int> = arrayListOf()
+        val mstSet: MutableList<Boolean> = arrayListOf()
+        val edgeCounter: MutableList<Int> = arrayListOf()
+
+        for (i in 0 until tmpPoints.size) {
+            key.add(Int.MAX_VALUE)
+            mstSet.add(false)
+            edgeCounter.add(0)
+        }
+
+        key[0] = 0
+        parent[0] = -1
+
+        for (count in 0 until (tmpPoints.size - 1)) {
+            val u = minKey(key, mstSet)
+            mstSet[u] = true
+            for (v in 0 until tmpPoints.size) {
+                if ((graph[u][v] != 0) &&
+                    (mstSet[v] == false) &&
+                    (graph[u][v] < key[v])
+                ) {
+                    parent[v] = u
+                    key[v] = graph[u][v]
                 }
             }
         }
-        val curr_path = IntArray(N + 1)
 
-        var curr_bound = 0
-        Arrays.fill(curr_path, -1)
-        Arrays.fill(visited, false)
+        val edgePairs: MutableList<Pair<Int, Int>> = mutableListOf()
+        for (i in 1 until tmpPoints.size) {
+            edgeCounter[i] += 1
+            edgeCounter[parent[i]] += 1
+            edgePairs.add(Pair(i, parent[i]))
+        }
 
-        for (i in 0 until N) curr_bound += firstMin(adj, i) +
-                secondMin(adj, i)
+        for (i in 0 until tmpPoints.size) {
+            if (edgeCounter[i] % 2 == 1) {
+                var minEdge = Int.MAX_VALUE
+                var minEdgeIndex = -1
+                for (j in i + 1 until tmpPoints.size)
+                    if (edgeCounter[j] % 2 == 1 &&
+                        graph[i][j] < minEdge &&
+                        (Pair(i, j) !in edgePairs || Pair(j, i) !in edgePairs)
+                    ) {
+                        minEdge = graph[i][j]
+                        minEdgeIndex = j
+                    }
+                edgeCounter[i] += 1
+                edgeCounter[minEdgeIndex] += 1
+                edgePairs.add(Pair(i, minEdgeIndex))
+            }
+        }
 
-        curr_bound = if (curr_bound == 1) curr_bound / 2 + 1 else curr_bound / 2
+        val sortedList: MutableList<Pair<Int, Int>> =
+            edgePairs.sortedWith(compareBy({ graph[it.first][it.second] })).toMutableList()
 
-        visited[0] = true
-        curr_path[0] = 0
+        for (i in 0 until sortedList.size) {
+            if (sortedList[i].first == 0 || sortedList[i].second == 0) {
+                var tmp = sortedList[i]
+                sortedList.removeAt(i)
+                sortedList.add(0, tmp)
+                break
+            }
+        }
 
-        TSPRec(adj, curr_bound, 0, 1, curr_path)
+        val usedList: MutableList<Int> = mutableListOf()
+        var next = 0
+        if (sortedList[0].first == 0) {
+            next = sortedList[0].second
+            usedList.add(sortedList[0].first)
+            usedList.add(sortedList[0].second)
+        } else {
+            next = sortedList[0].first
+            usedList.add(sortedList[0].second)
+            usedList.add(sortedList[0].first)
+        }
+        sortedList.removeAt(0)
+
+        for (i in 0 until sortedList.size) {
+            if (sortedList[i].first == 0 || sortedList[i].second == 0) {
+                var tmp = sortedList[i]
+                sortedList.removeAt(i)
+                sortedList.add(0, tmp)
+                break
+            }
+        }
+        while (usedList.size < tmpPoints.size) {
+            for (i in 0 until sortedList.size) {
+                if (sortedList[i].first in usedList && sortedList[i].second in usedList) {
+                    sortedList.removeAt(i)
+                    break
+                }
+                if (sortedList[i].first == next && sortedList[i].second !in usedList) {
+                    next = sortedList[i].second
+                    usedList.add(sortedList[i].second)
+                    sortedList.removeAt(i)
+                    break
+                }
+                if (sortedList[i].second == next && sortedList[i].first !in usedList) {
+                    next = sortedList[i].first
+                    usedList.add(sortedList[i].first)
+                    sortedList.removeAt(i)
+                    break
+                }
+            }
+            if (sortedList[0].first !in usedList) {
+                next = sortedList[0].first
+                usedList.add(sortedList[0].first)
+            }
+            if (sortedList[0].second !in usedList) {
+                next = sortedList[0].second
+                usedList.add(sortedList[0].second)
+            }
+            sortedList.removeAt(0)
+        }
+        usedList.remove(0)
+
+        var wp = ""
+        for (p in usedList) {
+            wp = wp + "via:" + waypoints[p - 1].latitude + "," + waypoints[p - 1].longitude + "|"
+        }
+        wp.dropLast(1)
+
+        val t1 = Thread {
+            var urlDirections =
+                getString(R.string.map_url_text) +
+                        originlat + "," + originlong +
+                        "&waypoints=" + wp +
+                        "&destination=" + originlat + "," + originlong +
+                        movementMethod + "&departure_time=" + departureTime +
+                        "&key=" + getString(R.string.google_maps_key)
+            println(urlDirections)
+            val apiResponse = URL(urlDirections).readText()
+            val jsonResponse = JSONObject(apiResponse)
+
+            val routes = jsonResponse.getJSONArray("routes")
+            if (!routes.isNull(0)) {
+                val legs = routes.getJSONObject(0).getJSONArray("legs")
+                println(
+                    "Duration: " + legs.getJSONObject(0).getJSONObject("duration")
+                        .getString("value")
+                )
+            }
+        }
+        t1.start()
+        t1.join()
     }
 
+}
 
-    ///Nearest neighbour
-    private fun NearestNeighbour(points: MutableList<LatLng>) {
+
+/*
+var numa = 0
+private fun TSPAlgo() {
+    val tmpLat = 53.41904081498391
+    val tmpLong = 14.55116280845876
+    val timeStamp = 1690192800
+    var points: MutableList<LatLng> = ArrayList()
+    val algo = 5
+    val test = 2
+    if (test == 0) {
+        for (i in rmObjects) {
+            if (i.tags.contains("outdoors"))
+                points.add(LatLng(i.lat, i.long))
+        }
+        V = 11
+        N = 11
+        movementMethod = "&mode=walking"
+    } else if (test == 1) {
+        for (i in rmObjects) {
+            if (i.tags.contains("museum"))
+                points.add(LatLng(i.lat, i.long))
+        }
+        V = 6
+        N = 6
+        movementMethod = "&mode=walking"
+    } else if (test == 2) {
+        for (i in rmObjects) {
+            if (i.tags.contains("church"))
+                points.add(LatLng(i.lat, i.long))
+        }
+        V = 26
+        N = 26
+        movementMethod = "&mode=driving"
+    }
+    var wp = ""
+    for (i in points) {
+        wp = wp + "via:" + i.latitude + "," + i.longitude + "|"
+    }
+    wp.dropLast(1)
+
+    var urlDirections =
+        getString(R.string.map_url_text) +
+                tmpLat + "," + tmpLong +
+                "&waypoints=" + wp +
+                "&destination=" + tmpLat + "," + tmpLong +
+                movementMethod + "&departure_time=" + timeStamp +
+                "&key=" + getString(R.string.google_maps_key)
+
+    if (algo == 0) {
+        points.clear()
+        for (i in rmObjects) {
+            if (i.tags.contains("museum"))
+                points.add(LatLng(i.lat, i.long))
+        }
+        wp = ""
+        for (i in points) {
+            wp = wp + "via:" + i.latitude + "," + i.longitude + "|"
+        }
+        wp.dropLast(1)
+        var urlDirections =
+            getString(R.string.map_url_text) +
+                    tmpLat + "," + tmpLong +
+                    "&waypoints=" + wp +
+                    "&destination=" + tmpLat + "," + tmpLong +
+                    movementMethod + "&departure_time=" + timeStamp +
+                    "&key=" + getString(R.string.google_maps_key)
+        val timeInMillis = measureTimeMillis {
+            bruteForceIterate(0, points)
+        }
+        var result = TSPwaypoints[0]
+        for (i in TSPwaypoints)
+            if (i.first > 0 && i.first < result.first)
+                result = i
+        println("Bruteforce")
+        println(urlDirections)
+        println("Result time: " + result)
+        println("Work time: " + timeInMillis)
+    } else if (algo == 1) {
+        val timeInMillis = measureTimeMillis {
+            branchNBound(points)
+        }
+        println("B&B")
+        println("Minimum cost : " + final_res)
+        println("Path Taken : ")
+        for (i in 0..N) {
+            print(final_path[i])
+        }
+        println()
+        println(timeInMillis)
+    } else if (algo == 2) {
+        val timeInMillis = measureTimeMillis {
+            nearestNeighbour(points)
+        }
+        println("Nearest neighbour")
+        println("Work time: " + timeInMillis)
+    } else if (algo == 3) {
+        val timeInMillis = measureTimeMillis {
+            cheapestInsertion(points)
+        }
+        println("Cheapest Insert")
+        println("Work time: " + timeInMillis)
+    } else if (algo == 4) {
+        val timeInMillis = measureTimeMillis {
+            farthestInsertion(points)
+        }
+        println("Farthest Insert")
+        println("Work time: " + timeInMillis)
+    } else if (algo == 5) {
+        val timeInMillis = measureTimeMillis {
+            christofides(points)
+        }
+        println("Christofides")
+        println("Work time: " + timeInMillis)
+    } else if (algo == 6) {
+        val timeInMillis = measureTimeMillis {
+            cheapestConvex(points, points.size)
+        }
+        println("cheapestConvex")
+        println("Work time: " + timeInMillis)
+    } else if (algo == 7) {
+        val timeInMillis = measureTimeMillis {
+            farthestConvex(points, points.size)
+        }
+        println("farthestConvex")
+        println("Work time: " + timeInMillis)
+    }
+}
+
+/// Brute force search
+private fun bruteForceIterate(index: Int, points: MutableList<LatLng>) {
+    if (index == 1) {
+        println(numa)
+        numa += 1
+    }
+    if (index == points.size - 1) {
         val tmpLat = 53.41904081498391
         val tmpLong = 14.55116280845876
         val timeStamp = 1690192800
-
-        var urlDirections = ""
-
+        var wp = ""
+        var resultTime = -1
+        for (i in points) {
+            wp = wp + "via:" + i.latitude + "," + i.longitude + "|"
+        }
+        wp.dropLast(1)
         val t = Thread {
-            for (i in -1 until points.size - 2) {
-                var currMinVal = 0
-                var currMinIndex = 0
-                for (j in i + 1 until points.size) {
-                    if (i == -1)
-                        urlDirections =
-                            getString(R.string.map_url_text) +
-                                    tmpLat + "," + tmpLong +
-                                    "&destination=" + points[j].latitude + "," + points[j].longitude +
-                                    movementMethod + "&departure_time=" + timeStamp +
-                                    "&key=" + getString(R.string.google_maps_key)
-                    else
-                        urlDirections =
-                            getString(R.string.map_url_text) +
-                                    points[j - 1].latitude + "," + points[j - 1].longitude +
-                                    "&destination=" + points[j].latitude + "," + points[j].longitude +
-                                    movementMethod + "&departure_time=" + timeStamp +
-                                    "&key=" + getString(R.string.google_maps_key)
+            var urlDirections =
+                getString(R.string.map_url_text) +
+                        tmpLat + "," + tmpLong +
+                        "&waypoints=" + wp +
+                        "&destination=" + tmpLat + "," + tmpLong +
+                        movementMethod + "&departure_time=" + timeStamp +
+                        "&key=" + getString(R.string.google_maps_key)
+            val apiResponse = URL(urlDirections).readText()
+            val jsonResponse = JSONObject(apiResponse)
+
+            val routes = jsonResponse.getJSONArray("routes")
+            if (!routes.isNull(0)) {
+                resultTime += 1
+                val legs = routes.getJSONObject(0).getJSONArray("legs")
+                resultTime = legs.getJSONObject(0).getJSONObject("duration")
+                    .getString("value").toInt()
+            }
+        }
+        t.start()
+        t.join()
+        TSPwaypoints.add(Pair(resultTime, points.toMutableList()))
+    } else {
+        for (i in index until points.size) {
+            if (i == index)
+                bruteForceIterate(index + 1, points)
+            else {
+                var tmpPoints = points.toMutableList()
+                var tmp = tmpPoints[i]
+                tmpPoints[i] = tmpPoints[index]
+                tmpPoints[index] = tmp
+                bruteForceIterate(index + 1, tmpPoints)
+            }
+        }
+    }
+}
+
+
+///Branch and bound
+private var N = 11
+private var final_path = IntArray(N + 1)
+private var visited = BooleanArray(N)
+private var final_res = Int.MAX_VALUE
+private fun copyToFinal(curr_path: IntArray) {
+    for (i in 0 until N) final_path[i] = curr_path[i]
+    final_path[N] = curr_path[0]
+}
+
+private fun firstMin(adj: Array<IntArray>, i: Int): Int {
+    var min = Int.MAX_VALUE
+    for (k in 0 until N) if (adj[i][k] < min && i != k) min = adj[i][k]
+    return min
+}
+
+private fun secondMin(adj: Array<IntArray>, i: Int): Int {
+    var first = Int.MAX_VALUE
+    var second = Int.MAX_VALUE
+    for (j in 0 until N) {
+        if (i == j) continue
+        if (adj[i][j] <= first) {
+            second = first
+            first = adj[i][j]
+        } else if (adj[i][j] <= second &&
+            adj[i][j] != first
+        ) second = adj[i][j]
+    }
+    return second
+}
+
+private fun TSPRec(
+    adj: Array<IntArray>, curr_bound: Int, curr_weight: Int,
+    level: Int, curr_path: IntArray
+) {
+    var curr_bound = curr_bound
+    var curr_weight = curr_weight
+    if (level == N) {
+        if (adj[curr_path[level - 1]][curr_path[0]] != 0) {
+            val curr_res = curr_weight +
+                    adj[curr_path[level - 1]][curr_path[0]]
+
+            if (curr_res < final_res) {
+                copyToFinal(curr_path)
+                final_res = curr_res
+            }
+        }
+        return
+    }
+
+    for (i in 0 until N) {
+        if (adj[curr_path[level - 1]][i] != 0 &&
+            visited[i] == false
+        ) {
+            val temp = curr_bound
+            curr_weight += adj[curr_path[level - 1]][i]
+
+            curr_bound -= if (level == 1) (firstMin(adj, curr_path[level - 1]) +
+                    firstMin(adj, i)) / 2 else (secondMin(adj, curr_path[level - 1]) +
+                    firstMin(adj, i)) / 2
+
+            if (curr_bound + curr_weight < final_res) {
+                curr_path[level] = i
+                visited[i] = true
+
+                TSPRec(
+                    adj, curr_bound, curr_weight, level + 1,
+                    curr_path
+                )
+            }
+
+            curr_weight -= adj[curr_path[level - 1]][i]
+            curr_bound = temp
+
+            Arrays.fill(visited, false)
+            for (j in 0..level - 1) visited[curr_path[j]] = true
+        }
+    }
+}
+
+private fun branchNBound(points: MutableList<LatLng>) {
+    val tmpLat = 53.41904081498391
+    val tmpLong = 14.55116280845876
+    val timeStamp = 1690192800
+    points.add(0, LatLng(tmpLat, tmpLong))
+    var adj: Array<IntArray> = Array(N) { IntArray(N) }
+    for (i in 0 until points.size) {
+        for (j in 0 until points.size) {
+            if (i != j) {
+                val t = Thread {
+                    var urlDirections =
+                        getString(R.string.map_url_text) +
+                                points[i].latitude + "," + points[i].longitude +
+                                "&destination=" + points[j].latitude + "," + points[j].longitude +
+                                movementMethod + "&departure_time=" + timeStamp +
+                                "&key=" + getString(R.string.google_maps_key)
+                    val apiResponse = URL(urlDirections).readText()
+                    val jsonResponse = JSONObject(apiResponse)
+
+                    val routes = jsonResponse.getJSONArray("routes")
+                    if (!routes.isNull(0)) {
+                        val legs = routes.getJSONObject(0).getJSONArray("legs")
+                        adj[i][j] = legs.getJSONObject(0).getJSONObject("duration")
+                            .getString("value").toInt()
+                    }
+                }
+                t.start()
+                t.join()
+            }
+        }
+    }
+    val curr_path = IntArray(N + 1)
+
+    var curr_bound = 0
+    Arrays.fill(curr_path, -1)
+    Arrays.fill(visited, false)
+
+    for (i in 0 until N) curr_bound += firstMin(adj, i) +
+            secondMin(adj, i)
+
+    curr_bound = if (curr_bound == 1) curr_bound / 2 + 1 else curr_bound / 2
+
+    visited[0] = true
+    curr_path[0] = 0
+
+    TSPRec(adj, curr_bound, 0, 1, curr_path)
+}
+
+
+///Nearest neighbour
+private fun nearestNeighbour(points: MutableList<LatLng>) {
+    val tmpLat = 53.41904081498391
+    val tmpLong = 14.55116280845876
+    val timeStamp = 1690192800
+
+    var urlDirections = ""
+
+    val t = Thread {
+        for (i in -1 until points.size - 2) {
+            var currMinVal = 0
+            var currMinIndex = 0
+            for (j in i + 1 until points.size) {
+                if (i == -1)
+                    urlDirections =
+                        getString(R.string.map_url_text) +
+                                tmpLat + "," + tmpLong +
+                                "&destination=" + points[j].latitude + "," + points[j].longitude +
+                                movementMethod + "&departure_time=" + timeStamp +
+                                "&key=" + getString(R.string.google_maps_key)
+                else
+                    urlDirections =
+                        getString(R.string.map_url_text) +
+                                points[j - 1].latitude + "," + points[j - 1].longitude +
+                                "&destination=" + points[j].latitude + "," + points[j].longitude +
+                                movementMethod + "&departure_time=" + timeStamp +
+                                "&key=" + getString(R.string.google_maps_key)
+
+                val apiResponse = URL(urlDirections).readText()
+                val jsonResponse = JSONObject(apiResponse)
+
+                val routes = jsonResponse.getJSONArray("routes")
+                if (!routes.isNull(0)) {
+                    val legs = routes.getJSONObject(0).getJSONArray("legs")
+                    val resultTime = legs.getJSONObject(0).getJSONObject("duration")
+                        .getString("value").toInt()
+                    if (resultTime < currMinVal || j == i + 1) {
+                        currMinVal = resultTime
+                        currMinIndex = j
+                    }
+                }
+            }
+            val tmp = points[i + 1]
+            points[i + 1] = points[currMinIndex]
+            points[currMinIndex] = tmp
+        }
+        var wp = ""
+        for (i in points) {
+            wp = wp + "via:" + i.latitude + "," + i.longitude + "|"
+        }
+        wp.dropLast(1)
+
+        var res = 0
+        urlDirections =
+            getString(R.string.map_url_text) +
+                    tmpLat + "," + tmpLong +
+                    "&waypoints=" + wp +
+                    "&destination=" + tmpLat + "," + tmpLong +
+                    movementMethod + "&departure_time=" + timeStamp +
+                    "&key=" + getString(R.string.google_maps_key)
+        val apiResponse = URL(urlDirections).readText()
+        val jsonResponse = JSONObject(apiResponse)
+
+        val routes = jsonResponse.getJSONArray("routes")
+        if (!routes.isNull(0)) {
+            val legs = routes.getJSONObject(0).getJSONArray("legs")
+            res = legs.getJSONObject(0).getJSONObject("duration")
+                .getString("value").toInt()
+        }
+        println(urlDirections)
+        println(res)
+    }
+    t.start()
+    t.join()
+}
+
+
+///Cheapest Insertion
+private fun cheapestInsertion(points: MutableList<LatLng>) {
+    val tmpLat = 53.41904081498391
+    val tmpLong = 14.55116280845876
+    val timeStamp = 1690192800
+
+    var urlDirections = ""
+
+    val t = Thread {
+        var currRoute: MutableList<LatLng> = mutableListOf()
+        var currBestRoute: MutableList<LatLng> = mutableListOf()
+        for (i in -1 until points.size - 1) {
+            println(currRoute.joinToString())
+            var currMinVal = 0
+            var currMinIndex = 0
+
+            for (j in i + 1 until points.size) {
+                if (i == -1) {
+                    urlDirections =
+                        getString(R.string.map_url_text) +
+                                tmpLat + "," + tmpLong +
+                                "&destination=" + points[j].latitude + "," + points[j].longitude +
+                                movementMethod + "&departure_time=" + timeStamp +
+                                "&key=" + getString(R.string.google_maps_key)
 
                     val apiResponse = URL(urlDirections).readText()
                     val jsonResponse = JSONObject(apiResponse)
@@ -1875,18 +2226,495 @@ class MapScreen : AppCompatActivity(),
                             currMinIndex = j
                         }
                     }
+                } else {
+                    for (k in 0 until currRoute.size + 1) {
+                        var currRouteTmp = currRoute.toMutableList()
+                        if (k == currRoute.size)
+                            currRouteTmp.add(points[j])
+                        else
+                            currRouteTmp.add(k, points[j])
+                        var wp = ""
+                        for (p in currRouteTmp) {
+                            wp =
+                                wp + "via:" + p.latitude + "," + p.longitude + "|"
+                        }
+                        wp.dropLast(1)
+                        urlDirections =
+                            getString(R.string.map_url_text) +
+                                    tmpLat + "," + tmpLong +
+                                    "&waypoints=" + wp +
+                                    "&destination=" + tmpLat + "," + tmpLong +
+                                    movementMethod + "&departure_time=" + timeStamp +
+                                    "&key=" + getString(R.string.google_maps_key)
+
+                        val apiResponse = URL(urlDirections).readText()
+                        val jsonResponse = JSONObject(apiResponse)
+
+                        val routes = jsonResponse.getJSONArray("routes")
+                        if (!routes.isNull(0)) {
+                            val legs = routes.getJSONObject(0).getJSONArray("legs")
+                            val resultTime = legs.getJSONObject(0).getJSONObject("duration")
+                                .getString("value").toInt()
+                            if (resultTime < currMinVal || j == i + 1) {
+                                currMinVal = resultTime
+                                currMinIndex = j
+                                currBestRoute = currRouteTmp.toMutableList()
+                            }
+                        }
+                    }
                 }
+            }
+            if (i == -1) {
                 val tmp = points[i + 1]
                 points[i + 1] = points[currMinIndex]
                 points[currMinIndex] = tmp
+                currRoute.add(points[i + 1])
+            } else {
+                val tmp = points[i + 1]
+                points[i + 1] = points[currMinIndex]
+                points[currMinIndex] = tmp
+                currRoute = currBestRoute.toMutableList()
+                println(currRoute.joinToString())
             }
-            var wp = ""
-            for (i in points) {
-                wp = wp + "via:" + i.latitude + "," + i.longitude + "|"
+        }
+        var wp = ""
+        for (i in currRoute) {
+            wp = wp + "via:" + i.latitude + "," + i.longitude + "|"
+        }
+        wp.dropLast(1)
+
+        var res = 0
+        urlDirections =
+            getString(R.string.map_url_text) +
+                    tmpLat + "," + tmpLong +
+                    "&waypoints=" + wp +
+                    "&destination=" + tmpLat + "," + tmpLong +
+                    movementMethod + "&departure_time=" + timeStamp +
+                    "&key=" + getString(R.string.google_maps_key)
+        val apiResponse = URL(urlDirections).readText()
+        val jsonResponse = JSONObject(apiResponse)
+
+        val routes = jsonResponse.getJSONArray("routes")
+        if (!routes.isNull(0)) {
+            val legs = routes.getJSONObject(0).getJSONArray("legs")
+            res = legs.getJSONObject(0).getJSONObject("duration")
+                .getString("value").toInt()
+        }
+        println(urlDirections)
+        println(res)
+    }
+    t.start()
+    t.join()
+}
+
+
+///Farthest Insertion
+private fun farthestInsertion(points: MutableList<LatLng>) {
+    val tmpLat = 53.41904081498391
+    val tmpLong = 14.55116280845876
+    val timeStamp = 1690192800
+
+    var urlDirections = ""
+
+    val t = Thread {
+        var currRoute: MutableList<LatLng> = mutableListOf()
+        var currBestRoute: MutableList<LatLng> = mutableListOf()
+        for (i in -1 until points.size - 1) {
+            println(currRoute.joinToString())
+            var currMinVal = 0
+            var currMinIndex = 0
+            var currFarthestVal = 0
+            var currFarthestIndex = 0
+
+            for (j in i + 1 until points.size) {
+                if (i == -1) {
+                    urlDirections =
+                        getString(R.string.map_url_text) +
+                                tmpLat + "," + tmpLong +
+                                "&destination=" + points[j].latitude + "," + points[j].longitude +
+                                movementMethod + "&departure_time=" + timeStamp +
+                                "&key=" + getString(R.string.google_maps_key)
+
+                    val apiResponse = URL(urlDirections).readText()
+                    val jsonResponse = JSONObject(apiResponse)
+
+                    val routes = jsonResponse.getJSONArray("routes")
+                    if (!routes.isNull(0)) {
+                        val legs = routes.getJSONObject(0).getJSONArray("legs")
+                        val resultTime = legs.getJSONObject(0).getJSONObject("duration")
+                            .getString("value").toInt()
+                        if (resultTime > currFarthestVal) {
+                            currFarthestVal = resultTime
+                            currFarthestIndex = j
+                        }
+                    }
+                } else {
+                    for (k in 0 until currRoute.size + 1) {
+                        if (k == currRoute.size)
+                            urlDirections =
+                                getString(R.string.map_url_text) +
+                                        tmpLat + "," + tmpLong +
+                                        "&destination=" + points[j].latitude + "," + points[j].longitude +
+                                        movementMethod + "&departure_time=" + timeStamp +
+                                        "&key=" + getString(R.string.google_maps_key)
+                        else
+                            urlDirections =
+                                getString(R.string.map_url_text) +
+                                        currRoute[k].latitude + "," + currRoute[k].longitude +
+                                        "&destination=" + points[j].latitude + "," + points[j].longitude +
+                                        movementMethod + "&departure_time=" + timeStamp +
+                                        "&key=" + getString(R.string.google_maps_key)
+
+
+                        val apiResponse = URL(urlDirections).readText()
+                        val jsonResponse = JSONObject(apiResponse)
+
+                        val routes = jsonResponse.getJSONArray("routes")
+                        if (!routes.isNull(0)) {
+                            val legs = routes.getJSONObject(0).getJSONArray("legs")
+                            val resultTime = legs.getJSONObject(0).getJSONObject("duration")
+                                .getString("value").toInt()
+                            if (resultTime > currFarthestVal) {
+                                currFarthestVal = resultTime
+                                currFarthestIndex = j
+                            }
+                        }
+                    }
+                }
+            }
+            if (i == -1) {
+                val tmp = points[i + 1]
+                points[i + 1] = points[currFarthestIndex]
+                points[currFarthestIndex] = tmp
+                currRoute.add(points[i + 1])
+            } else {
+                val tmp = points[i + 1]
+                points[i + 1] = points[currFarthestIndex]
+                points[currFarthestIndex] = tmp
+                for (k in 0 until currRoute.size + 1) {
+                    var currRouteTmp = currRoute.toMutableList()
+                    if (k == currRoute.size)
+                        currRouteTmp.add(points[i + 1])
+                    else
+                        currRouteTmp.add(k, points[i + 1])
+                    var wp = ""
+                    for (p in currRouteTmp) {
+                        wp =
+                            wp + "via:" + p.latitude + "," + p.longitude + "|"
+                    }
+                    wp.dropLast(1)
+                    urlDirections =
+                        getString(R.string.map_url_text) +
+                                tmpLat + "," + tmpLong +
+                                "&waypoints=" + wp +
+                                "&destination=" + tmpLat + "," + tmpLong +
+                                movementMethod + "&departure_time=" + timeStamp +
+                                "&key=" + getString(R.string.google_maps_key)
+
+                    val apiResponse = URL(urlDirections).readText()
+                    val jsonResponse = JSONObject(apiResponse)
+
+                    val routes = jsonResponse.getJSONArray("routes")
+                    if (!routes.isNull(0)) {
+                        val legs = routes.getJSONObject(0).getJSONArray("legs")
+                        val resultTime = legs.getJSONObject(0).getJSONObject("duration")
+                            .getString("value").toInt()
+                        if (resultTime < currMinVal || k == 0) {
+                            currMinVal = resultTime
+                            currMinIndex = k
+                            currBestRoute = currRouteTmp.toMutableList()
+                        }
+                    }
+                }
+                currRoute = currBestRoute.toMutableList()
+                println(currRoute.joinToString())
+            }
+        }
+        var wp = ""
+        for (i in currRoute) {
+            wp = wp + "via:" + i.latitude + "," + i.longitude + "|"
+        }
+        wp.dropLast(1)
+
+        var res = 0
+        urlDirections =
+            getString(R.string.map_url_text) +
+                    tmpLat + "," + tmpLong +
+                    "&waypoints=" + wp +
+                    "&destination=" + tmpLat + "," + tmpLong +
+                    movementMethod + "&departure_time=" + timeStamp +
+                    "&key=" + getString(R.string.google_maps_key)
+        val apiResponse = URL(urlDirections).readText()
+        val jsonResponse = JSONObject(apiResponse)
+
+        val routes = jsonResponse.getJSONArray("routes")
+        if (!routes.isNull(0)) {
+            val legs = routes.getJSONObject(0).getJSONArray("legs")
+            res = legs.getJSONObject(0).getJSONObject("duration")
+                .getString("value").toInt()
+        }
+        println(urlDirections)
+        println(res)
+    }
+    t.start()
+    t.join()
+}
+
+
+///Christofides
+private var V = 11
+
+fun minKey(key: MutableList<Int>, mstSet: MutableList<Boolean>): Int {
+    var min = Int.MAX_VALUE
+    var min_index = -1
+    for (v in 0 until V) {
+        if (mstSet[v] == false && key[v] < min) {
+            min = key[v]
+            min_index = v
+        }
+    }
+    return min_index
+}
+
+fun christofides(points: MutableList<LatLng>) {
+    val tmpLat = 53.41904081498391
+    val tmpLong = 14.55116280845876
+    val timeStamp = 1690192800
+    val tmpPoints = points.toMutableList()
+    points.add(0, LatLng(tmpLat, tmpLong))
+    var graph: Array<IntArray> = Array(V) { IntArray(V) }
+    val t = Thread {
+        for (i in 0 until points.size) {
+            for (j in 0 until points.size) {
+                if (i != j) {
+                    var urlDirections =
+                        getString(R.string.map_url_text) +
+                                points[i].latitude + "," + points[i].longitude +
+                                "&destination=" + points[j].latitude + "," + points[j].longitude +
+                                movementMethod + "&departure_time=" + timeStamp +
+                                "&key=" + getString(R.string.google_maps_key)
+                    val apiResponse = URL(urlDirections).readText()
+                    val jsonResponse = JSONObject(apiResponse)
+
+                    val routes = jsonResponse.getJSONArray("routes")
+                    if (!routes.isNull(0)) {
+                        val legs = routes.getJSONObject(0).getJSONArray("legs")
+                        graph[i][j] = legs.getJSONObject(0).getJSONObject("duration")
+                            .getString("value").toInt()
+                    }
+                }
+                print(graph[i][j])
+            }
+        }
+        println()
+    }
+    t.start()
+    t.join()
+
+    for (i in graph) {
+        for (j in i)
+            print(j.toString() + " ")
+        println()
+    }
+
+    val parent = IntArray(V)
+    val key: MutableList<Int> = arrayListOf()
+    val mstSet: MutableList<Boolean> = arrayListOf()
+    val edgeCounter: MutableList<Int> = arrayListOf()
+
+    for (i in 0 until V) {
+        key.add(Int.MAX_VALUE)
+        mstSet.add(false)
+        edgeCounter.add(0)
+    }
+
+    key[0] = 0
+    parent[0] = -1
+
+    for (count in 0 until (V - 1)) {
+        val u = minKey(key, mstSet)
+        mstSet[u] = true
+        for (v in 0 until V) {
+            if ((graph[u][v] != 0) &&
+                (mstSet[v] == false) &&
+                (graph[u][v] < key[v])
+            ) {
+                parent[v] = u
+                key[v] = graph[u][v]
+            }
+        }
+    }
+
+    val edgePairs: MutableList<Pair<Int, Int>> = mutableListOf()
+    for (i in 1 until V) {
+        edgeCounter[i] += 1
+        edgeCounter[parent[i]] += 1
+        edgePairs.add(Pair(i, parent[i]))
+    }
+
+    for (i in 0 until V) {
+        if (edgeCounter[i] % 2 == 1) {
+            var minEdge = Int.MAX_VALUE
+            var minEdgeIndex = -1
+            for (j in i + 1 until V)
+                if (edgeCounter[j] % 2 == 1 &&
+                    graph[i][j] < minEdge &&
+                    (Pair(i, j) !in edgePairs || Pair(j, i) !in edgePairs)
+                ) {
+                    minEdge = graph[i][j]
+                    minEdgeIndex = j
+                }
+            edgeCounter[i] += 1
+            edgeCounter[minEdgeIndex] += 1
+            edgePairs.add(Pair(i, minEdgeIndex))
+        }
+    }
+
+    val sortedList: MutableList<Pair<Int, Int>> =
+        edgePairs.sortedWith(compareBy({ graph[it.first][it.second] })).toMutableList()
+
+    for (i in 0 until sortedList.size) {
+        if (sortedList[i].first == 0 || sortedList[i].second == 0) {
+            var tmp = sortedList[i]
+            sortedList.removeAt(i)
+            sortedList.add(0, tmp)
+            break
+        }
+    }
+
+    val usedList: MutableList<Int> = mutableListOf()
+    var next = 0
+    if (sortedList[0].first == 0) {
+        next = sortedList[0].second
+        usedList.add(sortedList[0].first)
+        usedList.add(sortedList[0].second)
+    } else {
+        next = sortedList[0].first
+        usedList.add(sortedList[0].second)
+        usedList.add(sortedList[0].first)
+    }
+    sortedList.removeAt(0)
+
+    while (usedList.size < V) {
+        for (i in 0 until sortedList.size) {
+            if (sortedList[i].first in usedList && sortedList[i].second in usedList) {
+                sortedList.removeAt(i)
+                break
+            }
+            if (sortedList[i].first == next && sortedList[i].second !in usedList) {
+                next = sortedList[i].second
+                usedList.add(sortedList[i].second)
+                sortedList.removeAt(i)
+                break
+            }
+            if (sortedList[i].second == next && sortedList[i].first !in usedList) {
+                next = sortedList[i].first
+                usedList.add(sortedList[i].first)
+                sortedList.removeAt(i)
+                break
+            }
+        }
+        if (sortedList[0].first !in usedList) {
+            next = sortedList[0].first
+            usedList.add(sortedList[0].first)
+        }
+        if (sortedList[0].second !in usedList) {
+            next = sortedList[0].second
+            usedList.add(sortedList[0].second)
+        }
+        sortedList.removeAt(0)
+    }
+    usedList.remove(0)
+
+    var wp = ""
+    for (p in usedList) {
+        wp = wp + "via:" + tmpPoints[p - 1].latitude + "," + tmpPoints[p - 1].longitude + "|"
+    }
+    wp.dropLast(1)
+
+    val t1 = Thread {
+        var urlDirections =
+            getString(R.string.map_url_text) +
+                    tmpLat + "," + tmpLong +
+                    "&waypoints=" + wp +
+                    "&destination=" + tmpLat + "," + tmpLong +
+                    movementMethod + "&departure_time=" + timeStamp +
+                    "&key=" + getString(R.string.google_maps_key)
+        println(urlDirections)
+        val apiResponse = URL(urlDirections).readText()
+        val jsonResponse = JSONObject(apiResponse)
+
+        val routes = jsonResponse.getJSONArray("routes")
+        if (!routes.isNull(0)) {
+            val legs = routes.getJSONObject(0).getJSONArray("legs")
+            println(
+                "Duration: " + legs.getJSONObject(0).getJSONObject("duration")
+                    .getString("value")
+            )
+        }
+    }
+    t1.start()
+    t1.join()
+}
+
+
+///Convexhull
+open fun orientation(p: LatLng, q: LatLng, r: LatLng): Int {
+    val `val`: Double = (q.longitude - p.longitude) * (r.latitude - q.latitude) -
+            (q.latitude - p.latitude) * (r.longitude - q.longitude)
+    if (`val` == 0.000) return 0
+    return if (`val` > 0) 1 else 2
+}
+
+fun cheapestConvex(points: MutableList<LatLng>, n: Int) {
+    if (n < 3) return
+    val hull: Vector<LatLng> = Vector<LatLng>()
+    var l = 0
+    for (i in 1 until n) if (points[i].latitude < points[l].latitude) l = i
+
+    var p = l
+    var q: Int
+    do {
+        hull.add(points[p])
+        q = (p + 1) % n
+        for (i in 0 until n) {
+            if (orientation(points[p], points[i], points[q])
+                == 2
+            ) q = i
+        }
+        p = q
+    } while (p != l)
+
+    val tmpList: MutableList<Int> = mutableListOf()
+    for (i in hull) {
+        if (i in points) {
+            points.remove(i)
+        }
+    }
+
+    val tmpLat = 53.41904081498391
+    val tmpLong = 14.55116280845876
+    val timeStamp = 1690192800
+
+    val newPoints = hull.toMutableList()
+    newPoints.addAll(points)
+    var urlDirections = ""
+
+    val t = Thread {
+        var currRoute = hull.toMutableList()
+        var currBestRoute = hull.toMutableList()
+
+        var currMinVal = 0
+        var currMinIndex = 0
+        var wp = ""
+        for (i in 0 until hull.size) {
+            for (j in 0 until hull.size) {
+                currRoute[j] = hull[(i + j) % hull.size]
+                wp =
+                    wp + "via:" + currRoute[j].latitude + "," + currRoute[j].longitude + "|"
             }
             wp.dropLast(1)
 
-            var res = 0
             urlDirections =
                 getString(R.string.map_url_text) +
                         tmpLat + "," + tmpLong +
@@ -1894,22 +2722,281 @@ class MapScreen : AppCompatActivity(),
                         "&destination=" + tmpLat + "," + tmpLong +
                         movementMethod + "&departure_time=" + timeStamp +
                         "&key=" + getString(R.string.google_maps_key)
+
             val apiResponse = URL(urlDirections).readText()
             val jsonResponse = JSONObject(apiResponse)
 
             val routes = jsonResponse.getJSONArray("routes")
             if (!routes.isNull(0)) {
                 val legs = routes.getJSONObject(0).getJSONArray("legs")
-                res = legs.getJSONObject(0).getJSONObject("duration")
+                val resultTime = legs.getJSONObject(0).getJSONObject("duration")
                     .getString("value").toInt()
+                if (resultTime < currMinVal || i == 0) {
+                    currMinVal = resultTime
+                    currBestRoute = currRoute.toMutableList()
+                }
             }
-            println(urlDirections)
-            println(res)
         }
-        t.start()
-        t.join()
+        currRoute = currBestRoute.toMutableList()
+
+        for (i in hull.size until newPoints.size - 1) {
+            currMinVal = 0
+            currMinIndex = 0
+            println(currRoute.joinToString())
+            for (j in i + 1 until newPoints.size) {
+                for (k in 0 until currRoute.size + 1) {
+                    var currRouteTmp = currRoute.toMutableList()
+                    if (k == currRoute.size)
+                        currRouteTmp.add(newPoints[j])
+                    else
+                        currRouteTmp.add(k, newPoints[j])
+                    wp = ""
+                    for (p in currRouteTmp) {
+                        wp =
+                            wp + "via:" + p.latitude + "," + p.longitude + "|"
+                    }
+                    wp.dropLast(1)
+                    urlDirections =
+                        getString(R.string.map_url_text) +
+                                tmpLat + "," + tmpLong +
+                                "&waypoints=" + wp +
+                                "&destination=" + tmpLat + "," + tmpLong +
+                                movementMethod + "&departure_time=" + timeStamp +
+                                "&key=" + getString(R.string.google_maps_key)
+
+                    val apiResponse = URL(urlDirections).readText()
+                    val jsonResponse = JSONObject(apiResponse)
+
+                    val routes = jsonResponse.getJSONArray("routes")
+                    if (!routes.isNull(0)) {
+                        val legs = routes.getJSONObject(0).getJSONArray("legs")
+                        val resultTime = legs.getJSONObject(0).getJSONObject("duration")
+                            .getString("value").toInt()
+                        if (resultTime < currMinVal || j == i + 1) {
+                            currMinVal = resultTime
+                            currMinIndex = j
+                            currBestRoute = currRouteTmp.toMutableList()
+                        }
+                    }
+                }
+            }
+            val tmp = newPoints[i + 1]
+            newPoints[i + 1] = newPoints[currMinIndex]
+            newPoints[currMinIndex] = tmp
+            currRoute = currBestRoute.toMutableList()
+            println(currRoute.joinToString())
+        }
+        wp = ""
+        for (i in currRoute) {
+            wp = wp + "via:" + i.latitude + "," + i.longitude + "|"
+        }
+        wp.dropLast(1)
+
+        var res = 0
+        urlDirections =
+            getString(R.string.map_url_text) +
+                    tmpLat + "," + tmpLong +
+                    "&waypoints=" + wp +
+                    "&destination=" + tmpLat + "," + tmpLong +
+                    movementMethod + "&departure_time=" + timeStamp +
+                    "&key=" + getString(R.string.google_maps_key)
+        val apiResponse = URL(urlDirections).readText()
+        val jsonResponse = JSONObject(apiResponse)
+
+        val routes = jsonResponse.getJSONArray("routes")
+        if (!routes.isNull(0)) {
+            val legs = routes.getJSONObject(0).getJSONArray("legs")
+            res = legs.getJSONObject(0).getJSONObject("duration")
+                .getString("value").toInt()
+        }
+        println(urlDirections)
+        println(res)
+    }
+    t.start()
+    t.join()
+}
+
+
+///farthest hull
+fun farthestConvex(points: MutableList<LatLng>, n: Int) {
+    if (n < 3) return
+    val hull: Vector<LatLng> = Vector<LatLng>()
+    var l = 0
+    for (i in 1 until n) if (points[i].latitude < points[l].latitude) l = i
+
+    var p = l
+    var q: Int
+    do {
+        hull.add(points[p])
+        q = (p + 1) % n
+        for (i in 0 until n) {
+            if (orientation(points[p], points[i], points[q])
+                == 2
+            ) q = i
+        }
+        p = q
+    } while (p != l)
+
+    val tmpList: MutableList<Int> = mutableListOf()
+    for (i in hull) {
+        if (i in points) {
+            points.remove(i)
+        }
     }
 
+    val tmpLat = 53.41904081498391
+    val tmpLong = 14.55116280845876
+    val timeStamp = 1690192800
 
-    ///
-}
+    val newPoints = hull.toMutableList()
+    newPoints.addAll(points)
+    var urlDirections = ""
+
+    val t = Thread {
+        var currRoute = hull.toMutableList()
+        var currBestRoute = hull.toMutableList()
+
+        var currMinVal = 0
+        var currMinIndex = 0
+        var wp = ""
+        for (i in 0 until hull.size) {
+            for (j in 0 until hull.size) {
+                currRoute[j] = hull[(i + j) % hull.size]
+                wp =
+                    wp + "via:" + currRoute[j].latitude + "," + currRoute[j].longitude + "|"
+            }
+            wp.dropLast(1)
+
+            urlDirections =
+                getString(R.string.map_url_text) +
+                        tmpLat + "," + tmpLong +
+                        "&waypoints=" + wp +
+                        "&destination=" + tmpLat + "," + tmpLong +
+                        movementMethod + "&departure_time=" + timeStamp +
+                        "&key=" + getString(R.string.google_maps_key)
+
+            val apiResponse = URL(urlDirections).readText()
+            val jsonResponse = JSONObject(apiResponse)
+
+            val routes = jsonResponse.getJSONArray("routes")
+            if (!routes.isNull(0)) {
+                val legs = routes.getJSONObject(0).getJSONArray("legs")
+                val resultTime = legs.getJSONObject(0).getJSONObject("duration")
+                    .getString("value").toInt()
+                if (resultTime < currMinVal || i == 0) {
+                    currMinVal = resultTime
+                    currBestRoute = currRoute.toMutableList()
+                }
+            }
+        }
+        currRoute = currBestRoute.toMutableList()
+
+        for (i in hull.size until newPoints.size - 1) {
+            currMinVal = 0
+            currMinIndex = 0
+            var currFarthestVal = 0
+            var currFarthestIndex = 0
+            println(currRoute.joinToString())
+            for (j in i + 1 until newPoints.size) {
+                for (k in 0 until currRoute.size + 1) {
+                    if (k == currRoute.size)
+                        urlDirections =
+                            getString(R.string.map_url_text) +
+                                    tmpLat + "," + tmpLong +
+                                    "&destination=" + newPoints[j].latitude + "," + newPoints[j].longitude +
+                                    movementMethod + "&departure_time=" + timeStamp +
+                                    "&key=" + getString(R.string.google_maps_key)
+                    else
+                        urlDirections =
+                            getString(R.string.map_url_text) +
+                                    currRoute[k].latitude + "," + currRoute[k].longitude +
+                                    "&destination=" + newPoints[j].latitude + "," + newPoints[j].longitude +
+                                    movementMethod + "&departure_time=" + timeStamp +
+                                    "&key=" + getString(R.string.google_maps_key)
+
+
+                    val apiResponse = URL(urlDirections).readText()
+                    val jsonResponse = JSONObject(apiResponse)
+
+                    val routes = jsonResponse.getJSONArray("routes")
+                    if (!routes.isNull(0)) {
+                        val legs = routes.getJSONObject(0).getJSONArray("legs")
+                        val resultTime = legs.getJSONObject(0).getJSONObject("duration")
+                            .getString("value").toInt()
+                        if (resultTime > currFarthestVal) {
+                            currFarthestVal = resultTime
+                            currFarthestIndex = j
+                        }
+                    }
+                }
+            }
+            val tmp = newPoints[i + 1]
+            newPoints[i + 1] = newPoints[currFarthestIndex]
+            newPoints[currFarthestIndex] = tmp
+            for (k in 0 until currRoute.size + 1) {
+                var currRouteTmp = currRoute.toMutableList()
+                if (k == currRoute.size)
+                    currRouteTmp.add(newPoints[i + 1])
+                else
+                    currRouteTmp.add(k, newPoints[i + 1])
+                var wp = ""
+                for (p in currRouteTmp) {
+                    wp =
+                        wp + "via:" + p.latitude + "," + p.longitude + "|"
+                }
+                wp.dropLast(1)
+                urlDirections =
+                    getString(R.string.map_url_text) +
+                            tmpLat + "," + tmpLong +
+                            "&waypoints=" + wp +
+                            "&destination=" + tmpLat + "," + tmpLong +
+                            movementMethod + "&departure_time=" + timeStamp +
+                            "&key=" + getString(R.string.google_maps_key)
+
+                val apiResponse = URL(urlDirections).readText()
+                val jsonResponse = JSONObject(apiResponse)
+
+                val routes = jsonResponse.getJSONArray("routes")
+                if (!routes.isNull(0)) {
+                    val legs = routes.getJSONObject(0).getJSONArray("legs")
+                    val resultTime = legs.getJSONObject(0).getJSONObject("duration")
+                        .getString("value").toInt()
+                    if (resultTime < currMinVal || k == 0) {
+                        currMinVal = resultTime
+                        currMinIndex = k
+                        currBestRoute = currRouteTmp.toMutableList()
+                    }
+                }
+            }
+            currRoute = currBestRoute.toMutableList()
+            println(currRoute.joinToString())
+        }
+        wp = ""
+        for (i in currRoute) {
+            wp = wp + "via:" + i.latitude + "," + i.longitude + "|"
+        }
+        wp.dropLast(1)
+
+        var res = 0
+        urlDirections =
+            getString(R.string.map_url_text) +
+                    tmpLat + "," + tmpLong +
+                    "&waypoints=" + wp +
+                    "&destination=" + tmpLat + "," + tmpLong +
+                    movementMethod + "&departure_time=" + timeStamp +
+                    "&key=" + getString(R.string.google_maps_key)
+        val apiResponse = URL(urlDirections).readText()
+        val jsonResponse = JSONObject(apiResponse)
+
+        val routes = jsonResponse.getJSONArray("routes")
+        if (!routes.isNull(0)) {
+            val legs = routes.getJSONObject(0).getJSONArray("legs")
+            res = legs.getJSONObject(0).getJSONObject("duration")
+                .getString("value").toInt()
+        }
+        println(urlDirections)
+        println(res)
+    }
+    t.start()
+    t.join()
+}*/

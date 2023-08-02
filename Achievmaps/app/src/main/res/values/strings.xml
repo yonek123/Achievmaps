@@ -126,7 +126,7 @@
     <string name="walking_text">pieszo</string>
     <string name="driving_text">autem</string>
     <string name="transit_text">t. miejski</string>
-    <string name="time_text">Podaj czas</string>
+    <string name="time_text">Data i czas rozpoczęcia</string>
     <string name="start_route_text">Rozpocznij</string>
     <string name="map_url_text">https://maps.googleapis.com/maps/api/directions/json?origin=</string>
 </resources>
